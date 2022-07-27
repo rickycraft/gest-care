@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 80",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -11,6 +11,7 @@
     "deploy": "docker run -p 80:80 --rm gest-care"
   },
   "dependencies": {
+    "bootstrap": "^5.2.0",
     "next": "12.2.3",
     "react": "18.2.0",
     "react-dom": "18.2.0"
