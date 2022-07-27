@@ -9,5 +9,6 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  res.status(200).json({ name: 'Caterina Leonelli' })
+  // altro codice
+  res.status(200).json({ name: 'Anna Vandi' })
 }
