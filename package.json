@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "docker": "docker build -t gest-care:latest .",
-    "deploy": "docker run -p 80:80 --rm gest-care",
+    "docker": "sudo docker build -t gest-care:latest . && sudo docker image prune -f",
+    "deploy": "sudo docker run -p 80:80 --rm gest-care",
     "prisma-generate": "npx prisma generate",
     "prisma-migrate": "npx prisma migrate dev"
   },
