@@ -1,5 +1,7 @@
 import { Preventivo, PreventivoRow } from "@prisma/client";
-import { preventivo, preventivo_row } from "../../model/preventivo";
+import { preventivo, preventivo_row } from "../interfaces/preventivo";
+import useSwr from 'swr';
+import { fetcher } from "./utils";
 
 export function mapPreventivoRow(preventivoRow: PreventivoRow): preventivo_row {
   return {

@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-export interface preventivo_row {
+export type preventivo_row = {
   prodottoId: number;
   personalizzazioneId: number;
   provvigioneSc: Prisma.Decimal;
@@ -8,7 +8,7 @@ export interface preventivo_row {
   provvigioneComm: Prisma.Decimal;
 }
 
-export interface preventivo {
+export type preventivo = {
   nome: string;
   scuolaId: number;
   fornitoreId: number;

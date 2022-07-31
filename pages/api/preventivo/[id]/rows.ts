@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient } from '@prisma/client'
+import { mapPreventivoRow } from '../../../../scripts/preventivo'
 
 const prisma = new PrismaClient()
 
@@ -16,13 +17,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
     include: {
       rows: true,
-      scuola: true,
     }
   })
 
   if (preventivo === null) {
     res.status(404).json({ error: 'Preventivo not found' })
   } else {
-    res.status(200).json(preventivo)
+    const preventivoRows = preventivo.rows.map(mapPreventivoRow)
+    res.status(200).json(preventivoRows)
   }
 }
