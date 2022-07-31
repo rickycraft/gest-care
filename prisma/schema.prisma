@@ -27,6 +27,7 @@ model Fornitore {
   prodotti          Prodotto[]
   personalizzazioni Personalizzazione[]
   nome              String              @db.VarChar(255)
+  Preventivo        Preventivo[]
 }
 
 model Prodotto {
@@ -54,10 +55,12 @@ model Preventivo {
   createdAt DateTime        @default(now())
   rows      PreventivoRow[]
 
-  nome         String @db.VarChar(255)
-  scuola       Scuola @relation(fields: [scuolaId], references: [id])
+  nome         String    @db.VarChar(255)
+  scuola       Scuola    @relation(fields: [scuolaId], references: [id])
   scuolaId     Int
-  lastEditedBy User   @relation(fields: [userId], references: [id])
+  fornitore    Fornitore @relation(fields: [fornitoreId], references: [id])
+  fornitoreId  Int
+  lastEditedBy User      @relation(fields: [userId], references: [id])
   userId       Int
 }
 
