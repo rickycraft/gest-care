@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient } from '@prisma/client'
-import { mapPreventivo } from '../../../../scripts/preventivo'
+import { mapPreventivo, preventivo } from 'interfaces/preventivo'
 
 const prisma = new PrismaClient()
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async (req: NextApiRequest, res: NextApiResponse<preventivo>) => {
   const id = Number(req.query.id)
   if (Number.isNaN(id)) {
-    res.status(400).json({ error: 'Invalid id' })
+    res.status(400).end()
     return
   }
 
@@ -18,7 +18,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   })
 
   if (preventivo === null) {
-    res.status(404).json({ error: 'Preventivo not found' })
+    res.status(404).end()
   } else {
     res.status(200).json(mapPreventivo(preventivo))
   }
