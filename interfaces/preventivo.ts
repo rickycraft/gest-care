@@ -1,11 +1,9 @@
-import { Prisma } from "@prisma/client";
-
 export type preventivo_row = {
   prodottoId: number;
   personalizzazioneId: number;
-  provvigioneSc: Prisma.Decimal;
-  provvigioneRappre: Prisma.Decimal;
-  provvigioneComm: Prisma.Decimal;
+  provvigioneSc: number;
+  provvigioneRappre: number;
+  provvigioneComm: number;
 }
 
 export type preventivo = {
@@ -21,9 +19,9 @@ export function mapPreventivoRow(preventivoRow: PreventivoRow): preventivo_row {
   return {
     prodottoId: preventivoRow.prodottoId,
     personalizzazioneId: preventivoRow.personalizzazioneId,
-    provvigioneSc: preventivoRow.provvigioneSC,
-    provvigioneRappre: preventivoRow.provvigioneRappre,
-    provvigioneComm: preventivoRow.provvigioneComm
+    provvigioneSc: preventivoRow.provvigioneSC.toNumber(),
+    provvigioneRappre: preventivoRow.provvigioneRappre.toNumber(),
+    provvigioneComm: preventivoRow.provvigioneComm.toNumber()
   };
 }
 
