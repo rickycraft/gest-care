@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient } from '@prisma/client'
-import { mapPersonalizzazione, personalizzazione } from 'interfaces/personalizzazione'
-
-const prisma = new PrismaClient()
+import { personalizzazione } from 'interfaces/personalizzazione'
+import { getPersonalizzazioni } from 'scripts/fornitore'
 
 export default async (req: NextApiRequest, res: NextApiResponse<personalizzazione[]>) => {
   const id = Number(req.query.id)
@@ -11,12 +9,6 @@ export default async (req: NextApiRequest, res: NextApiResponse<personalizzazion
     return
   }
 
-  const personalizzazioni = await prisma.personalizzazione.findMany({
-    where: {
-      fornitoreId: id,
-    }
-  })
-  console.log(personalizzazioni)
-
-  res.status(200).json(personalizzazioni.map(mapPersonalizzazione))
+  const personalizzazioni = await getPersonalizzazioni(id)
+  res.status(200).json(personalizzazioni)
 }

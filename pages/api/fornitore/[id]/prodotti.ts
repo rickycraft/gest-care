@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient } from '@prisma/client'
-import { mapProdotto, prodotto } from 'interfaces/prodotto'
-
-const prisma = new PrismaClient()
+import { prodotto } from 'interfaces/prodotto'
+import { getProdotti } from 'scripts/fornitore'
 
 export default async (req: NextApiRequest, res: NextApiResponse<prodotto[]>) => {
   const id = Number(req.query.id)
@@ -11,11 +9,6 @@ export default async (req: NextApiRequest, res: NextApiResponse<prodotto[]>) => 
     return
   }
 
-  const prodotti = await prisma.prodotto.findMany({
-    where: {
-      fornitoreId: id,
-    }
-  })
-
-  res.status(200).json(prodotti.map(mapProdotto))
+  const prodotti = await getProdotti(id)
+  res.status(200).json(prodotti)
 }

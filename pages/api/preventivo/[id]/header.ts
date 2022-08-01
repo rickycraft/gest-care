@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient } from '@prisma/client'
-import { mapPreventivo, preventivo } from 'interfaces/preventivo'
-
-const prisma = new PrismaClient()
+import { preventivo } from 'interfaces/preventivo'
+import { getPreventivo } from 'scripts/preventivo'
 
 export default async (req: NextApiRequest, res: NextApiResponse<preventivo>) => {
   const id = Number(req.query.id)
@@ -11,15 +9,10 @@ export default async (req: NextApiRequest, res: NextApiResponse<preventivo>) => 
     return
   }
 
-  const preventivo = await prisma.preventivo.findFirst({
-    where: {
-      id: id,
-    }
-  })
-
-  if (preventivo === null) {
+  const preventivo = await getPreventivo(id)
+  if (preventivo === undefined) {
     res.status(404).end()
   } else {
-    res.status(200).json(mapPreventivo(preventivo))
+    res.status(200).json(preventivo)
   }
 }
