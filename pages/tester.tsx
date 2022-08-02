@@ -35,6 +35,7 @@ const Tester = (serverData: serverData) => {
 }
 
 export async function getServerSideProps(context: NextPageContext) {
+
   const id = Number(context.query.id)
   if (Number.isNaN(id)) {
     return {

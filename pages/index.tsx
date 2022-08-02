@@ -4,12 +4,6 @@ import { addUser } from 'scripts/user'
 import { User } from '@prisma/client'
 
 export default function Home() {
-  var user:User={
-    username: 'rootleo00',
-    password: 'asd',
-    id: 0
-  }
-  addUser(user)
 
   return (
 
