@@ -9,3 +9,72 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id         Int          @id @default(autoincrement())
+  username   String       @unique @db.VarChar(255)
+  password   String       @db.VarChar(255)
+  preventivi Preventivo[]
+}
+
+model Scuola {
+  id         Int          @id @default(autoincrement())
+  nome       String       @db.VarChar(255)
+  preventivi Preventivo[]
+}
+
+model Fornitore {
+  id                Int                 @id @default(autoincrement())
+  prodotti          Prodotto[]
+  personalizzazioni Personalizzazione[]
+  nome              String              @db.VarChar(255)
+  Preventivo        Preventivo[]
+}
+
+model Prodotto {
+  id          Int             @id @default(autoincrement())
+  fornitore   Fornitore       @relation(fields: [fornitoreId], references: [id])
+  fornitoreId Int
+  quotazioni  PreventivoRow[]
+
+  nome   String  @db.VarChar(255)
+  prezzo Decimal @db.Decimal(10, 2)
+}
+
+model Personalizzazione {
+  id          Int             @id @default(autoincrement())
+  fornitore   Fornitore       @relation(fields: [fornitoreId], references: [id])
+  fornitoreId Int
+  quotazioni  PreventivoRow[]
+
+  nome   String  @db.VarChar(255)
+  prezzo Decimal @db.Decimal(10, 2)
+}
+
+model Preventivo {
+  id        Int             @id @default(autoincrement())
+  createdAt DateTime        @default(now())
+  rows      PreventivoRow[]
+
+  nome         String    @db.VarChar(255)
+  scuola       Scuola    @relation(fields: [scuolaId], references: [id])
+  scuolaId     Int
+  fornitore    Fornitore @relation(fields: [fornitoreId], references: [id])
+  fornitoreId  Int
+  lastEditedBy User      @relation(fields: [userId], references: [id])
+  userId       Int
+}
+
+model PreventivoRow {
+  id           Int        @id @default(autoincrement())
+  preventivo   Preventivo @relation(fields: [preventivoId], references: [id])
+  preventivoId Int
+
+  prodotto            Prodotto          @relation(fields: [prodottoId], references: [id])
+  prodottoId          Int
+  personalizzazione   Personalizzazione @relation(fields: [personalizzazioneId], references: [id])
+  personalizzazioneId Int
+  provvigioneSC       Decimal           @db.Decimal(10, 2)
+  provvigioneRappre   Decimal           @db.Decimal(10, 2)
+  provvigioneComm     Decimal           @db.Decimal(10, 2)
+}
