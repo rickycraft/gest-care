@@ -1,8 +1,18 @@
 import Layout from 'components/Layout'
 import Image from 'next/image'
+import { addUser } from 'scripts/user'
+import { User } from '@prisma/client'
 
 export default function Home() {
+  var user:User={
+    username: 'rootleo00',
+    password: 'asd',
+    id: 0
+  }
+  addUser(user)
+
   return (
+
     <Layout>
       <h1>
         <span style={{ marginRight: '.3em', verticalAlign: 'middle' }}>
