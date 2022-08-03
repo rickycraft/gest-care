@@ -67,12 +67,12 @@ model Preventivo {
 
 model PreventivoRow {
   id           Int        @id @default(autoincrement())
-  preventivo   Preventivo @relation(fields: [preventivoId], references: [id])
+  preventivo   Preventivo @relation(fields: [preventivoId], references: [id], onDelete: Cascade)
   preventivoId Int
 
-  prodotto            Prodotto          @relation(fields: [prodottoId], references: [id])
+  prodotto            Prodotto          @relation(fields: [prodottoId], references: [id], onDelete: Cascade)
   prodottoId          Int
-  personalizzazione   Personalizzazione @relation(fields: [personalizzazioneId], references: [id])
+  personalizzazione   Personalizzazione @relation(fields: [personalizzazioneId], references: [id], onDelete: Cascade)
   personalizzazioneId Int
   provvigioneSC       Decimal           @db.Decimal(10, 2)
   provvigioneRappre   Decimal           @db.Decimal(10, 2)
