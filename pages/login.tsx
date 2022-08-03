@@ -4,6 +4,7 @@ import Layout from 'components/Layout'
 import Form from 'components/Form'
 import fetchJson, { FetchError } from 'lib/fetchJson'
 
+
 export default function Login() {
   // here we just check if user is already logged in and redirect to profile
   const { mutateUser } = useUser({
@@ -27,6 +28,8 @@ export default function Login() {
             }
 
             try {
+              console.log('body: '+body)
+
               mutateUser(
                 await fetchJson('/api/login', {
                   method: 'POST',
@@ -56,3 +59,4 @@ export default function Login() {
     </Layout>
   )
 }
+

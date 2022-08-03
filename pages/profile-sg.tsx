@@ -12,7 +12,7 @@ export default function SgProfile() {
 
   return (
     <Layout>
-      <h1>Your GitHub profile</h1>
+      <h1>Your profile</h1>
       <h2>
         This page uses{' '}
         <a href="https://nextjs.org/docs/basic-features/pages#static-generation-recommended">
@@ -24,11 +24,7 @@ export default function SgProfile() {
       {user && (
         <>
           <p style={{ fontStyle: 'italic' }}>
-            Public data, from{' '}
-            <a href={`https://github.com/${user.login}`}>
-              https://github.com/{user.login}
-            </a>
-            , reduced to `login` and `avatar_url`.
+            This is the profile page of username: {user.username}{' '}
           </p>
 
           <pre>{JSON.stringify(user, null, 2)}</pre>

@@ -8,7 +8,6 @@ import { NextApiRequest, NextApiResponse } from 'next'
 export type Events =
   Endpoints['GET /users/{username}/events']['response']['data']
 
-const octokit = new Octokit()
 
 export default withIronSessionApiRoute(eventsRoute, sessionOptions)
 

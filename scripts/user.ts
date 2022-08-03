@@ -1,4 +1,5 @@
 import { mapUser, user } from 'interfaces/user';
+import { NextPageContext } from 'next';
 import { prisma } from 'prisma/client'
 
 export async function addUser(user: user) {
@@ -51,3 +52,4 @@ export async function getUserByUsername(username: string) {
   if (user == null) return undefined;
   else return mapUser(user)
 }
+
