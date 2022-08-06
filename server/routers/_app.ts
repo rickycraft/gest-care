@@ -1,5 +1,6 @@
 import { createRouter } from '../createRouter';
 import superjson from 'superjson';
+import { userRouter } from './user';
 
 export const appRouter = createRouter()
   .transformer(superjson)
@@ -8,5 +9,5 @@ export const appRouter = createRouter()
       return 'yay!';
     },
   })
-//.merge('post.', postRouter);
+  .merge('user.', userRouter);
 export type AppRouter = typeof appRouter;

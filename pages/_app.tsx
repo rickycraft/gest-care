@@ -5,6 +5,8 @@ import { httpBatchLink } from '@trpc/client/links/httpBatchLink';
 import superjson from 'superjson';
 import 'bootstrap/dist/css/bootstrap.css'
 import type { AppProps } from 'next/app'
+import { AppRouter } from 'server/routers/_app';
+import { SSRContext } from 'server/utils/trpc';
 
 function getBaseUrl() {
   if (typeof window !== 'undefined') {
