@@ -10,6 +10,12 @@ const defaultUserSelect = Prisma.validator<Prisma.UserSelect>()({
 })
 
 export const userRouter = createRouter()
+  // .middleware(async ({ ctx, next }) => {
+  //   if (!ctx.user) {
+  //     throw new TRPCError({ code: 'UNAUTHORIZED' });
+  //   }
+  //   return next()
+  // })
   .query("byId", {
     input: z.object({
       id: z.number(),

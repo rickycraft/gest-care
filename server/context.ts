@@ -1,20 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import * as trpc from '@trpc/server';
 import { inferAsyncReturnType } from '@trpc/server';
 import { unsealData } from "iron-session";
 import * as trpcNext from '@trpc/server/adapters/next';
-import { sessionOptions } from "./iron"
-import { z } from "zod"
+import { IRON_COOKIE, sessionOptions, sessionSchema } from "./iron"
 
-const sessionSchema = z.object({
-  user: z.object({
-    id: z.number(),
-    username: z.string(),
-  })
-});
 
+// auth for server side
 export async function createContext({ req, res }: trpcNext.CreateNextContextOptions) {
-  const cookie = req.cookies["iron-cookie"];
+  const cookie = req.cookies[IRON_COOKIE];
   if (!cookie) {
     console.error("No cookie found");
     return {};
@@ -28,10 +21,11 @@ export async function createContext({ req, res }: trpcNext.CreateNextContextOpti
     console.error(cookie);
     return {};
   }
-  console.log("user: ", result.data.user)
+  //console.log("user: ", result.data.user)
   return {
     user: result.data.user,
   };
 }
-type Context = inferAsyncReturnType<typeof createContext>;
+
+export type Context = inferAsyncReturnType<typeof createContext>;
 
