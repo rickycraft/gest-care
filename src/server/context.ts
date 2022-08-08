@@ -6,6 +6,15 @@ import { IRON_COOKIE, sessionOptions, sessionSchema } from "./iron"
 
 // auth for server side
 export async function createContext({ req, res }: trpcNext.CreateNextContextOptions) {
+  if (process.env.NODE_ENV === 'development') {
+    return {
+      user: {
+        id: '1',
+        name: 'admin',
+      }
+    }
+  }
+
   const cookie = req.cookies[IRON_COOKIE]
   if (!cookie) {
     //console.error("No cookie found")

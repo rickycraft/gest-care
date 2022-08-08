@@ -1,4 +1,4 @@
-import { createRouter } from "server/createRouter"
+import { createProtectedRouter } from "server/createRouter"
 import { z } from 'zod'
 import { prisma } from 'server/prisma'
 import { TRPCError } from "@trpc/server"
@@ -19,7 +19,7 @@ const prodSchema = z.object({
 
 type prodType = z.infer<typeof prodSchema>
 
-export const prodRouter = createRouter()
+export const prodRouter = createProtectedRouter()
   .query("byId", {
     input: z.object({
       id: z.number(),

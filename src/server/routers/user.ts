@@ -1,4 +1,4 @@
-import { createRouter } from "server/createRouter"
+import { createProtectedRouter } from "server/createRouter"
 import { z } from 'zod'
 import { prisma } from 'server/prisma'
 import { TRPCError } from "@trpc/server"
@@ -9,7 +9,7 @@ const defaultUserSelect = Prisma.validator<Prisma.UserSelect>()({
   username: true,
 })
 
-export const userRouter = createRouter()
+export const userRouter = createProtectedRouter()
   .query("byId", {
     input: z.object({
       id: z.number(),
