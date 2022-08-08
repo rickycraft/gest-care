@@ -1,13 +1,15 @@
-import { createRouter } from '../createRouter';
-import superjson from 'superjson';
-import { userRouter } from './user';
+import { createRouter } from '../createRouter'
+import superjson from 'superjson'
+import { userRouter } from './user'
+import { prodRouter } from './prodotto'
 
 export const appRouter = createRouter()
   .transformer(superjson)
   .query('healthz', {
     async resolve() {
-      return 'yay!';
+      return 'yay!'
     },
   })
-  .merge('user.', userRouter);
-export type AppRouter = typeof appRouter;
+  .merge('user.', userRouter)
+  .merge('prodotto.', prodRouter)
+export type AppRouter = typeof appRouter

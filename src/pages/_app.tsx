@@ -1,18 +1,18 @@
 //import '../styles/globals.css'
-import { withTRPC } from '@trpc/next';
-import { loggerLink } from '@trpc/client/links/loggerLink';
-import { httpBatchLink } from '@trpc/client/links/httpBatchLink';
-import superjson from 'superjson';
+import { withTRPC } from '@trpc/next'
+import { loggerLink } from '@trpc/client/links/loggerLink'
+import { httpBatchLink } from '@trpc/client/links/httpBatchLink'
+import superjson from 'superjson'
 import 'bootstrap/dist/css/bootstrap.css'
 import type { AppProps } from 'next/app'
-import { AppRouter } from 'server/routers/_app';
-import { SSRContext } from 'utils/trpc';
+import { AppRouter } from 'server/routers/_app'
+import { SSRContext } from 'utils/trpc'
 
 function getBaseUrl() {
   if (typeof window !== 'undefined') {
-    return '';
+    return ''
   }
-  return `http://localhost:${process.env.PORT ?? 3000}`;
+  return `http://localhost:${process.env.PORT ?? 3000}`
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -20,7 +20,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 }
 
 export default withTRPC<AppRouter>({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   config() {
     return {
       links: [
@@ -35,22 +34,22 @@ export default withTRPC<AppRouter>({
         }),
       ],
       transformer: superjson,
-    };
+    }
   },
   ssr: true,
   responseMeta(opts) {
-    const ctx = opts.ctx as SSRContext;
+    const ctx = opts.ctx as SSRContext
     if (ctx.status) {
       return {
         status: ctx.status,
-      };
+      }
     }
-    const error = opts.clientErrors[0];
+    const error = opts.clientErrors[0]
     if (error) {
       return {
         status: error.data?.httpStatus ?? 500,
-      };
+      }
     }
-    return {};
+    return {}
   },
-})(MyApp);
+})(MyApp)
