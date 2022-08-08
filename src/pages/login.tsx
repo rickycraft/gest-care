@@ -1,3 +1,4 @@
+<<<<<<< HEAD:pages/login.tsx
 import React, { useState } from 'react'
 import useUser from 'lib/useUser'
 import Layout from 'components/Layout'
@@ -57,6 +58,14 @@ export default function Login() {
         }
       `}</style>
     </Layout>
+=======
+import React from 'react'
+
+export default function Login() {
+
+  return (
+    <div>Login</div>
+>>>>>>> rov:src/pages/login.tsx
   )
 }
 

@@ -1,12 +1,26 @@
 import Layout from 'components/Layout'
 import Image from 'next/image'
+<<<<<<< HEAD:pages/index.tsx
 import { addUser } from 'scripts/user'
 import { User } from '@prisma/client'
 
 export default function Home() {
 
+=======
+import { trpc } from 'utils/trpc'
+import styles from '../../styles/Home.module.css'
+
+const Home: NextPage = () => {
+
+  const userQuery = trpc.useQuery(['user.byUsername', { username: 'test' }])
+
+  if (userQuery.isLoading) return <div>Loading...</div>
+  if (userQuery.isError) return <div>Error: {userQuery.error.message}</div>
+
+>>>>>>> rov:src/pages/index.tsx
   return (
 
+<<<<<<< HEAD:pages/index.tsx
     <Layout>
       <h1>
         <span style={{ marginRight: '.3em', verticalAlign: 'middle' }}>
@@ -15,6 +29,15 @@ export default function Home() {
         <a href="https://github.com/vvo/iron-session">iron-session</a> -
         Authentication example
       </h1>
+=======
+      <main className={styles.main}>
+        <h1 className={styles.title}>
+          Welcome to <a href="https://nextjs.org">Next.js!</a>
+        </h1>
+        <h2>
+          Query result: {userQuery.data?.username}
+        </h2>
+>>>>>>> rov:src/pages/index.tsx
 
       <p>
         This example creates an authentication system that uses a{' '}
