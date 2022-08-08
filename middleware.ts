@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server'
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const next = NextResponse.next()
-  console.log(request.nextUrl)
+  //console.log(request.nextUrl)
 
   const cookie = request.cookies.get("iron-cookie")
   if (cookie === undefined) return NextResponse.redirect(new URL('/login', request.nextUrl.origin))
