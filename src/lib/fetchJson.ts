@@ -1,3 +1,4 @@
+//questa è kla fetch di base (plain)
 export default async function fetchJson<JSON = unknown>(
   input: RequestInfo,
   init?: RequestInit

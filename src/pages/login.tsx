@@ -1,19 +1,20 @@
-<<<<<<< HEAD:pages/login.tsx
 import React, { useState } from 'react'
-import useUser from 'lib/useUser'
-import Layout from 'components/Layout'
-import Form from 'components/Form'
-import fetchJson, { FetchError } from 'lib/fetchJson'
+import useUser from '../lib/useUser'
+import Layout from '../components/Layout'
+import Form from '../components/Form'
+import fetchJson, { FetchError } from '../lib/fetchJson'
 
 
 export default function Login() {
   // here we just check if user is already logged in and redirect to profile
   const { mutateUser } = useUser({
-    redirectTo: '/profile-sg',
+    redirectTo: '/', //se l'utente riesce a loggarsi, allora viene rediretto all'index
     redirectIfFound: true,
   })
 
-  const [errorMsg, setErrorMsg] = useState('')
+  //useState inizializza lo stato errorMsg a messaggio vuoto e utilizza come setState, il setErrorMsg
+  // quindi per modificare errorMsg bisogna chiamare setErrorMsg
+  const [errorMsg, setErrorMsg] = useState('') 
 
   return (
     <Layout>
@@ -29,10 +30,10 @@ export default function Login() {
             }
 
             try {
-              console.log('body: '+body)
+              // console.log('[DBG LOGIN] body: '+body.username+' '  + body.password)
 
               mutateUser(
-                await fetchJson('/api/login', {
+                await fetchJson('/api/auth/login', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify(body),
@@ -58,14 +59,6 @@ export default function Login() {
         }
       `}</style>
     </Layout>
-=======
-import React from 'react'
-
-export default function Login() {
-
-  return (
-    <div>Login</div>
->>>>>>> rov:src/pages/login.tsx
   )
 }
 
