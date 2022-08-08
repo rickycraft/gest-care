@@ -3,7 +3,6 @@ import { withSessionRoute } from "server/iron"
 import { prisma } from 'server/prisma'
 import { z } from "zod"
 
-
 const credSchema = z.object({
   username: z.string(),
   password: z.string(),
@@ -11,11 +10,15 @@ const credSchema = z.object({
 
 export default withSessionRoute(
   async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
-    const cred = credSchema.parse(req.query)
+    const cred = credSchema.safeParse(req.query)
+    if (!cred.success) {
+      res.status(400).end()
+      return
+    }
     const user = await prisma.user.findFirst({
       where: {
-        username: cred.username,
-        password: cred.password,
+        username: cred.data.username,
+        password: cred.data.password,
       },
       select: {
         id: true,
