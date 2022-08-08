@@ -1,17 +1,17 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { withSessionRoute } from "server/iron";
-import { prisma } from "prisma/client";
+import { NextApiRequest, NextApiResponse } from "next"
+import { withSessionRoute } from "server/iron"
+import { prisma } from 'server/prisma'
 import { z } from "zod"
 
 
 const credSchema = z.object({
   username: z.string(),
   password: z.string(),
-});
+})
 
 export default withSessionRoute(
   async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
-    const cred = credSchema.parse(req.query);
+    const cred = credSchema.parse(req.query)
     const user = await prisma.user.findFirst({
       where: {
         username: cred.username,
@@ -26,8 +26,8 @@ export default withSessionRoute(
       res.send({ ok: false })
       return
     }
-    req.session.user = user;
-    await req.session.save();
-    res.send({ ok: true });
+    req.session.user = user
+    await req.session.save()
+    res.send({ ok: true })
   },
-);
+)

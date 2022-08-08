@@ -1,8 +1,8 @@
-import { createRouter } from "server/createRouter";
-import { z } from 'zod';
-import { prisma } from 'prisma/client';
-import { TRPCError } from "@trpc/server";
-import { Prisma } from "@prisma/client";
+import { createRouter } from "server/createRouter"
+import { z } from 'zod'
+import { prisma } from 'server/prisma'
+import { TRPCError } from "@trpc/server"
+import { Prisma } from "@prisma/client"
 
 const defaultProdSelect = Prisma.validator<Prisma.ProdottoSelect>()({
   id: true,
@@ -17,7 +17,7 @@ const prodSchema = z.object({
   prezzo: z.number(),
 })
 
-type prodType = z.infer<typeof prodSchema>;
+type prodType = z.infer<typeof prodSchema>
 
 export const prodRouter = createRouter()
   .query("byId", {
@@ -25,15 +25,15 @@ export const prodRouter = createRouter()
       id: z.number(),
     }),
     async resolve({ input }) {
-      const { id } = input;
+      const { id } = input
       const prodotto = await prisma.prodotto.findFirst({
         where: {
           id
         },
         select: defaultProdSelect,
-      });
-      if (!prodotto) throw new TRPCError({ code: "NOT_FOUND" });
-      return prodotto;
+      })
+      if (!prodotto) throw new TRPCError({ code: "NOT_FOUND" })
+      return prodotto
     }
   })
   .query("list", {
@@ -41,26 +41,26 @@ export const prodRouter = createRouter()
       fornitore: z.number(),
     }),
     async resolve({ input }) {
-      const { fornitore } = input;
+      const { fornitore } = input
       const prodotto = await prisma.prodotto.findMany({
         where: {
           fornitoreId: fornitore
         },
         select: defaultProdSelect,
-      });
-      if (!prodotto) throw new TRPCError({ code: "NOT_FOUND" });
-      return prodotto;
+      })
+      if (!prodotto) throw new TRPCError({ code: "NOT_FOUND" })
+      return prodotto
     }
   })
   .mutation("upsert", {
     input: prodSchema,
     async resolve({ input }) {
       try {
-        const prodotto = await upsertProd(input);
-        return prodotto;
+        const prodotto = await upsertProd(input)
+        return prodotto
       } catch {
         if (input.id === null) {
-          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
         } else {
           throw new TRPCError({ code: "NOT_FOUND" })
         }
@@ -73,15 +73,15 @@ export const prodRouter = createRouter()
       id: z.number(),
     }),
     async resolve({ input }) {
-      const { id } = input;
+      const { id } = input
       const prodotto = await prisma.prodotto.delete({
         where: {
           id
         },
         select: defaultProdSelect,
-      });
-      if (!prodotto) throw new TRPCError({ code: "NOT_FOUND" });
-      return;
+      })
+      if (!prodotto) throw new TRPCError({ code: "NOT_FOUND" })
+      return
     }
   })
 
@@ -95,7 +95,7 @@ async function upsertProd(prod: prodType) {
         prezzo: prod.prezzo,
       },
       select: defaultProdSelect,
-    });
+    })
   }
 
   // update
@@ -109,5 +109,5 @@ async function upsertProd(prod: prodType) {
       prezzo: prod.prezzo,
     },
     select: defaultProdSelect,
-  });
+  })
 }
