@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Form from '../components/Form'
 import { FetchError } from '../lib/fetchJson'
 import { InferGetServerSidePropsType } from "next";
@@ -10,7 +10,7 @@ import { IronSessionData } from 'iron-session';
 //
 export default function Login({ }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   // here we just check if user is already logged in and redirect to profile
-  const [user, setUser] = useState<IronSessionData>();
+  const [user] = useState<IronSessionData>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
     //useState inizializza lo stato errorMsg a messaggio vuoto e utilizza come setState, il setErrorMsg
   // quindi per modificare errorMsg bisogna chiamare setErrorMsg
@@ -18,22 +18,8 @@ export default function Login({ }: InferGetServerSidePropsType<typeof getServerS
   const router = useRouter()
   console.log('[DBG LOGIN] state of isLoggedIn: ' + isLoggedIn)
 
-  const firstUpdate = useRef(true);
-  useLayoutEffect(() => {
-    if (firstUpdate.current) {
-      firstUpdate.current = false;
-      return;
-    }
-    console.log('[DBG LOGIN] isLoggedIn: ' + isLoggedIn)
-    if (isLoggedIn === false) {
-      setErrorMsg("Wrong username or password!");
-    }else{
-      setErrorMsg('')
-    }
-  }, [isLoggedIn, errorMsg]);
-
   useEffect(() => {
-    console.log('[DBG LOGIN] isLoggedIn: ' + isLoggedIn)
+    // console.log('[DBG LOGIN] isLoggedIn: ' + isLoggedIn)
     if (isLoggedIn === true) {
       router.push('/')
     }
@@ -52,7 +38,7 @@ export default function Login({ }: InferGetServerSidePropsType<typeof getServerS
           errorMessage={errorMsg}
           onSubmit={async (event) => {
             event.preventDefault()
-
+            
             const body = {
               username: event.currentTarget.username.value,
               password: event.currentTarget.password.value
@@ -69,6 +55,9 @@ export default function Login({ }: InferGetServerSidePropsType<typeof getServerS
                   let json = await response.json();
                   console.log('response json: ' + JSON.stringify(json));
                   setIsLoggedIn(json.isLoggedIn);
+                  if(!json.isLoggedIn){
+                    setErrorMsg("Wrong username or password!")
+                  }
                 }
             } catch (error) {
               if (error instanceof FetchError) {
