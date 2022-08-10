@@ -1,4 +1,4 @@
-import type { User } from '../api/user'
+import type { User } from './user'
 import { trpc } from 'utils/trpc'
 import { withIronSessionApiRoute } from 'iron-session/next'
 import { sessionOptions } from 'lib/session'
