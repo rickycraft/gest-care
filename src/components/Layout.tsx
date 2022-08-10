@@ -29,7 +29,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           padding-right: 1rem;
         }
       `}</style>
-      <Header />
+      <Header/>
 
       <main>
         <div className="container">{children}</div>

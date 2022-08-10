@@ -1,89 +1,56 @@
 import Link from 'next/link'
-import useUser from '../lib/useUser'
-import { useRouter } from 'next/router'
 import fetchJson from '../lib/fetchJson'
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import { useRouter } from 'next/router';
+
+const BasicMenuItem = ({ title, path }: { title: string, path: string }) => {
+  return (
+    <Link href={path} passHref>
+      <Nav.Link >{title}</Nav.Link>
+    </Link>
+  )
+}
 
 export default function Header() {
-  const { user, mutateUser } = useUser()
   const router = useRouter()
-  console.log("user: ", user )
-
+  const menuLinks = [
+    {
+      title: 'Home',
+      path: '/',
+    },
+    {
+      title: 'About',
+      path: '/about',
+    },
+    {
+      title: 'Login',
+      path: '/login',
+    },
+  ]
   return (
-    <header>
-      <nav>
-        <ul>
-          {user?.isLoggedIn === false && (
-            <li>
-              <Link href="/login">
-                <a>Login</a>
-              </Link>
-            </li>
-          )}
-          {user?.isLoggedIn === true && (
-            <>
-              <li>
-                <Link href="/">
-                  <a 
-                    onClick={async (e) => {
+    <Navbar bg="light" expand="lg">
+      <Container fluid>
+        <Navbar.Brand href="#home">React-Bootstrap Navbar</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto">
+            {menuLinks.map((link, index) => (
+              <BasicMenuItem {...link} key={index} />
+            ))}
+            <Link href='/login' >
+              <Nav.Link onClick={async (e) => {
                     e.preventDefault()
-                    mutateUser(
-                      await fetchJson('/api/auth/logout', { method: 'POST' }),
-                      false
-                    )
-                    router.push('/login')
-                  }}
-                  >
-                  Logout
-                </a>
-                </Link>
-
-              </li>
-              <li>
-               <Link href="/">
-                <a>Home</a>
-              </Link>
-              </li>
-            </>
-          )}
-          <li>
-
-          </li>
-        </ul>
-      </nav>
-      <style jsx>{`
-        ul {
-          display: flex;
-          list-style: none;
-          margin-left: 0;
-          padding-left: 0;
-        }
-
-        li {
-          margin-right: 1rem;
-          display: flex;
-        }
-
-        li:first-child {
-          margin-left: auto;
-        }
-
-        a {
-          color: #fff;
-          text-decoration: none;
-          display: flex;
-          align-items: center;
-        }
-
-        a img {
-          margin-right: 1em;
-        }
-
-        header {
-          padding: 0.2rem;
-          color: #fff;
-          background-color: #333;
-        }
-      `}</style>
-    </header>
+                    await fetchJson('/api/auth/logout', { method: 'POST' })
+                      router.push('/login')
+                  }}>
+                    Logout
+              </Nav.Link>
+            </Link>
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   )
 }
