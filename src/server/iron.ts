@@ -2,7 +2,7 @@ import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiHandler } from "next";
 import { IronSessionOptions } from "iron-session"
 import { z } from "zod"
-import { User } from "pages/api/user";
+// import { User } from "pages/api/user";
 
 export const sessionSchema = z.object({
   user: z.object({
@@ -28,10 +28,10 @@ export function withSessionRoute(handler: NextApiHandler) {
 
 declare module "iron-session" {
   interface IronSessionData {
-    // user?: {
-    //   id: number;
-    //   username: string;
-    // };
-    user?: User
+    user?: {
+      id: number;
+      username: string;
+      isLoggedIn : boolean; //ATT aggiunto
+    };
   }
 }
