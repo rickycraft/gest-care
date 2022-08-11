@@ -17,7 +17,7 @@ const prodSchema = z.object({
   prezzo: z.number(),
 })
 
-type prodType = z.infer<typeof prodSchema>
+export type prodType = z.infer<typeof prodSchema>
 
 export const prodRouter = createProtectedRouter()
   .query("byId", {
@@ -111,3 +111,9 @@ async function upsertProd(prod: prodType) {
     select: defaultProdSelect,
   })
 }
+
+// export type Prodotto = {
+//   id: number,
+//   nome: string,
+//   prezzo: number,
+// }
