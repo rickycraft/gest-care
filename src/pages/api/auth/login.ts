@@ -24,7 +24,7 @@ export default withSessionRoute(
       select: {
         id: true,
         username: true,
-      },
+      }, 
     })
     if (!findUser) {
       res.send({ isLoggedIn:false })
@@ -35,7 +35,7 @@ export default withSessionRoute(
       username: findUser.username,
       isLoggedIn: true,
     }
-    req.session.user = user
+    req.session.user = user 
     await req.session.save()
     res.send({isLoggedIn:true})
   },
