@@ -17,7 +17,7 @@ export default function Prodotto() {
   const [isSendingSave, setIsSendingSave] = useState(false)
   const [isSendingDelete, setIsSendingDelete] = useState(false)
   const [isSendingEdit, setIsSendingEdit] = useState(false)
-  const [newProdotto, setNewProdotto] = useState<prodType>({ id: -1, nome: '', prezzo: -1, fornitore: -1 });
+  const [newProdotto, setNewProdotto] = useState<prodType>({ id: -1, nome: '', prezzo: -1, fornitore: -1 }); //ATT brutto da modificare
   const [inputTextValues, setInputTextValues] = useState({ inputTextNome: '', inputTextPrezzo: '' })
 
   const sendSaveRequest = useCallback(async () => {
