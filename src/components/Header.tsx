@@ -15,7 +15,8 @@ const BasicMenuItem = ({ title, path }: { title: string, path: string }) => {
 
 export default function Header() {
   const router = useRouter()
-  const menuLinks = [
+  // basicMenuLinks are links which are always showed regardless of user authentication or user role
+  const basicMenuLinks = [
     {
       title: 'Home',
       path: '/',
@@ -32,20 +33,22 @@ export default function Header() {
   return (
     <Navbar bg="light" expand="lg">
       <Container fluid>
-        <Navbar.Brand href="#home">React-Bootstrap Navbar</Navbar.Brand>
+        <Navbar.Brand >Gest-Care</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            {menuLinks.map((link, index) => (
+            {basicMenuLinks.map((link, index) => (
               <BasicMenuItem {...link} key={index} />
             ))}
             <Link href='/login' >
-              <Nav.Link onClick={async (e) => {
-                    e.preventDefault()
-                    await fetchJson('/api/auth/logout', { method: 'POST' })
-                      router.push('/login')
-                  }}>
-                    Logout
+              <Nav.Link
+                onClick={async (e) => {
+                  e.preventDefault()
+                  await fetchJson('/api/auth/logout', { method: 'POST' })
+                  router.push('/login')
+                }}
+              >
+                Logout
               </Nav.Link>
             </Link>
           </Nav>
