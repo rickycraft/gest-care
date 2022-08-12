@@ -7,8 +7,8 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
-import { useCallback, useState } from 'react';
-import { Form, InputGroup } from 'react-bootstrap';
+import { useCallback, useEffect, useState } from 'react';
+import { ButtonGroup, Form } from 'react-bootstrap';
 import type { prodType } from '../../server/routers/prodotto'
 import { FcDeleteRow, FcCheckmark, FcCancel, FcSupport } from "react-icons/fc";
 import Alert from 'react-bootstrap/Alert';
@@ -26,7 +26,7 @@ export default function Prodotto() {
   const prodTrpc = trpc.useQuery(['prodotto.list', { fornitore: Number(fornitore?.id) }]) 
   const fornitoreTrpc = trpc.useQuery(['fornitore.list'])
   const querySaveProdotto = trpc.useMutation(['prodotto.upsert'])
-  const queryDeleteProdotto = trpc.useMutation(['prodotto.delete',])
+  const queryDeleteProdotto = trpc.useMutation(['prodotto.delete'])
 
 
   const sendSaveRequest = useCallback( () =>  {
@@ -66,6 +66,18 @@ export default function Prodotto() {
     setIsSendingDelete(false)
   } 
 
+  useEffect(() => {
+    setNewProdotto(
+      { id: Number(inputTextValues.inputTextId),
+        nome: inputTextValues.inputTextNome,
+        prezzo: Number(inputTextValues.inputTextPrezzo),
+        fornitore: fornitore.id
+      }
+    )
+
+  }, [fornitore.id, inputTextValues])
+  
+
   if (!prodTrpc.isSuccess) return (
     <div>Not ready</div>
   )
@@ -86,9 +98,7 @@ export default function Prodotto() {
               onSelect={(selectedKey) => {
                 setNewProdotto(
                   {
-                    id: newProdotto.id,
-                    nome: newProdotto.nome,
-                    prezzo: newProdotto.prezzo,
+                    ...newProdotto,
                     fornitore: Number(selectedKey)
                   }
                 )
@@ -118,33 +128,23 @@ export default function Prodotto() {
                 <td>{prod.id} </td>
                 <td>{prod.nome}</td>
                 <td> {prod.prezzo}</td>
-                <td><Button variant="outline-warning" name="saveButton" disabled={isSendingEdit} onClick={sendEditRequest}>Edit <FcSupport /></Button></td>
-                <td><Button variant="outline-danger" name="deleteButton" disabled={isSendingDelete} onClick={() => sendDeleteRequest(prod.id) }>Delete <FcCancel /></Button></td>
+                <td>
+                <ButtonGroup aria-label="Basic example">
+                  <Button variant="outline-warning" >Edit <FcSupport /></Button>
+                  <Button variant="outline-danger" name="deleteButton" disabled={isSendingDelete} onClick={() => sendDeleteRequest(-1)}>Delete <FcCancel /></Button>
+                </ButtonGroup>
+              </td>
               </tr>
             ))}
             <tr hidden={!fornitore.isSelected}>
               <td>
-                <InputGroup className="mb-3"
-                  onChange={
-                    (event) => setNewProdotto(
-                      {
-                        id: Number((event.target as HTMLInputElement).value),
-                        nome: newProdotto.nome,
-                        prezzo: newProdotto.prezzo,
-                        fornitore: newProdotto.fornitore
-                      }
-                    )}
-                >
-                  <InputGroup.Text id="newIdProdottoInputText">
-                  </InputGroup.Text>
                   <Form.Control value={inputTextValues.inputTextId}
                     onChange={
                       (event) => {
                         setInputTextValues(
                           {
+                            ...inputTextValues,
                             inputTextId: event.target.value,
-                            inputTextNome: inputTextValues.inputTextNome,
-                            inputTextPrezzo: inputTextValues.inputTextPrezzo
                           }
                         )
                       }
@@ -153,31 +153,15 @@ export default function Prodotto() {
                     aria-label="New id prodotto"
                     aria-describedby="basic-addon1"
                   />
-                </InputGroup>
               </td>
               <td>
-                <InputGroup className="mb-3"
-                  onChange={
-                    (event) => setNewProdotto(
-                      {
-                        id: newProdotto.id,
-                        nome: (event.target as HTMLInputElement).value,
-                        prezzo: newProdotto.prezzo,
-                        fornitore: newProdotto.fornitore
-                      }
-                    )}
-
-                >
-                  <InputGroup.Text id="newnomeProdottoInputText">
-                  </InputGroup.Text>
                   <Form.Control value={inputTextValues.inputTextNome}
                     onChange={
                       (event) => {
                         setInputTextValues(
                           {
-                            inputTextId: inputTextValues.inputTextId,
+                            ...inputTextValues,
                             inputTextNome: event.target.value,
-                            inputTextPrezzo: inputTextValues.inputTextPrezzo
                           }
                         )
                       }
@@ -186,29 +170,13 @@ export default function Prodotto() {
                     aria-label="New nome prodotto"
                     aria-describedby="basic-addon1"
                   />
-                </InputGroup>
               </td>
               <td>
-                <InputGroup className="mb-3"
-                  onChange={
-                    (event) => {
-                      setNewProdotto(
-                        {
-                          id: newProdotto.id,
-                          nome: newProdotto.nome,
-                          prezzo: Number((event.target as HTMLInputElement).value),
-                          fornitore: newProdotto.fornitore
-                        }
-                      )
-                    }}
-                >
-                  <InputGroup.Text id="newPrezzoProdottoInputText" ></InputGroup.Text>
                   <Form.Control value={inputTextValues.inputTextPrezzo}
                     onChange={
                       (event) => setInputTextValues(
                         {
-                          inputTextId: inputTextValues.inputTextId,
-                          inputTextNome: inputTextValues.inputTextNome,
+                          ...inputTextValues,
                           inputTextPrezzo: String(event.target.value)
                         }
                       )}
@@ -216,12 +184,13 @@ export default function Prodotto() {
                     aria-label="New prezzo prodotto"
                     aria-describedby="basic-addon1"
                   />
-                </InputGroup>
               </td>
-            </tr>
-            <tr hidden={!fornitore.isSelected}>
-              <td><Button variant="outline-success" name="saveButton" onClick={sendSaveRequest}>Save <FcCheckmark /></Button></td>
-              <td><Button variant="outline-primary" name="cleanButton" onClick={() => setInputTextValues({ inputTextId: '', inputTextNome: '', inputTextPrezzo: '' })}>Clean <FcDeleteRow /></Button></td>
+              <td hidden={!fornitore.isSelected}>
+                <ButtonGroup aria-label="Basic example">
+              <Button variant="outline-success" name="saveButton" onClick={sendSaveRequest}>Save <FcCheckmark /></Button>
+              <Button variant="outline-primary" name="cleanButton" onClick={() => setInputTextValues({ inputTextId: '', inputTextNome: '', inputTextPrezzo: '' })}>Clean <FcDeleteRow /></Button>
+                </ButtonGroup>
+                </td>
             </tr>
           </tbody>
 
