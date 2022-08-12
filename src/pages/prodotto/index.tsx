@@ -7,8 +7,8 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
-import { useCallback, useEffect, useState } from 'react';
-import { ButtonGroup, Form } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
+import { ButtonGroup, Form, Spinner } from 'react-bootstrap';
 import type { prodType } from '../../server/routers/prodotto'
 import { FcDeleteRow, FcCheckmark, FcCancel, FcSupport } from "react-icons/fc";
 import Alert from 'react-bootstrap/Alert';
@@ -20,67 +20,83 @@ export default function Prodotto() {
   const [isSendingDelete, setIsSendingDelete] = useState(false)
   const [isSendingEdit, setIsSendingEdit] = useState(false)
   const [isSendingSave, setIsSendingSave] = useState(false)
-  const [newProdotto, setNewProdotto] = useState<prodType>({ id: -1, nome: '', prezzo: -1, fornitore: -1 }); //ATT brutto da modificare
-  const [inputTextValues, setInputTextValues] = useState({ inputTextId: '', inputTextNome: '', inputTextPrezzo: '' })
-  const [fornitore, setFornitore] = useState({ id: -1,  isSelected:false}); //ATT brutto ma da modificare { id: -1, isSelected: false }
-  const prodTrpc = trpc.useQuery(['prodotto.list', { fornitore: Number(fornitore?.id) }]) 
+  const [newProdotto, setNewProdotto] = useState<prodType>({ id: null, nome: '', prezzo: -1, fornitore: -1 }); //ATT brutto da modificare
+  const [inputTextValues, setInputTextValues] = useState({ inputTextNome: '', inputTextPrezzo: '' })
+  const [fornitore, setFornitore] = useState({ id: -1, isSelected: false }); //ATT brutto ma da modificare { id: -1, isSelected: false }
+  const prodTrpc = trpc.useQuery(['prodotto.list', { fornitore: Number(fornitore?.id) }])
   const fornitoreTrpc = trpc.useQuery(['fornitore.list'])
   const querySaveProdotto = trpc.useMutation(['prodotto.upsert'])
   const queryDeleteProdotto = trpc.useMutation(['prodotto.delete'])
 
 
-  const sendSaveRequest = useCallback( () =>  {
+  const sendSaveRequest = async () => {
     //don't send again while we are sending
     if (isSendingSave) return
     // update state
     setIsSendingSave(true)
     //send the actual request
-    const resultQuery = querySaveProdotto.mutate(newProdotto)
-    //querySaveProdotto dovrebbe ritornare il prodotto aggiornato
-    if (resultQuery === undefined) {
-      setErrorMsg('Non è stato possibile salvare il prodotto inserito')
+    querySaveProdotto.mutate(newProdotto)
+    console.log('is loading ' + querySaveProdotto.isLoading)
+    console.log('is success ' + querySaveProdotto.isSuccess)
+
+    if (!querySaveProdotto.isSuccess) {
+      if (querySaveProdotto.isError) {
+        console.log(querySaveProdotto.error)
+        setErrorMsg('Non è stato possibile salvare il prodotto inserito')
+      }
     }
+    setInputTextValues({ inputTextNome: '', inputTextPrezzo: '' })
     //once the request is sent, update state again
     setIsSendingSave(false)
-  }, [isSendingSave, newProdotto, querySaveProdotto])// update the callback if the state changes
+  }
 
-  function sendEditRequest () {
+  const sendEditRequest = async () => {
     if (isSendingEdit) return
     setIsSendingEdit(true)
-    const resultQuery = querySaveProdotto.mutate(newProdotto)
-    //querySaveProdotto dovrebbe ritornare il prodotto aggiornato
-    // if (resultQuery === undefined) { //condizione di qualcosa
-    //   setErrorMsg('Non è stato possibile modificare il prodotto inserito')
-    // }
+    console.log('edit')
+    return
+    querySaveProdotto.mutate({ ...newProdotto, id: Number(newProdotto.id) })
+    if (!querySaveProdotto.isSuccess) {
+      if (querySaveProdotto.isError) {
+        console.log(querySaveProdotto.error)
+        setErrorMsg('Non è stato possibile modificare il prodotto specificato')
+      }
+    }
     setIsSendingEdit(false)
   }
 
-  function sendDeleteRequest(idDeleteProdotto: number) {
+  const sendDeleteRequest = async (idDeleteProdotto: number) => {
     if (isSendingDelete) return
     setIsSendingDelete(true)
-    const resultQuery  = queryDeleteProdotto.mutate({id: idDeleteProdotto})
-    //querySaveProdotto dovrebbe ritornare il prodotto aggiornato
-    // if (resultQuery === undefined) {
-    //   setErrorMsg('Non è stato possibile eliminare il prodotto selezionato')
-    // }
+    // console.log(idDeleteProdotto)
+    const resultQuery = queryDeleteProdotto.mutate({ id: idDeleteProdotto })
+    console.log(resultQuery)
+    if (!queryDeleteProdotto.isSuccess) {
+      if (queryDeleteProdotto.isError) {
+        console.log(queryDeleteProdotto.error)
+        setErrorMsg('Non è stato possibile salvare il prodotto inserito')
+      }
+    }
     setIsSendingDelete(false)
-  } 
+  }
 
   useEffect(() => {
     setNewProdotto(
-      { id: Number(inputTextValues.inputTextId),
+      {
+        id: newProdotto.id,
         nome: inputTextValues.inputTextNome,
         prezzo: Number(inputTextValues.inputTextPrezzo),
         fornitore: fornitore.id
       }
     )
 
-  }, [fornitore.id, inputTextValues])
-  
+  }, [fornitore.id, inputTextValues, newProdotto.id])
 
-  if (!prodTrpc.isSuccess) return (
-    <div>Not ready</div>
-  )
+
+  if (!prodTrpc.isSuccess || !fornitoreTrpc.isSuccess)
+    return (
+      <div>Not ready</div>
+    )
 
   return (
     <div className="container">
@@ -91,28 +107,35 @@ export default function Prodotto() {
       </Head>
       <main className={styles.main}>
         <h1 className={styles.title}>Prodotti</h1>
-        <Navbar bg="light" style={{ maxHeight: '100px' }} >
-          <Navbar.Collapse id="navbarScroll" >
-            <Nav className="me-auto"
-              activeKey={fornitore.id}
-              onSelect={(selectedKey) => {
-                setNewProdotto(
-                  {
-                    ...newProdotto,
-                    fornitore: Number(selectedKey)
-                  }
-                )
-                setFornitore({ id: Number(selectedKey), isSelected: true })
-              }}>
-              <NavDropdown title="Scegli fornitore" id="navbarScrollingDropdown">
-                {fornitoreTrpc.data?.map(fornitore => (
-                  <NavDropdown.Item key={fornitore.id} eventKey={fornitore.id}>{fornitore.nome}</NavDropdown.Item>
-                ))}
-              </NavDropdown>
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar>
-
+        <Form.Group >
+        <Form.Select id="disabledTextInput"
+          placeholder="Seleziona un fornitore"
+          aria-label="Seleziona un fornitore"
+          aria-describedby="basic-addon1"
+          value={fornitore.id}
+          onChange={(event) => {
+            console.log(event.currentTarget.value)
+            if(event.currentTarget.value){ //check se non è stato selezionato il primo option
+            setNewProdotto(
+              {
+                ...newProdotto,
+                fornitore: Number(event.currentTarget.value)
+              }
+            )
+            setFornitore({ id: Number(event.currentTarget.value), isSelected: true })
+            }
+            else{
+              setFornitore({ id:-1, isSelected: false })
+              setInputTextValues({ inputTextNome: '', inputTextPrezzo: '' })
+            }
+          }}
+        >
+          <option value=''>Seleziona un fornitore</option>
+          {fornitoreTrpc.data?.map(element => (
+            <option key={element.id} value={element.id}>{element.nome}</option>
+          ))}
+        </Form.Select>
+        </Form.Group>
         {/*Table which shows all products by fornitore*/}
         <Table striped bordered hover>
           <thead>
@@ -129,76 +152,104 @@ export default function Prodotto() {
                 <td>{prod.nome}</td>
                 <td> {prod.prezzo}</td>
                 <td>
-                <ButtonGroup aria-label="Basic example">
-                  <Button variant="outline-warning" >Edit <FcSupport /></Button>
-                  <Button variant="outline-danger" name="deleteButton" disabled={isSendingDelete} onClick={() => sendDeleteRequest(-1)}>Delete <FcCancel /></Button>
-                </ButtonGroup>
-              </td>
+                  <ButtonGroup aria-label="Basic example">
+                    <Button variant="outline-warning"
+                      disabled={querySaveProdotto.isLoading}
+                      onClick={() => sendEditRequest()}
+                    >
+                      Edit
+                      {(!querySaveProdotto.isLoading) && <FcSupport />}
+                      {(querySaveProdotto.isLoading) &&
+                        <Spinner
+                          as="span"
+                          animation="border"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true"
+                        />}
+                    </Button>
+                    <Button variant="outline-danger" name="deleteButton"
+                      disabled={queryDeleteProdotto.isLoading}
+                      onClick={() => sendDeleteRequest(prod.id)}>
+                      Delete
+                      {(!queryDeleteProdotto.isLoading) && <FcCancel />}
+                      {(queryDeleteProdotto.isLoading) &&
+                        <Spinner
+                          as="span"
+                          animation="border"
+                          size="sm"
+                          role="status"
+                          aria-hidden="true"
+                        />}
+                    </Button>
+                  </ButtonGroup>
+                </td>
               </tr>
             ))}
             <tr hidden={!fornitore.isSelected}>
               <td>
-                  <Form.Control value={inputTextValues.inputTextId}
-                    onChange={
-                      (event) => {
-                        setInputTextValues(
-                          {
-                            ...inputTextValues,
-                            inputTextId: event.target.value,
-                          }
-                        )
-                      }
-                    }
-                    placeholder="New id prodotto"
-                    aria-label="New id prodotto"
-                    aria-describedby="basic-addon1"
-                  />
               </td>
               <td>
-                  <Form.Control value={inputTextValues.inputTextNome}
-                    onChange={
-                      (event) => {
-                        setInputTextValues(
-                          {
-                            ...inputTextValues,
-                            inputTextNome: event.target.value,
-                          }
-                        )
-                      }
-                    }
-                    placeholder="New nome prodotto"
-                    aria-label="New nome prodotto"
-                    aria-describedby="basic-addon1"
-                  />
-              </td>
-              <td>
-                  <Form.Control value={inputTextValues.inputTextPrezzo}
-                    onChange={
-                      (event) => setInputTextValues(
+                <Form.Control value={inputTextValues.inputTextNome}
+                  onChange={
+                    (event) => {
+                      setInputTextValues(
                         {
                           ...inputTextValues,
-                          inputTextPrezzo: String(event.target.value)
+                          inputTextNome: event.target.value,
                         }
-                      )}
-                    placeholder="New prezzo prodotto"
-                    aria-label="New prezzo prodotto"
-                    aria-describedby="basic-addon1"
-                  />
+                      )
+                    }
+                  }
+                  placeholder="New nome prodotto"
+                  aria-label="New nome prodotto"
+                  aria-describedby="basic-addon1"
+                />
+              </td>
+              <td>
+                <Form.Control value={inputTextValues.inputTextPrezzo}
+                  onChange={
+                    (event) => setInputTextValues(
+                      {
+                        ...inputTextValues,
+                        inputTextPrezzo: String(event.target.value)
+                      }
+                    )}
+                  placeholder="New prezzo prodotto"
+                  aria-label="New prezzo prodotto"
+                  aria-describedby="basic-addon1"
+                />
               </td>
               <td hidden={!fornitore.isSelected}>
                 <ButtonGroup aria-label="Basic example">
-              <Button variant="outline-success" name="saveButton" onClick={sendSaveRequest}>Save <FcCheckmark /></Button>
-              <Button variant="outline-primary" name="cleanButton" onClick={() => setInputTextValues({ inputTextId: '', inputTextNome: '', inputTextPrezzo: '' })}>Clean <FcDeleteRow /></Button>
+                  <Button variant="outline-success" name="saveButton"
+                    disabled={querySaveProdotto.isLoading}
+                    onClick={sendSaveRequest}>
+                    Save
+                    {(!querySaveProdotto.isLoading) && <FcCheckmark />}
+                    {(querySaveProdotto.isLoading) && <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />}
+
+                  </Button>
+                  <Button variant="outline-primary" name="cleanButton"
+                    onClick={() => setInputTextValues({ inputTextNome: '', inputTextPrezzo: '' })}>
+                    Clean <FcDeleteRow /></Button>
                 </ButtonGroup>
-                </td>
+              </td>
             </tr>
           </tbody>
 
         </Table>
-        <Alert  variant='danger' hidden={errorMsg.length === 0}>
-        {errorMsg}
+        
+        <Alert variant='danger' hidden={errorMsg.length === 0}>
+          {errorMsg}
         </Alert>
-        <div> Test: {newProdotto.id}, {newProdotto.nome}, {newProdotto.prezzo}, {newProdotto.fornitore}</div>
+        {/* <div> Test:  {newProdotto.nome}, {newProdotto.prezzo}, {newProdotto.fornitore}</div> */}
       </main>
     </div >
   )
