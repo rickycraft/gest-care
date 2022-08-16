@@ -21,3 +21,11 @@ export const fornitoreRouter = createProtectedRouter()
       return fornitori
     }
   })
+
+
+  const fornitoreSchema = z.object({
+    id: z.number().nullable(),
+    nome: z.string(),
+  })
+  
+  export type fornitoreType = z.infer<typeof fornitoreSchema>

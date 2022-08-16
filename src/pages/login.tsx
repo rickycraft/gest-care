@@ -67,7 +67,8 @@ export default function Login({ }: InferGetServerSidePropsType<typeof getServerS
         >
         </Form>
       </div>
-
+      <br />
+      Source: <a href="https://github.com/rickycraft/gest-care">GitHub Repo</a>
     </div>
   )
 }

@@ -26,6 +26,14 @@ export default function Header() {
       path: '/about',
     },
     {
+      title: 'Prodotti',
+      path: '/prodotto',
+    },
+    {
+      title: 'Preventivi',
+      path: '/preventivo',
+    },
+    {
       title: 'Login',
       path: '/login',
     },
