@@ -9,13 +9,14 @@ const credSchema = z.object({
 })
 
 export default withSessionRoute(
-  async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
-    const cred = credSchema.safeParse(req.query)
+  async function loginRoute(req: NextApiRequest, res: NextApiResponse<{isLoggedIn: boolean}>) {
+    // console.log('[DBG LOGIN]body: '+req.body.username+' '  + req.body.password)
+    const cred = credSchema.safeParse(req.body)
     if (!cred.success) {
       res.status(400).end()
       return
     }
-    const user = await prisma.user.findFirst({
+    const findUser = await prisma.user.findFirst({
       where: {
         username: cred.data.username,
         password: cred.data.password,
@@ -23,14 +24,19 @@ export default withSessionRoute(
       select: {
         id: true,
         username: true,
-      },
+      }, 
     })
-    if (!user) {
-      res.send({ ok: false })
+    if (!findUser) {
+      res.send({ isLoggedIn:false })
       return
     }
-    req.session.user = user
+    const user = {
+      id: findUser.id,
+      username: findUser.username,
+      isLoggedIn: true,
+    }
+    req.session.user = user 
     await req.session.save()
-    res.send({ ok: true })
+    res.send({isLoggedIn:true})
   },
 )

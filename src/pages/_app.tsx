@@ -1,12 +1,18 @@
-//import '../styles/globals.css'
 import { withTRPC } from '@trpc/next'
 import { loggerLink } from '@trpc/client/links/loggerLink'
 import { httpBatchLink } from '@trpc/client/links/httpBatchLink'
 import superjson from 'superjson'
+// add bootstrap css 
 import 'bootstrap/dist/css/bootstrap.css'
+import SSRProvider from 'react-bootstrap/SSRProvider'
+// own css files here
+//import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { AppRouter } from 'server/routers/_app'
 import { SSRContext } from 'utils/trpc'
+import Head from 'next/head'
+import { useEffect } from 'react'
+import Layout from 'components/Layout'
 
 function getBaseUrl() {
   if (typeof window !== 'undefined') {
@@ -16,7 +22,23 @@ function getBaseUrl() {
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+
+  useEffect(() => {
+    typeof document !== undefined ? require('bootstrap/dist/js/bootstrap') : null
+  }, [])
+  return (
+
+    <>
+      <SSRProvider>
+        <Layout>
+          <Head>
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+          </Head>
+          <Component {...pageProps} />
+        </Layout>
+      </SSRProvider>
+    </>
+  );
 }
 
 export default withTRPC<AppRouter>({

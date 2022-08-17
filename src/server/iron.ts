@@ -30,6 +30,7 @@ declare module "iron-session" {
     user?: {
       id: number;
       username: string;
+      isLoggedIn : boolean; //ATT aggiunto
     };
   }
 }
