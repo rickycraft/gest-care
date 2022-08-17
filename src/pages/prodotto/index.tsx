@@ -77,9 +77,8 @@ export default function Prodotto() {
       </Head>
       <main>
         <h1>Prodotti</h1>
-        <p className="lead">Seleziona un fornitore e visualizza i prodotti</p>
         {/* Selezionare il fornitore */}
-        <Form.Group className="mb-4" >
+        <Form.Group>
           <Form.Select
             value={fornitore}
             onChange={(event) => { setFornitore(Number(event.currentTarget.value)) }}
@@ -91,13 +90,12 @@ export default function Prodotto() {
           </Form.Select>
         </Form.Group>
         {/*Table which shows all products by fornitore*/}
-        <Table   striped hover hidden={fornitore == 0}  >
+        <Table striped bordered hover hidden={fornitore == 0}>
           <thead>
             <tr>
               <th>Id prodotto</th>
               <th>Nome prodotto</th>
               <th>Prezzo</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
