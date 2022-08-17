@@ -1,6 +1,6 @@
 import Head from 'next/head'
 // import { trpc } from 'utils/trpc'
-import styles from '../../../styles/Home.module.css'
+
 import 'bootstrap/dist/css/bootstrap.css'
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
@@ -82,13 +82,13 @@ export default function Preventivo() {
         <meta name="description" content="Created by ..." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main2}>
+      <main>
         <h1 className="mb-4">Preventivi</h1>
         <p className="lead mb-4">Visualizza i preventivi</p>
         {/*Table which shows all preventivi*/}
         <ButtonGroup className="mb-2">
           <Button variant="outline-warning" >Edit <FcSupport /></Button>
-          <Button variant="outline-danger" name="deleteButton" disabled={isSendingDelete} onClick={() => sendDeleteRequest(-1)}>Delete <FcCancel /></Button>
+          <Button variant="outline-danger" name="deleteButton" disabled={false} onClick={() => sendDeleteRequest(-1)}>Delete <FcCancel /></Button>
           <Button variant="outline-dark" name="saveButton" onClick={makePDF}>PDF <MdPictureAsPdf /></Button>
         </ButtonGroup>
         <Table responsive striped bordered hover >
