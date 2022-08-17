@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import Form from '../components/Form'
-import { FetchError } from '../lib/fetchJson'
 import { InferGetServerSidePropsType } from "next";
 import { withIronSessionSsr } from 'iron-session/next'
 import { sessionOptions } from "server/iron"
@@ -57,11 +56,7 @@ export default function Login({ }: InferGetServerSidePropsType<typeof getServerS
                 }
               }
             } catch (error) {
-              if (error instanceof FetchError) {
-                setErrorMsg(error.data.message)
-              } else {
                 console.error('An unexpected error happened:', error)
-              }
             }
           }}
         >

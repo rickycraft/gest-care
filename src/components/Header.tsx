@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import fetchJson from '../lib/fetchJson'
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -42,7 +41,7 @@ export default function Header() {
     <Navbar bg="light" expand="lg">
       <Container fluid>
         <Navbar.Brand >Gest-Care</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Toggle />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             {basicMenuLinks.map((link, index) => (
@@ -52,7 +51,7 @@ export default function Header() {
               <Nav.Link
                 onClick={async (e) => {
                   e.preventDefault()
-                  await fetchJson('/api/auth/logout', { method: 'POST' })
+                  await fetch('/api/auth/logout', { method: 'POST' })
                   router.push('/login')
                 }}
               >

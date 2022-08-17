@@ -1,4 +1,3 @@
-// import { User } from '../pages/api/user'
 import { withIronSessionSsr } from 'iron-session/next'
 import { sessionOptions } from "server/iron"
 import Head from 'next/head'
@@ -6,16 +5,13 @@ import Image from 'next/image'
 import { trpc } from 'utils/trpc'
 import styles from '../../styles/Home.module.css'
 import { InferGetServerSidePropsType } from "next";
-// import useUser from 'lib/useUser'
-import fetchJson from '../lib/fetchJson'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 export default function Home({
   user,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter()
-  if (user === undefined || user?.username === ''  || user?.id === -1) { //controllo debole ma solo per rendere l'idea
+  if (user === undefined || user?.username === ''  || user?.id === -1) { //TODO controllo debole ma solo per rendere l'idea
     console.log('no user')
   }
   if (user!==undefined) {
@@ -45,19 +41,6 @@ export default function Home({
                 <h2>Go to prodotti &rarr;</h2>
                 <p>Pagina che serve a leggere o modificare la lista di prodotti</p>
                 </a>
-                <Link href="prodotto"  >
-                  <a
-                  onClick={async (e) => {
-                    e.preventDefault()
-                      await fetchJson('prodotto', { method: 'POST' }),
-                    router.push('/prodotto')
-                  }}
-                  >
-                    Another way (under construction)
-                  </a>
-                </Link>
-
-
             </div>
           </main>
 
@@ -85,12 +68,11 @@ export const getServerSideProps = withIronSessionSsr(async function ({
   const user = req.session.user;
 
   if (user === undefined) {
-    // res.setHeader("location", "/login");
     res.statusCode = 302;
     res.end();
     return {
       props: {
-        user: {username:'', id:-1, isLoggedIn:false}, //ATT debole ma da modificare
+        user: {username:'', id:-1, isLoggedIn:false}, //TODO: ATT debole ma da modificare
       },
     };
   }

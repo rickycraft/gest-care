@@ -6,8 +6,8 @@ import Form from 'react-bootstrap/Form';
 import { FaUserCircle , FaKey} from "react-icons/fa";
 
 const USER_REGEX = /^[A-z][A-z0-9-]{3,23}$/;
-const PWD_REGEX : RegExp= /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,100}$/;
-// const PWD_REGEX_TEST : RegExp= /(?=.*[a-z])/;
+// const PWD_REGEX : RegExp= /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,100}$/;
+const PWD_REGEX_TEST : RegExp= /(?=.*[a-z])/;
 const EMAIL_REGEX = /^[a-zA-Z0-9.! #$%&'*+/=? ^`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$/;
 
 export default function FormLogin({
@@ -35,7 +35,7 @@ export default function FormLogin({
 
   useEffect (() =>{
     //check regexp password
-    if (PWD_REGEX.test(passwordValue)) {
+    if (PWD_REGEX_TEST.test(passwordValue)) {
       setIsPasswordInvalid(false)
     } else {
       setIsPasswordInvalid(true)
