@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import Footer from './Footer'
 import Header from './Header'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -29,11 +30,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           padding-right: 1rem;
         }
       `}</style>
+
       <Header/>
 
       <main>
-        <div className="container">{children}</div>
+        <div className="container" >{children}</div>
       </main>
+    
+      <div className="fixed-bottom">
+      <Footer></Footer>
+      </div>
+     
+
+
     </>
   )
 }
