@@ -66,7 +66,7 @@ export const prodRouter = createProtectedRouter()
         const prodotto = await prisma.prodotto.create({
           data: {
             listinoId: input.listino,
-            nome: input.nome,
+            nome: input.nome.toLowerCase(),
             prezzo: input.prezzo,
           },
           select: defaultProdSelect,
