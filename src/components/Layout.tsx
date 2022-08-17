@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Header from './Header'
+import Footer from './Footer'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -34,6 +35,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <main>
         <div className="container">{children}</div>
       </main>
+
+
+      <div className="fixed-bottom">
+      <Footer></Footer>
+      </div>
+     
     </>
   )
 }

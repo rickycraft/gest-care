@@ -16,7 +16,6 @@ export default function Home({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter()
   if (user === undefined || user?.username === ''  || user?.id === -1) { //controllo debole ma solo per rendere l'idea
-    console.log('no user')
   }
   if (user!==undefined) {
     const userQuery = trpc.useQuery(['user.byUsername', { username: user.username }])

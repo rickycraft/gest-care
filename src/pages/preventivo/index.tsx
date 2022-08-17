@@ -11,7 +11,7 @@ import { FcDeleteRow, FcCheckmark, FcCancel, FcSupport } from "react-icons/fc";
 import Alert from 'react-bootstrap/Alert';
 import { MdPictureAsPdf } from "react-icons/md";
 import Row from 'react-bootstrap/Row';
-
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 
 export default function Preventivo() {
 
@@ -114,13 +114,19 @@ useEffect(() => {
         <meta name="description" content="Created by ..." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        <h1 className={styles.title}>Preventivi</h1>
-
+      <main className={styles.main2}>
+        <h1 className="mb-4">Preventivi</h1>
+        <p className="lead mb-4">Visualizza i preventivi</p>
         {/*Table which shows all preventivi*/}
-        <Table striped bordered hover>
+        <ButtonGroup className="mb-2">
+                  <Button variant="outline-warning" >Edit <FcSupport /></Button>
+                  <Button variant="outline-danger" name="deleteButton" disabled={isSendingDelete} onClick={() => sendDeleteRequest(-1)}>Delete <FcCancel /></Button>
+                  <Button variant="outline-dark" name="saveButton" onClick={makePDF}>PDF <MdPictureAsPdf /></Button>
+        </ButtonGroup>
+        <Table responsive striped bordered hover >
           <thead>
             <tr >
+              <th></th>
               <th>Id preventivo</th>
               <th>Nome preventivo</th>
               <th>Data creazione</th>
@@ -150,6 +156,9 @@ useEffect(() => {
               </tr>
             ))} */}
             <tr >
+              <td>  <InputGroup className="mb-3">
+                        <InputGroup.Checkbox aria-label="Checkbox for following text input" />
+                   </InputGroup></td>
               <td>preventivo.id </td>
               <td>preventivo.nome</td>
               <td> preventivo.dataCreazione</td>
@@ -157,6 +166,7 @@ useEffect(() => {
               <td> preventivo.nomeFornitore</td>
               <td> preventivo.ultimaModifica</td>
               <td> preventivo.nomeUtenteUltimaModifica</td>
+              {/*
               <td>
                 <ButtonGroup aria-label="Basic example">
                   <Button variant="outline-warning" >Edit <FcSupport /></Button>
@@ -164,11 +174,12 @@ useEffect(() => {
                   <Button variant="outline-dark" name="saveButton" onClick={makePDF}>PDF <MdPictureAsPdf /></Button>
                 </ButtonGroup>
               </td>
+               */}
             </tr>
           </tbody>
         </Table>
-        <Card >
-          <Card.Body>
+        <Card className="mt-5">
+          <Card.Body >
             <Card.Title>Insert new preventivo</Card.Title>
             <Form>
               <Form.Group as={Row} className="mb-3" >
