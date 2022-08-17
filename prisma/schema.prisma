@@ -25,22 +25,32 @@ model Scuola {
 
 model Fornitore {
   id                Int                 @id @default(autoincrement())
-  prodotti          Prodotto[]
   personalizzazioni Personalizzazione[]
   nome              String              @unique @db.VarChar(255)
   Preventivo        Preventivo[]
+  Listino           Listino[]
+}
+
+model Listino {
+  id        Int        @id @default(autoincrement())
+  fornitore Fornitore  @relation(fields: [fornitoreId], references: [id])
+  Prodotto  Prodotto[]
+
+  nome        String   @unique @db.VarChar(255)
+  fornitoreId Int
+  createdAt   DateTime @updatedAt()
 }
 
 model Prodotto {
-  id          Int             @id @default(autoincrement())
-  fornitore   Fornitore       @relation(fields: [fornitoreId], references: [id])
-  fornitoreId Int
-  quotazioni  PreventivoRow[]
+  id         Int             @id @default(autoincrement())
+  listino    Listino         @relation(fields: [listinoId], references: [id])
+  quotazioni PreventivoRow[]
 
-  nome   String  @db.VarChar(255)
-  prezzo Decimal @db.Decimal(10, 2)
+  listinoId Int
+  nome      String  @db.VarChar(255)
+  prezzo    Decimal @db.Decimal(10, 2)
 
-  @@unique([fornitoreId, nome])
+  @@unique([nome, listinoId])
 }
 
 model Personalizzazione {

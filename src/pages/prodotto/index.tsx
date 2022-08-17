@@ -13,54 +13,61 @@ export default function Prodotto() {
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
   const [inputTextValues, setInputTextValues] = useState({ nome: '', prezzo: '' })
-  const [fornitore, setFornitore] = useState(0)
+  const [listino, setListino] = useState(0)
   // trpc
-  const prodTrpc = trpc.useQuery(['prodotto.list', { fornitore }])
-  const fornitoreTrpc = trpc.useQuery(['fornitore.list'])
-  const querySaveProdotto = trpc.useMutation(['prodotto.upsert'])
-  const queryDeleteProdotto = trpc.useMutation(['prodotto.delete'])
+  const prodQuery = trpc.useQuery(['prodotto.list', { listino }])
+  const listinoQuery = trpc.useQuery(['listino.list'])
+  const prodottoInsert = trpc.useMutation('prodotto.insert')
+  const prodottoUpdate = trpc.useMutation('prodotto.update')
+  const prodottoDelete = trpc.useMutation('prodotto.delete')
 
+  useEffect(() => {
+    if (!prodQuery.isSuccess) return
+    if (prodottoInsert.isSuccess || prodottoDelete.isSuccess || prodottoUpdate.isSuccess) {
+      prodQuery.refetch()
+    }
+  }, [prodottoInsert.isSuccess, prodottoDelete.isSuccess, prodottoUpdate.isSuccess])
 
-  // sendSaveRequest: manda richiesta di aggiungere un nuovo prodotto o di modificarlo (upsert)
-  const sendSaveRequest = async () => {
-    if (querySaveProdotto.isLoading) return
-    querySaveProdotto.mutate({
-      id: null,
+  const insertProdotto = async () => {
+    if (prodottoInsert.isLoading) return
+    prodottoInsert.mutate({
       nome: inputTextValues.nome,
       prezzo: Number(inputTextValues.prezzo),
-      fornitore: fornitore,
+      listino: listino,
     })
     setInputTextValues({ nome: '', prezzo: '' })
-    if (querySaveProdotto.isError) {
-      setErrorMsg('Errore nel salvare un nuovo prodotto: ' + querySaveProdotto.error)
+    if (prodottoInsert.isError) {
+      setErrorMsg('Errore nel salvare un nuovo prodotto: ' + prodottoInsert.error)
     }
   }
 
-  // sendSaveRequest: manda richiesta di eliminare prodotto specificato con il suo id
-  const sendDeleteRequest = async (idProdotto: number) => {
-    if (queryDeleteProdotto.isLoading) return
-    queryDeleteProdotto.mutate({ id: idProdotto })
-    if (querySaveProdotto.isError) {
-      setErrorMsg('Errore nell eliminare il prodotto selezionato: ' + querySaveProdotto.error)
+  const updateProdotto = async (idProdotto: number, prezzo: number) => {
+    if (prodottoUpdate.isLoading) return
+    prodottoUpdate.mutate({
+      id: idProdotto,
+      prezzo: prezzo,
+    })
+    if (prodottoUpdate.isError) {
+      setErrorMsg('Errore nel aggiornare un prodotto: ' + prodottoUpdate.error)
     }
   }
 
-  //refetch della lista dei fornitori o prodotti ogni qwualvolta che 
-  // querySaveProdotto o queryDeleteProdotto va a buon fine 
-  useEffect(() => {
-    if (querySaveProdotto.isSuccess || queryDeleteProdotto.isSuccess) {
-      prodTrpc.refetch()
+  const deleteProdotto = async (idProdotto: number) => {
+    if (prodottoDelete.isLoading) return
+    prodottoDelete.mutate({
+      id: idProdotto
+    })
+    if (prodottoDelete.isError) {
+      setErrorMsg('Errore nell eliminare il prodotto selezionato: ' + prodottoDelete.error)
     }
-  }, [querySaveProdotto.isSuccess, queryDeleteProdotto.isSuccess, prodTrpc])
+  }
 
-  //ritorno uns pagina con un messaggio di caricamento se le fetch non hanno ancora aggiornato le liste
-  if (!prodTrpc.isSuccess || !fornitoreTrpc.isSuccess) {
+  if (!prodQuery.isSuccess || !listinoQuery.isSuccess) {
     return (
       <div>Not ready</div>
     )
   }
 
-  //ritorno la pagina con i dati dei prodotti e dei fornitori
   return (
     <div className="container">
       <Head>
@@ -69,21 +76,21 @@ export default function Prodotto() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <h1>Prodotti</h1>
-        {/* form dropdown per selezionare il fornitore */}
+        <h1>Listino</h1>
+        {/* form dropdown per selezionare il listino */}
         <Form.Group>
           <Form.Select
-            value={fornitore}
-            onChange={(event) => { setFornitore(Number(event.currentTarget.value)) }}
+            value={listino}
+            onChange={(event) => { setListino(Number(event.currentTarget.value)) }}
           >
-            <option value='0'>Seleziona un fornitore</option>
-            {fornitoreTrpc.data.map(element => (
+            <option value='0'>Seleziona un listino</option>
+            {listinoQuery.data.map(element => (
               <option key={element.id} value={element.id}>{element.nome}</option>
             ))}
           </Form.Select>
         </Form.Group>
-        {/*Tabella che mostra i prodotti del fornitore selezionato*/}
-        <Table striped bordered hover hidden={fornitore == 0}>
+        {/*Tabella che mostra i prodotti del listino selezionato*/}
+        <Table striped bordered hover hidden={listino == 0}>
           <thead>
             <tr>
               <th>Id prodotto</th>
@@ -92,7 +99,7 @@ export default function Prodotto() {
             </tr>
           </thead>
           <tbody>
-            {prodTrpc.data.map(prod => (
+            {prodQuery.data.map(prod => (
               <tr key={prod.id}>
                 <td>{prod.id}</td>
                 <td>{prod.nome}</td>
@@ -105,21 +112,21 @@ export default function Prodotto() {
                   <ButtonGroup >
                     <Button name='EditButton'
                       variant="outline-warning"
-                      disabled={querySaveProdotto.isLoading}
-                      onClick={() => sendSaveRequest()}
+                      disabled={prodottoUpdate.isLoading}
+                      onClick={() => updateProdotto(prod.id, Number(prod.prezzo))}
                     >
                       Edit
-                      {(!querySaveProdotto.isLoading) && <FcSupport />}
-                      {(querySaveProdotto.isLoading) && <Spinner as="span" animation="border" size="sm" role="status" />}
+                      {(!prodottoUpdate.isLoading) && <FcSupport />}
+                      {(prodottoUpdate.isLoading) && <Spinner as="span" animation="border" size="sm" role="status" />}
                     </Button>
                     <Button name="DeleteButton"
                       variant="outline-danger"
-                      disabled={queryDeleteProdotto.isLoading}
-                      onClick={() => sendDeleteRequest(prod.id)}
+                      disabled={prodottoDelete.isLoading}
+                      onClick={() => deleteProdotto(prod.id)}
                     >
                       Delete
-                      {(!queryDeleteProdotto.isLoading) && <FcCancel />}
-                      {(queryDeleteProdotto.isLoading) && <Spinner as="span" animation="border" size="sm" role="status" />}
+                      {(!prodottoDelete.isLoading) && <FcCancel />}
+                      {(prodottoDelete.isLoading) && <Spinner as="span" animation="border" size="sm" role="status" />}
                     </Button>
                   </ButtonGroup>
                 </td>
@@ -151,19 +158,19 @@ export default function Prodotto() {
                 />
               </td>
               <td>
-                {/*Gruppo di bottoni "save" e "clean" per ogni riga prodotto
+                {/*Gruppo di bottoni "save" e "clean" per nuovo prodotto
                     save: salva un nuovo prodotto
                     clean: pulisce gli input text
                   */}
                 <ButtonGroup>
                   <Button name="SaveButton"
                     variant="outline-success"
-                    disabled={querySaveProdotto.isLoading}
-                    onClick={() => sendSaveRequest()}
+                    disabled={prodottoInsert.isLoading}
+                    onClick={() => insertProdotto()}
                   >
                     Save
-                    {!querySaveProdotto.isLoading && <FcCheckmark />}
-                    {querySaveProdotto.isLoading && <Spinner as="span" animation="border" size="sm" role="status" />}
+                    {!prodottoInsert.isLoading && <FcCheckmark />}
+                    {prodottoInsert.isLoading && <Spinner as="span" animation="border" size="sm" role="status" />}
                   </Button>
                   <Button name="CleanButton"
                     variant="outline-primary"
@@ -182,7 +189,7 @@ export default function Prodotto() {
         <Alert variant='danger' hidden={errorMsg.length === 0}>
           {errorMsg}
         </Alert>
-        {/* <div> Test:  {newProdotto.nome}, {newProdotto.prezzo}, {newProdotto.fornitore}</div> */}
+        {/* <div> Test:  {newProdotto.nome}, {newProdotto.prezzo}, {newProdotto.listino}</div> */}
       </main>
     </div >
   )
