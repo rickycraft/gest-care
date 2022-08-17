@@ -1,22 +1,22 @@
 import Head from 'next/head'
 // import { trpc } from 'utils/trpc'
 import styles from '../../../styles/Home.module.css'
-import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/css/bootstrap.css'
 import Table from 'react-bootstrap/Table'
-import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import { useCallback, useEffect, useState } from 'react';
-import { Card, Col, Form, InputGroup } from 'react-bootstrap';
-import { FcDeleteRow, FcCheckmark, FcCancel, FcSupport } from "react-icons/fc";
-import Alert from 'react-bootstrap/Alert';
-import { MdPictureAsPdf } from "react-icons/md";
-import Row from 'react-bootstrap/Row';
+import Button from 'react-bootstrap/Button'
+import ButtonGroup from 'react-bootstrap/ButtonGroup'
+import { useCallback, useEffect, useState } from 'react'
+import { Card, Col, Form, InputGroup } from 'react-bootstrap'
+import { FcDeleteRow, FcCheckmark, FcCancel, FcSupport } from "react-icons/fc"
+import Alert from 'react-bootstrap/Alert'
+import { MdPictureAsPdf } from "react-icons/md"
+import Row from 'react-bootstrap/Row'
 
 
 export default function Preventivo() {
 
   const [errorMsg, setErrorMsg] = useState('')
-  const [newPDF, setNewPDF] = useState({ id: -1, nome: '', prezzo: -1, fornitore: -1 }); //prevType ATT brutto da modificare
+  const [newPDF, setNewPDF] = useState({ id: -1, nome: '', prezzo: -1, fornitore: -1 }) //prevType ATT brutto da modificare
   const [newPreventivo, setNewPreventivo] = useState({
     id: -1,
     nome: '',
@@ -25,7 +25,7 @@ export default function Preventivo() {
     nomeFornitore: '',
     ultimaModifica: Date.now(),
     nomeUtenteUltimaModifica: ''
-  }); // TODO prevType ATT brutto da modificare
+  }) // TODO prevType ATT brutto da modificare
   const [inputTextValues, setInputTextValues] = useState({
     inputTextId: '',
     inputTextNome: '',
@@ -50,19 +50,19 @@ export default function Preventivo() {
     console.log('sendDeleteRequest ' + idDeletePreventivo)
   }, [])
 
-useEffect(() => { 
-  setNewPreventivo(
-    {
-      id: Number(inputTextValues.inputTextId),
-      nome: inputTextValues.inputTextNome,
-      dataCreazione: Date.now(),
-      nomeScuola: inputTextValues.inputTextNomeScuola,
-      nomeFornitore: inputTextValues.inputTextNomeFornitore,
-      ultimaModifica: Date.now(),
-      nomeUtenteUltimaModifica: inputTextValues.inputTextNomeUtenteUltimaModifica
-    }
+  useEffect(() => {
+    setNewPreventivo(
+      {
+        id: Number(inputTextValues.inputTextId),
+        nome: inputTextValues.inputTextNome,
+        dataCreazione: Date.now(),
+        nomeScuola: inputTextValues.inputTextNomeScuola,
+        nomeFornitore: inputTextValues.inputTextNomeFornitore,
+        ultimaModifica: Date.now(),
+        nomeUtenteUltimaModifica: inputTextValues.inputTextNomeUtenteUltimaModifica
+      }
 
-  )
+    )
   }, [inputTextValues])
 
 
@@ -128,7 +128,7 @@ useEffect(() => {
               <td>
                 <ButtonGroup>
                   <Button variant="outline-warning" >Edit <FcSupport /></Button>
-                  <Button variant="outline-danger" name="deleteButton" disabled={isSendingDelete} onClick={() => sendDeleteRequest(-1)}>Delete <FcCancel /></Button>
+                  <Button variant="outline-danger" name="deleteButton" disabled={false} onClick={() => sendDeleteRequest(-1)}>Delete <FcCancel /></Button>
                   <Button variant="outline-dark" name="saveButton" onClick={makePDF}>PDF <MdPictureAsPdf /></Button>
                 </ButtonGroup>
               </td>
@@ -163,52 +163,52 @@ useEffect(() => {
                   New nome preventivo
                 </Form.Label>
                 <Col sm="10">
-                <Form.Control id="disabledTextInput"
-                value={inputTextValues.inputTextNome}
-                  onChange={
-                    (event) => {
-                      setInputTextValues(
-                        {
-                          ...inputTextValues,
-                          inputTextNome: event.target.value,
-                        }
-                      )
+                  <Form.Control id="disabledTextInput"
+                    value={inputTextValues.inputTextNome}
+                    onChange={
+                      (event) => {
+                        setInputTextValues(
+                          {
+                            ...inputTextValues,
+                            inputTextNome: event.target.value,
+                          }
+                        )
+                      }
                     }
-                  }
-                  placeholder="New nome preventivo"
-                />
+                    placeholder="New nome preventivo"
+                  />
                 </Col>
-              
-              <Form.Label column sm="2">
+
+                <Form.Label column sm="2">
                   New nome scuola preventivo
                 </Form.Label>
                 <Col sm="10">
-              <Form.Select id="disabledTextInput"
-              value={inputTextValues.inputTextNomeScuola}
-                onChange={
-                  (event) => {
-                    setInputTextValues(
-                      {
-                        ...inputTextValues,
-                        inputTextNomeScuola: event.target.value,
-                      }
-                    )
-                  }}
-                placeholder="New nome scuola preventivo"
-              >
-              <option>New nome scuola preventivo</option>
-              <option>New nome scuola preventivo2</option>
-              <option>New nome scuola preventivo3</option>
-                </Form.Select>
-              </Col>
+                  <Form.Select id="disabledTextInput"
+                    value={inputTextValues.inputTextNomeScuola}
+                    onChange={
+                      (event) => {
+                        setInputTextValues(
+                          {
+                            ...inputTextValues,
+                            inputTextNomeScuola: event.target.value,
+                          }
+                        )
+                      }}
+                    placeholder="New nome scuola preventivo"
+                  >
+                    <option>New nome scuola preventivo</option>
+                    <option>New nome scuola preventivo2</option>
+                    <option>New nome scuola preventivo3</option>
+                  </Form.Select>
+                </Col>
               </Form.Group>
               <Button variant="outline-success" name="saveButton" onClick={sendSaveRequest}>Save <FcCheckmark /></Button>
               <Button variant="outline-primary" name="cleanButton"
                 onClick={() => {
-                
-                setInputTextValues({ inputTextId: '', inputTextNome: '', inputTextNomeFornitore: '', inputTextNomeScuola: '', inputTextNomeUtenteUltimaModifica: '' })
-              }}>
-              
+
+                  setInputTextValues({ inputTextId: '', inputTextNome: '', inputTextNomeFornitore: '', inputTextNomeScuola: '', inputTextNomeUtenteUltimaModifica: '' })
+                }}>
+
                 Clean <FcDeleteRow /></Button>
             </Form>
           </Card.Body>

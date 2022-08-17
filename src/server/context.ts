@@ -7,29 +7,21 @@ import { IRON_COOKIE, sessionOptions, sessionSchema } from "./iron"
 // auth for server side
 export async function createContext({ req, res }: trpcNext.CreateNextContextOptions) {
   if (process.env.NODE_ENV === 'development') {
-    return {
-      user: {
-        id: '1',
-        name: 'admin',
-      }
-    }
+    //return { user: { id: 1, name: 'admin', } }
   }
 
   const cookie = req.cookies[IRON_COOKIE]
-  if (!cookie) {
-    //console.error("No cookie found")
-    return {}
-  }
-  //console.log("session: ", cookie)
+  // check if cookie is present
+  if (!cookie) return {}
   const unsealed = await unsealData(cookie, sessionOptions)
-  //console.log("unsealed: ", unsealed)
+  // try parse cookie
   const result = sessionSchema.safeParse(unsealed)
   if (!result.success) {
     console.error("Invalid session data: ", result.error)
     console.error(cookie)
     return {}
   }
-  //console.log("user: ", result.data.user)
+  // return correct user
   return {
     user: result.data.user,
   }

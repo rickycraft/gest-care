@@ -2,7 +2,7 @@ import { withTRPC } from '@trpc/next'
 import { loggerLink } from '@trpc/client/links/loggerLink'
 import { httpBatchLink } from '@trpc/client/links/httpBatchLink'
 import superjson from 'superjson'
-// add bootstrap css 
+// add bootstrap css
 import 'bootstrap/dist/css/bootstrap.css'
 import SSRProvider from 'react-bootstrap/SSRProvider'
 // own css files here
@@ -26,8 +26,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     typeof document !== undefined ? require('bootstrap/dist/js/bootstrap') : null
   }, [])
-  return (
 
+  return (
     <>
       <SSRProvider>
         <Layout>
@@ -38,7 +38,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         </Layout>
       </SSRProvider>
     </>
-  );
+  )
 }
 
 export default withTRPC<AppRouter>({
@@ -48,8 +48,7 @@ export default withTRPC<AppRouter>({
         // adds pretty logs to your console in development and logs errors in production
         loggerLink({
           enabled: (opts) =>
-            process.env.NODE_ENV === 'development' ||
-            (opts.direction === 'down' && opts.result instanceof Error),
+            process.env.NODE_ENV === 'development' || (opts.direction === 'down' && opts.result instanceof Error)
         }),
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,

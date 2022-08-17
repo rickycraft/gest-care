@@ -1,12 +1,8 @@
-import Head from 'next/head'
 import Header from './Header'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Head>
-        <title>With Iron Session</title>
-      </Head>
       <style jsx global>{`
         *,
         *::before,
@@ -29,7 +25,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           padding-right: 1rem;
         }
       `}</style>
-      <Header/>
+      <Header />
 
       <main>
         <div className="container">{children}</div>
