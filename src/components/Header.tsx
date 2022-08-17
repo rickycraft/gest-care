@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import { useRouter } from 'next/router';
+import Container from 'react-bootstrap/Container'
+import Nav from 'react-bootstrap/Nav'
+import Navbar from 'react-bootstrap/Navbar'
+import { useRouter } from 'next/router'
 
 const BasicMenuItem = ({ title, path }: { title: string, path: string }) => {
   return (
@@ -51,7 +51,7 @@ export default function Header() {
               <Nav.Link
                 onClick={async (e) => {
                   e.preventDefault()
-                  await fetch('/api/auth/logout', { method: 'POST' })
+                  await fetch('/api/auth/logout')
                   router.push('/login')
                 }}
               >
