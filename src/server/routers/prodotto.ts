@@ -10,14 +10,18 @@ const defaultProdSelect = Prisma.validator<Prisma.ProdottoSelect>()({
   prezzo: true,
 })
 
-const prodSchema = z.object({
-  id: z.number().nullable(),
-  fornitore: z.number(),
+const insertProdSchema = z.object({
+  listino: z.number(),
   nome: z.string(),
   prezzo: z.number(),
 })
+export type insertProdType = z.infer<typeof insertProdSchema>
 
-export type prodType = z.infer<typeof prodSchema>
+const updateProdSchema = z.object({
+  id: z.number(),
+  prezzo: z.number(),
+})
+export type updateProdType = z.infer<typeof updateProdSchema>
 
 export const prodRouter = createProtectedRouter()
   .query("byId", {
@@ -38,33 +42,57 @@ export const prodRouter = createProtectedRouter()
   })
   .query("list", {
     input: z.object({
-      fornitore: z.number(),
+      listino: z.number(),
     }),
     async resolve({ input }) {
-      const { fornitore } = input
+      const { listino } = input
       const prodotto = await prisma.prodotto.findMany({
         where: {
-          fornitoreId: fornitore
+          listinoId: listino
         },
         select: defaultProdSelect,
+        orderBy: {
+          nome: "asc",
+        },
       })
       if (!prodotto) throw new TRPCError({ code: "NOT_FOUND" })
       return prodotto
     }
   })
-  .mutation("upsert", {
-    input: prodSchema,
+  .mutation("insert", {
+    input: insertProdSchema,
     async resolve({ input }) {
       try {
-        const prodotto = await upsertProd(input)
+        const prodotto = await prisma.prodotto.create({
+          data: {
+            listinoId: input.listino,
+            nome: input.nome.toLowerCase(),
+            prezzo: input.prezzo,
+          },
+          select: defaultProdSelect,
+        })
         return prodotto
       } catch {
-        if (input.id === null) {
-          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
-        } else {
-          throw new TRPCError({ code: "NOT_FOUND" })
-        }
-
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
+      }
+    }
+  })
+  .mutation("update", {
+    input: updateProdSchema,
+    async resolve({ input }) {
+      try {
+        const prodotto = await prisma.prodotto.update({
+          data: {
+            prezzo: input.prezzo,
+          },
+          where: {
+            id: input.id
+          },
+          select: defaultProdSelect,
+        })
+        return prodotto
+      } catch {
+        throw new TRPCError({ code: "NOT_FOUND" })
       }
     }
   })
@@ -84,36 +112,3 @@ export const prodRouter = createProtectedRouter()
       return
     }
   })
-
-async function upsertProd(prod: prodType) {
-  if (prod.id === null) {
-    // create
-    return await prisma.prodotto.create({
-      data: {
-        fornitoreId: prod.fornitore,
-        nome: prod.nome,
-        prezzo: prod.prezzo,
-      },
-      select: defaultProdSelect,
-    })
-  }
-
-  // update
-  return await prisma.prodotto.update({
-    where: {
-      id: prod.id
-    },
-    data: {
-      fornitoreId: prod.fornitore,
-      nome: prod.nome,
-      prezzo: prod.prezzo,
-    },
-    select: defaultProdSelect,
-  })
-}
-
-// export type Prodotto = {
-//   id: number,
-//   nome: string,
-//   prezzo: number,
-// }
