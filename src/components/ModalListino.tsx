@@ -15,7 +15,7 @@ export default function ModalListino({
     isSaveLoading: boolean,
 }) {
     const [show, setShow] = useState(false);
-    const [fornitore, setFornitore] = useState(0)
+    const [fornitore, setFornitore] = useState(-1) //TODO cambiare questa inizializzazione
     const [nomeListino, setNomeListino] = useState('')
     const [isFornitoreInvalid, setIsFornitoreInvalid] = useState(false)
     const [isNomeInvalid, setIsNomeInvalid] = useState(false)
@@ -95,9 +95,15 @@ export default function ModalListino({
                 <Modal.Footer>
                     <Button variant="primary"
                         onClick={() => {
-                            if (!isFornitoreInvalid && !isNomeInvalid) {
-                                onClickSave(nomeListino, fornitore);
-                                handleClose()
+                            //controllo per non far premere save senza aver inserito alcun input
+                            if(nomeListino.length===0 || fornitore<0){
+                                setIsFornitoreInvalid(true)
+                                setIsNomeInvalid(true)
+                            }else{
+                                if (!isFornitoreInvalid && !isNomeInvalid) {
+                                    onClickSave(nomeListino, fornitore);
+                                    handleClose()
+                                }
                             }
                         }}
                     >
