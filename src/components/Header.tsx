@@ -37,10 +37,9 @@ export default function Header() {
 
 
     /* <Navbar bg="dark" expand="lg">*/
-    <Navbar bg="dark" variant="dark">
+    <Navbar bg="dark" variant="dark" expand="md">
       <Container fluid>
         <Navbar.Brand>Gest-Care</Navbar.Brand>
-
         <Navbar.Toggle />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
