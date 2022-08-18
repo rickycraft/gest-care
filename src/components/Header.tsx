@@ -41,7 +41,7 @@ export default function Header() {
       <Container fluid>
         <Navbar.Brand>Gest-Care</Navbar.Brand>
 
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Toggle />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             {basicMenuLinks.map((link, index) => (
@@ -59,9 +59,9 @@ export default function Header() {
             </Link>
           </Nav>
         </Navbar.Collapse>
-        <div>
-          Current user {user}
-        </div>
+        <Navbar.Text>
+            Signed in as: {user}
+          </Navbar.Text>
       </Container>
     </Navbar>
   )
