@@ -18,7 +18,7 @@ export default function FormLogin({
   isUsernameInvalid: boolean
   onSubmit: (e: FormEvent<HTMLFormElement>) => void,
   children: React.ReactNode; // 👈️ added type for children
-}) {
+  }) {
   
   const [isPasswordInvalid, setIsPasswordInvalid] = useState(false);
   const [isUsernameInvalid, setIsUsernameInvalid] = useState(false);

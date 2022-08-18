@@ -8,6 +8,7 @@ import { ButtonGroup, Form, Spinner } from 'react-bootstrap'
 import { FcDeleteRow, FcCheckmark } from "react-icons/fc"
 import Alert from 'react-bootstrap/Alert'
 import TableRow from 'components/TableRow'
+import ModalListino from 'components/ModalListino'
 
 const ONLY_DECIMAL_REGEX = /^\d+\.?\d*$/ //regex per il check del numero prezzo (TODO: inserire che può essere anche una stringa vuota)
 
@@ -19,7 +20,9 @@ export default function Prodotto() {
 
   // trpc
   const prodQuery = trpc.useQuery(['prodotto.list', { listino }])
+  const fornitoriQuery = trpc.useQuery(['fornitore.list'])
   const listinoQuery = trpc.useQuery(['listino.list'])
+  const listinoInsert = trpc.useMutation(['listino.insert'])
   const prodottoInsert = trpc.useMutation('prodotto.insert')
   const prodottoUpdate = trpc.useMutation('prodotto.update')
   const prodottoDelete = trpc.useMutation('prodotto.delete')
@@ -37,11 +40,12 @@ export default function Prodotto() {
 
   useEffect(() => {
     if (!prodQuery.isSuccess) return
-    if (prodottoInsert.isSuccess || prodottoDelete.isSuccess || prodottoUpdate.isSuccess) {
+    if (prodottoInsert.isSuccess || prodottoDelete.isSuccess || prodottoUpdate.isSuccess || listinoInsert.isSuccess) {
       prodQuery.refetch()
+      listinoQuery.refetch()
     }
-  }, [prodottoInsert.isSuccess, prodottoDelete.isSuccess, prodottoUpdate.isSuccess])
-  //TODO: LASCIARE IL WARNING SOPRA ALTRIMENTI ESPLODE IL BROWSER DI CHIAMATE TRPC
+  }, [prodottoInsert.isSuccess, prodottoDelete.isSuccess, prodottoUpdate.isSuccess, listinoInsert.isSuccess])
+  //TODO: LASCIARE IL WARNING SOPRA ALTRIMENTI ESPLODE IL BROWSER DI CHIAMATE TRPC (prodQuery)
 
   const insertProdotto = async () => {
     if (prodottoInsert.isLoading) return
@@ -78,7 +82,19 @@ export default function Prodotto() {
     }
   }
 
-  if (!prodQuery.isSuccess || !listinoQuery.isSuccess) {
+  const insertListino = async (nome:string, idFornitore:number) => {
+    // console.log('id: ' +idFornitore  + ' nome: ' + nome)
+    if (listinoInsert.isLoading) return
+    listinoInsert.mutate({
+      nome: nome,
+      fornitore: idFornitore,
+    })
+    if (listinoInsert.isError) {
+      setErrorMsg('Errore nel salvare un nuovo listino: ' + listinoInsert.error)
+    }
+  }
+
+  if (!prodQuery.isSuccess || !listinoQuery.isSuccess || !fornitoriQuery.isSuccess) {
     return (
       <div>Not ready</div>
     )
@@ -93,6 +109,12 @@ export default function Prodotto() {
       </Head>
       <main>
         <h1>Listino</h1>
+        <ModalListino 
+        label='+'
+        fornitoriList={fornitoriQuery.data}
+        onClickSave={insertListino}
+        isSaveLoading={listinoInsert.isLoading}
+        />
         {/* form dropdown per selezionare il listino */}
         <Form.Group>
           <Form.Select
