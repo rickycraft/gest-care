@@ -3,7 +3,7 @@ import { Button, ButtonGroup, Spinner } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import { FcCancel, FcSupport } from 'react-icons/fc';
 
-const ONLY_DECIMAL_REGEX= /^\d+\.?\d*$/ //regex per il check del numero prezzo
+const ONLY_DECIMAL_REGEX = /^\d+\.?\d*$/ //regex per il check del numero prezzo
 
 export default function TableRow({
     key,
@@ -16,38 +16,37 @@ export default function TableRow({
     onClickDelete,
     onClickEdit,
 }: {
-    key:number,
+    key: number,
     prodId: number,
     prodNome: string,
     prodPrezzoIniziale: string,
-    isEditSuccess:boolean,
-    isEditLoading:boolean,
-    isDeleteLoading:boolean,
-     onClickEdit: ( prod_id:number, prod_prezzo:number ) => void,
-     onClickDelete: ( prod_id:number) => void,
+    isEditSuccess: boolean,
+    isEditLoading: boolean,
+    isDeleteLoading: boolean,
+    onClickEdit: (prod_id: number, prod_prezzo: number) => void,
+    onClickDelete: (prod_id: number) => void,
 }) {
     const [isEditable, setIsEditable] = useState(false)
     const [newPrezzo, setNewPrezzo] = useState<string>('')
 
     const [prezzoIsInvalid, setPrezzoIsInvalid] = useState(false)
 
-        //check decimal prezzo
-      useEffect(() => {
+    //check decimal prezzo
+    useEffect(() => {
         if (ONLY_DECIMAL_REGEX.test(newPrezzo)) {
             setPrezzoIsInvalid(false)
         } else {
-            if(isEditable){
+            if (isEditable) {
                 setPrezzoIsInvalid(true)
             }
         }
-      }, [isEditable, newPrezzo]);
+    }, [isEditable, newPrezzo]);
 
     //resetto se una query è stata mandata
     useEffect(() => {
         if (isEditSuccess) {
             setIsEditable(false)
             setNewPrezzo('')
-            // setPrezzo(prezzo_trpc)
         }
     }, [isEditSuccess, prodPrezzoIniziale]);
 
@@ -60,10 +59,10 @@ export default function TableRow({
                 {/*input text del prezzo di un prodotto che è scrivibile solo quando viene fatto doppio click
               */}
                 <Form.Control
-                    id={'InputPrezzo'+prodId}
+                    id={'InputPrezzo' + prodId}
                     isInvalid={prezzoIsInvalid}
                     value={
-                        (newPrezzo.length===0 && !isEditable) ? prodPrezzoIniziale  : newPrezzo
+                        (newPrezzo.length === 0 && !isEditable) ? prodPrezzoIniziale : newPrezzo
                     }
                     readOnly={!isEditable}
                     onDoubleClick={() => {
@@ -86,16 +85,33 @@ export default function TableRow({
                 delete: elimina il prodotto della riga
               */}
                 <ButtonGroup >
-                    <Button name='EditButton'
+                    {isEditable && <Button name='EditButton'
+                        // hidden={!isEditable}
                         variant="outline-warning"
-                        disabled={isEditLoading || prezzoIsInvalid ||!isEditable}
-                        onClick={() => {!prezzoIsInvalid && onClickEdit( prodId, Number(newPrezzo))}}
+                        disabled={isEditLoading || prezzoIsInvalid || !isEditable}
+                        onClick={() => { !prezzoIsInvalid && onClickEdit(prodId, Number(newPrezzo)) }}
                     >
                         Edit
                         {(!isEditLoading) && <FcSupport />}
                         {(isEditLoading) && <Spinner as="span" animation="border" size="sm" role="status" />}
-                    </Button>
-                    <Button name="DeleteButton"
+                    </Button>}
+                    {isEditable && <Button name='UndoButton'
+                        // hidden={!isEditable}
+                        variant="outline-primary"
+                        disabled={isEditLoading || prezzoIsInvalid || !isEditable}
+                        onClick={() => {
+                            //reset
+                            setIsEditable(false); 
+                            setIsEditable(false);
+                            setNewPrezzo('')
+                        }}
+                    >
+                        Undo
+                        {(!isEditLoading) && <FcCancel />}
+                        {(isEditLoading) && <Spinner as="span" animation="border" size="sm" role="status" />}
+                    </Button>}
+                    {!isEditable && <Button name="DeleteButton"
+                        // hidden={isEditable}
                         variant="outline-danger"
                         disabled={isDeleteLoading}
                         onClick={() => onClickDelete(prodId)}
@@ -103,7 +119,7 @@ export default function TableRow({
                         Delete
                         {(!isDeleteLoading) && <FcCancel />}
                         {(isDeleteLoading) && <Spinner as="span" animation="border" size="sm" role="status" />}
-                    </Button>
+                    </Button>}
                 </ButtonGroup>
             </td>
         </tr>
