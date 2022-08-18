@@ -33,7 +33,7 @@ export default function Login({ }: InferGetServerSidePropsType<typeof getServerS
         <Form
           errorMessage={errorMsg}
           onSubmit={async (event) => {
-            event.preventDefault()
+            event.preventDefault();
 
             const body = {
               username: event.currentTarget.username.value,

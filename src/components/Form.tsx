@@ -9,7 +9,6 @@ const USER_REGEX = /^[A-z][A-z0-9-]{3,23}$/;
 // const PWD_REGEX : RegExp= /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,100}$/;
 const PWD_REGEX_TEST : RegExp= /(?=.*[a-z])/;
 const EMAIL_REGEX = /^[a-zA-Z0-9.! #$%&'*+/=? ^`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$/;
-
 export default function FormLogin({
   errorMessage,
   onSubmit,
@@ -17,8 +16,10 @@ export default function FormLogin({
   errorMessage: string
   isPasswordInvalid: boolean
   isUsernameInvalid: boolean
-  onSubmit: (e: FormEvent<HTMLFormElement>) => void
+  onSubmit: (e: FormEvent<HTMLFormElement>) => void,
+  children: React.ReactNode; // 👈️ added type for children
 }) {
+  
   const [isPasswordInvalid, setIsPasswordInvalid] = useState(false);
   const [isUsernameInvalid, setIsUsernameInvalid] = useState(false);
   const [usernameValue, setUsernameValue] = useState('');
