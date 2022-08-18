@@ -82,7 +82,7 @@ export default function Prodotto() {
     }
   }
 
-  const insertListino = async (nome:string, idFornitore:number) => {
+  const insertListino = async (nome: string, idFornitore: number) => {
     // console.log('id: ' +idFornitore  + ' nome: ' + nome)
     if (listinoInsert.isLoading) return
     listinoInsert.mutate({
@@ -108,20 +108,23 @@ export default function Prodotto() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <h1>Listino</h1>
-        <ModalListino 
-        label='+'
-        fornitoriList={fornitoriQuery.data}
-        onClickSave={insertListino}
-        isSaveLoading={listinoInsert.isLoading}
-        />
+        <h1>
+          Listino &nbsp;
+          <ModalListino
+            label='+'
+            fornitoriList={fornitoriQuery.data}
+            onClickSave={insertListino}
+            isSaveLoading={listinoInsert.isLoading}
+          />
+          </h1>
+
         {/* form dropdown per selezionare il listino */}
         <Form.Group>
           <Form.Select
             value={listino}
             onChange={(event) => { setListino(Number(event.currentTarget.value)) }}
           >
-            <option value='0'>Seleziona un listino</option>
+            <option value='0'>Seleziona un listino</option> {/*TODO: cambiare value posto a 0 */}
             {listinoQuery.data.map(element => (
               <option key={element.id} value={element.id}>{element.nome}</option>
             ))}
@@ -146,7 +149,7 @@ export default function Prodotto() {
                 prodPrezzoIniziale={prod.prezzo.toString()}
                 onClickDelete={deleteProdotto}
                 onClickEdit={updateProdotto}
-                isDeleteLoading={prodottoDelete.isLoading}
+                isDeleteLoading={prodottoDelete.isLoading }
                 isEditLoading={prodottoUpdate.isLoading}
                 isEditSuccess={prodottoUpdate.isSuccess}
               />

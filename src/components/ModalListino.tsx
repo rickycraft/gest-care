@@ -26,10 +26,9 @@ export default function ModalListino({
 
     return (
         <>
-            <Button variant="primary" onClick={handleShow}>
+            <Button variant="primary" className="rounded-circle" onClick={handleShow}>
                 {label}
             </Button>
-
             <Modal
                 show={show}
                 onHide={handleClose}
@@ -98,7 +97,7 @@ export default function ModalListino({
                         onClick={() => {
                             if (!isFornitoreInvalid && !isNomeInvalid) {
                                 onClickSave(nomeListino, fornitore);
-                                handleClose
+                                handleClose()
                             }
                         }}
                     >
