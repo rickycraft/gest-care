@@ -96,7 +96,6 @@ export default function TableRow({
                         {(isEditLoading) && <Spinner as="span" animation="border" size="sm" role="status" />}
                     </Button>}
                     {isEditable && <Button name='UndoButton'
-                        // hidden={!isEditable}
                         variant="outline-primary"
                         disabled={isEditLoading || prezzoIsInvalid || !isEditable}
                         onClick={() => {
@@ -111,7 +110,6 @@ export default function TableRow({
                         {(isEditLoading) && <Spinner as="span" animation="border" size="sm" role="status" />}
                     </Button>}
                     {!isEditable && <Button name="DeleteButton"
-                        // hidden={isEditable}
                         variant="outline-danger"
                         disabled={isDeleteLoading}
                         onClick={() => onClickDelete(prodId)}
