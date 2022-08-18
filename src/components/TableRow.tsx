@@ -3,7 +3,7 @@ import { Button, ButtonGroup, Spinner } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import { FcCancel, FcSupport } from 'react-icons/fc';
 
-const ONLY_DECIMAL_REGEX = /^\d+\.?\d*$/ //regex per il check del numero prezzo
+const ONLY_DECIMAL_REGEX = /^\d+\.?\d*$/ //regex per il check del numero prezzo (TODO: inserire che può essere anche una stringa vuota)
 
 export default function TableRow({
     key,
