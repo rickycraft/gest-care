@@ -11,84 +11,87 @@ datasource db {
 }
 
 model User {
-  id         Int          @id @default(autoincrement())
-  username   String       @unique @db.VarChar(255)
-  password   String       @db.VarChar(255)
+  id       Int    @id @default(autoincrement())
+  username String @unique @db.VarChar(255)
+  password String @db.VarChar(255)
+
   preventivi Preventivo[]
 }
 
 model Scuola {
-  id         Int          @id @default(autoincrement())
-  nome       String       @unique @db.VarChar(255)
+  id   Int    @id @default(autoincrement())
+  nome String @unique @db.VarChar(255)
+
   preventivi Preventivo[]
 }
 
 model Fornitore {
-  id                Int                 @id @default(autoincrement())
-  personalizzazioni Personalizzazione[]
-  nome              String              @unique @db.VarChar(255)
-  Preventivo        Preventivo[]
-  Listino           Listino[]
+  id   Int    @id @default(autoincrement())
+  nome String @unique @db.VarChar(255)
+
+  Listino Listino[]
 }
 
 model Listino {
-  id        Int        @id @default(autoincrement())
-  fornitore Fornitore  @relation(fields: [fornitoreId], references: [id])
-  Prodotto  Prodotto[]
-
-  nome        String   @unique @db.VarChar(255)
-  fornitoreId Int
+  id          Int      @id @default(autoincrement())
   createdAt   DateTime @updatedAt()
+  fornitoreId Int
+  nome        String   @unique @db.VarChar(255)
+
+  fornitore         Fornitore           @relation(fields: [fornitoreId], references: [id])
+  Prodotto          Prodotto[]
+  Personalizzazione Personalizzazione[]
+  Preventivo        Preventivo[]
 }
 
 model Prodotto {
-  id         Int             @id @default(autoincrement())
-  listino    Listino         @relation(fields: [listinoId], references: [id])
-  quotazioni PreventivoRow[]
-
-  listinoId Int
+  id        Int     @id @default(autoincrement())
   nome      String  @db.VarChar(255)
   prezzo    Decimal @db.Decimal(10, 2)
+  listinoId Int
+
+  listino    Listino         @relation(fields: [listinoId], references: [id])
+  quotazioni PreventivoRow[]
 
   @@unique([nome, listinoId])
 }
 
 model Personalizzazione {
-  id          Int             @id @default(autoincrement())
-  fornitore   Fornitore       @relation(fields: [fornitoreId], references: [id])
-  fornitoreId Int
-  quotazioni  PreventivoRow[]
+  id        Int     @id @default(autoincrement())
+  nome      String  @db.VarChar(255)
+  prezzo    Decimal @db.Decimal(10, 2)
+  listinoId Int
 
-  nome   String  @db.VarChar(255)
-  prezzo Decimal @db.Decimal(10, 2)
+  quotazioni PreventivoRow[]
+  listino    Listino         @relation(fields: [listinoId], references: [id])
 
-  @@unique([fornitoreId, nome])
+  @@unique([nome, listinoId])
 }
 
 model Preventivo {
-  id        Int             @id @default(autoincrement())
-  createdAt DateTime        @default(now())
-  rows      PreventivoRow[]
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  nome      String   @db.VarChar(255)
+  scuolaId  Int
+  listinoId Int
+  userId    Int
 
-  nome         String    @db.VarChar(255)
-  scuola       Scuola    @relation(fields: [scuolaId], references: [id])
-  scuolaId     Int
-  fornitore    Fornitore @relation(fields: [fornitoreId], references: [id])
-  fornitoreId  Int
-  lastEditedBy User      @relation(fields: [userId], references: [id])
-  userId       Int
+  rows         PreventivoRow[]
+  scuola       Scuola          @relation(fields: [scuolaId], references: [id])
+  listino      Listino         @relation(fields: [listinoId], references: [id])
+  lastEditedBy User            @relation(fields: [userId], references: [id])
 }
 
 model PreventivoRow {
-  id           Int        @id @default(autoincrement())
-  preventivo   Preventivo @relation(fields: [preventivoId], references: [id], onDelete: Cascade)
-  preventivoId Int
-
-  prodotto            Prodotto          @relation(fields: [prodottoId], references: [id], onDelete: Cascade)
+  id                  Int     @id @default(autoincrement())
+  provvigioneSC       Decimal @db.Decimal(10, 2)
+  provvigioneRappre   Decimal @db.Decimal(10, 2)
+  provvigioneComm     Decimal @db.Decimal(10, 2)
+  preventivoId        Int
   prodottoId          Int
-  personalizzazione   Personalizzazione @relation(fields: [personalizzazioneId], references: [id], onDelete: Cascade)
   personalizzazioneId Int
-  provvigioneSC       Decimal           @db.Decimal(10, 2)
-  provvigioneRappre   Decimal           @db.Decimal(10, 2)
-  provvigioneComm     Decimal           @db.Decimal(10, 2)
+
+  preventivo        Preventivo        @relation(fields: [preventivoId], references: [id], onDelete: Cascade)
+  prodotto          Prodotto          @relation(fields: [prodottoId], references: [id], onDelete: Cascade)
+  personalizzazione Personalizzazione @relation(fields: [personalizzazioneId], references: [id], onDelete: Cascade)
 }
