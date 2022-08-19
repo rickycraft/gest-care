@@ -27,11 +27,13 @@ export default function Header() {
   const authQuery = trpc.useQuery(['auth.currentUser'])
   const [user, setUser] = useState('')
 
+  /*
   useMemo(() => {
     if (authQuery.isSuccess && authQuery.data.id > 0) {
       setUser(authQuery.data.username)
     }
   }, [authQuery.data])
+  */
 
   return (
 
