@@ -50,7 +50,7 @@ model Prodotto {
   prezzo    Decimal @db.Decimal(10, 2)
   listinoId Int
 
-  listino    Listino         @relation(fields: [listinoId], references: [id])
+  listino    Listino         @relation(fields: [listinoId], references: [id], onDelete: Cascade)
   quotazioni PreventivoRow[]
 
   @@unique([nome, listinoId])
@@ -63,7 +63,7 @@ model Personalizzazione {
   listinoId Int
 
   quotazioni PreventivoRow[]
-  listino    Listino         @relation(fields: [listinoId], references: [id])
+  listino    Listino         @relation(fields: [listinoId], references: [id], onDelete: Cascade)
 
   @@unique([nome, listinoId])
 }
