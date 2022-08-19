@@ -62,8 +62,9 @@ export const prodRouter = createProtectedRouter()
   .mutation("insert", {
     input: insertProdSchema,
     async resolve({ input }) {
+      if (input.prezzo <= 0) throw new TRPCError({ code: "BAD_REQUEST" })
       try {
-        const prodotto = await prisma.prodotto.create({
+        return await prisma.prodotto.create({
           data: {
             listinoId: input.listino,
             nome: input.nome.toLowerCase(),
@@ -71,8 +72,7 @@ export const prodRouter = createProtectedRouter()
           },
           select: defaultProdSelect,
         })
-        return prodotto
-      } catch {
+      } catch (error) {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
       }
     }

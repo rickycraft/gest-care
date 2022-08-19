@@ -7,69 +7,74 @@ import { useEffect, useState } from 'react'
 import { ButtonGroup, Form, Spinner } from 'react-bootstrap'
 import { FcDeleteRow, FcCheckmark } from "react-icons/fc"
 import Alert from 'react-bootstrap/Alert'
-import TableRow from 'components/TableRow'
-import ModalListino from 'components/ModalListino'
-
-const ONLY_DECIMAL_REGEX = /^\d+\.?\d*$/ //regex per il check del numero prezzo (TODO: inserire che può essere anche una stringa vuota)
+import TableRow from 'components/listino/TableRow'
+import ModalListino from 'components/listino/ModalListino'
 
 export default function Prodotto() {
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
-  const [inputTextValues, setInputTextValues] = useState({ nome: '', prezzo: '' })
+  const [nome, setNome] = useState('')
+  const [prezzo, setPrezzo] = useState(0)
   const [listino, setListino] = useState(0)
 
   // trpc
   const prodQuery = trpc.useQuery(['prodotto.list', { listino }])
   const fornitoriQuery = trpc.useQuery(['fornitore.list'])
   const listinoQuery = trpc.useQuery(['listino.list'])
-  const listinoInsert = trpc.useMutation(['listino.insert'])
-  const prodottoInsert = trpc.useMutation('prodotto.insert')
-  const prodottoUpdate = trpc.useMutation('prodotto.update')
-  const prodottoDelete = trpc.useMutation('prodotto.delete')
-
-  const [prezzoInputTextIsInvalid, setPrezzoInputTextIsInvalid] = useState(false)
-
-  //check decimal prezzo
-  useEffect(() => {
-    if (ONLY_DECIMAL_REGEX.test(inputTextValues.prezzo) || inputTextValues.prezzo.length === 0) {
-      setPrezzoInputTextIsInvalid(false)
-    } else {
-      setPrezzoInputTextIsInvalid(true)
+  const listinoInsert = trpc.useMutation(['listino.insert'], {
+    onError() {
+      setErrorMsg('Errore nel salvare un nuovo listino')
     }
-  }, [inputTextValues.prezzo])
+  })
+  const prodottoInsert = trpc.useMutation('prodotto.insert', {
+    onError() {
+      setErrorMsg('Errore nel salvare un nuovo prodotto')
+    }
+  })
+  const prodottoUpdate = trpc.useMutation('prodotto.update', {
+    onError() {
+      setErrorMsg('Errore nel aggiornare un prodotto')
+    }
+  })
+  const prodottoDelete = trpc.useMutation('prodotto.delete', {
+    onError() {
+      setErrorMsg('Errore nell eliminare il prodotto selezionato')
+    }
+  })
+
+  useEffect(() => {
+    if (listinoInsert.isSuccess) {
+      setErrorMsg('')
+      listinoQuery.refetch()
+    }
+  }, [listinoInsert.isSuccess])
 
   useEffect(() => {
     if (!prodQuery.isSuccess) return
-    if (prodottoInsert.isSuccess || prodottoDelete.isSuccess || prodottoUpdate.isSuccess || listinoInsert.isSuccess) {
+    if (prodottoInsert.isSuccess || prodottoDelete.isSuccess || prodottoUpdate.isSuccess) {
+      setErrorMsg('')
       prodQuery.refetch()
-      listinoQuery.refetch()
     }
-  }, [prodottoInsert.isSuccess, prodottoDelete.isSuccess, prodottoUpdate.isSuccess, listinoInsert.isSuccess])
+  }, [prodottoInsert.isSuccess, prodottoDelete.isSuccess, prodottoUpdate.isSuccess])
   //TODO: LASCIARE IL WARNING SOPRA ALTRIMENTI ESPLODE IL BROWSER DI CHIAMATE TRPC (prodQuery)
 
   const insertProdotto = async () => {
     if (prodottoInsert.isLoading) return
     prodottoInsert.mutate({
-      nome: inputTextValues.nome,
-      prezzo: Number(inputTextValues.prezzo),
-      listino: listino,
+      nome,
+      prezzo,
+      listino,
     })
-    setInputTextValues({ nome: '', prezzo: '' })
-    if (prodottoInsert.isError) {
-      setErrorMsg('Errore nel salvare un nuovo prodotto: ' + prodottoInsert.error)
-    }
+    setPrezzo(0)
+    setNome('')
   }
 
   const updateProdotto = async (idProdotto: number, prezzo: number) => {
-    console.log('id: ' + idProdotto + ' prezzo: ' + prezzo)
     if (prodottoUpdate.isLoading) return
     prodottoUpdate.mutate({
       id: idProdotto,
       prezzo: prezzo,
     })
-    if (prodottoUpdate.isError) {
-      setErrorMsg('Errore nel aggiornare un prodotto: ' + prodottoUpdate.error)
-    }
   }
 
   const deleteProdotto = async (idProdotto: number) => {
@@ -77,22 +82,18 @@ export default function Prodotto() {
     prodottoDelete.mutate({
       id: idProdotto
     })
-    if (prodottoDelete.isError) {
-      setErrorMsg('Errore nell eliminare il prodotto selezionato: ' + prodottoDelete.error)
-    }
+
   }
 
   const insertListino = async (nome: string, idFornitore: number) => {
-    // console.log('id: ' +idFornitore  + ' nome: ' + nome)
     if (listinoInsert.isLoading) return
     listinoInsert.mutate({
       nome: nome,
       fornitore: idFornitore,
     })
-    if (listinoInsert.isError) {
-      setErrorMsg('Errore nel salvare un nuovo listino: ' + listinoInsert.error)
-    }
   }
+
+  const isRowValid = () => nome.length > 0 && prezzo > 0
 
   if (!prodQuery.isSuccess || !listinoQuery.isSuccess || !fornitoriQuery.isSuccess) {
     return (
@@ -119,7 +120,7 @@ export default function Prodotto() {
         </h1>
 
         {/* form dropdown per selezionare il listino */}
-        <Form.Group>
+        <Form.Group className='mb-2'>
           <Form.Select
             value={listino}
             onChange={(event) => { setListino(Number(event.currentTarget.value)) }}
@@ -131,10 +132,9 @@ export default function Prodotto() {
           </Form.Select>
         </Form.Group>
         {/*Tabella che mostra i prodotti del listino selezionato*/}
-        <Table striped bordered hover hidden={listino == 0}>
+        <Table bordered hover hidden={listino == 0}>
           <thead>
             <tr>
-              <th>Id prodotto</th>
               <th>Nome prodotto</th>
               <th>Prezzo</th>
               <th></th>
@@ -143,41 +143,27 @@ export default function Prodotto() {
           <tbody>
             {prodQuery.data.map(prod => (
               <TableRow
-                key={prod.id}
-                prodId={prod.id}
-                prodNome={prod.nome}
-                prodPrezzoIniziale={prod.prezzo.toString()}
+                rowId={prod.id}
+                rowName={prod.nome}
+                rowPrice={prod.prezzo}
                 onClickDelete={deleteProdotto}
                 onClickEdit={updateProdotto}
-                isDeleteLoading={prodottoDelete.isLoading}
-                isEditLoading={prodottoUpdate.isLoading}
-                isEditSuccess={prodottoUpdate.isSuccess}
               />
             ))}
             <tr>
-              <td></td>
               <td>
                 <Form.Control name='InputTextNomeProdotto'
-                  value={inputTextValues.nome}
-                  onChange={(event) => {
-                    setInputTextValues({
-                      ...inputTextValues,
-                      nome: event.target.value,
-                    })
-                  }}
-                  placeholder="New nome prodotto"
+                  value={nome}
+                  onChange={(event) => setNome(event.currentTarget.value)}
+                  placeholder="Nome prodotto"
                 />
               </td>
               <td>
-                <Form.Control name='InputTextPrezzoProdotto'
-                  isInvalid={prezzoInputTextIsInvalid}
-                  value={inputTextValues.prezzo}
-                  onChange={
-                    (event) => setInputTextValues({
-                      ...inputTextValues,
-                      prezzo: event.target.value
-                    })}
-                  placeholder="New prezzo prodotto"
+                <Form.Control name='InputTextPrezzoProdotto' type='number'
+                  value={(prezzo == 0) ? '' : prezzo}
+                  onChange={(event) => { event.preventDefault(); setPrezzo(Number(event.currentTarget.value)) }}
+                  onKeyPress={(event) => { if (event.key === 'Enter' && isRowValid()) insertProdotto() }}
+                  placeholder="Prezzo prodotto"
                 />
               </td>
               <td>
@@ -188,19 +174,16 @@ export default function Prodotto() {
                 <ButtonGroup>
                   <Button name="SaveButton"
                     variant="outline-success"
-                    disabled={prodottoInsert.isLoading || prezzoInputTextIsInvalid}
+                    disabled={!isRowValid()}
                     onClick={() => insertProdotto()}
                   >
-                    Save
-                    {!prodottoInsert.isLoading && <FcCheckmark />}
-                    {prodottoInsert.isLoading && <Spinner as="span" animation="border" size="sm" role="status" />}
+                    Save<FcCheckmark />
                   </Button>
                   <Button name="CleanButton"
                     variant="outline-primary"
-                    onClick={() => setInputTextValues({ nome: '', prezzo: '' })}
+                    onClick={() => { setPrezzo(0); setNome('') }}
                   >
-                    Clean
-                    <FcDeleteRow />
+                    Clean<FcDeleteRow />
                   </Button>
                 </ButtonGroup>
               </td>
