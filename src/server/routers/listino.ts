@@ -33,7 +33,7 @@ export const listinoRouter = createProtectedRouter()
       try {
         const listino = await prisma.listino.create({
           data: {
-            nome: input.nome,
+            nome: input.nome.trim(),
             fornitore: {
               connect: {
                 id: input.fornitore,

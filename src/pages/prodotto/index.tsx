@@ -19,13 +19,7 @@ export default function Prodotto() {
 
   // trpc
   const prodQuery = trpc.useQuery(['prodotto.list', { listino }])
-  const fornitoriQuery = trpc.useQuery(['fornitore.list'])
   const listinoQuery = trpc.useQuery(['listino.list'])
-  const listinoInsert = trpc.useMutation(['listino.insert'], {
-    onError() {
-      setErrorMsg('Errore nel salvare un nuovo listino')
-    }
-  })
   const prodottoInsert = trpc.useMutation('prodotto.insert', {
     onError() {
       setErrorMsg('Errore nel salvare un nuovo prodotto')
@@ -42,12 +36,14 @@ export default function Prodotto() {
     }
   })
 
+  /*
   useEffect(() => {
     if (listinoInsert.isSuccess) {
       setErrorMsg('')
       listinoQuery.refetch()
     }
   }, [listinoInsert.isSuccess])
+  */
 
   useEffect(() => {
     if (!prodQuery.isSuccess) return
@@ -85,17 +81,9 @@ export default function Prodotto() {
 
   }
 
-  const insertListino = async (nome: string, idFornitore: number) => {
-    if (listinoInsert.isLoading) return
-    listinoInsert.mutate({
-      nome: nome,
-      fornitore: idFornitore,
-    })
-  }
-
   const isRowValid = () => nome.length > 0 && prezzo > 0
 
-  if (!prodQuery.isSuccess || !listinoQuery.isSuccess || !fornitoriQuery.isSuccess) {
+  if (!prodQuery.isSuccess || !listinoQuery.isSuccess) {
     return (
       <div>Not ready</div>
     )
@@ -111,12 +99,7 @@ export default function Prodotto() {
       <main>
         <h1>
           Listino &nbsp;
-          <ModalListino
-            label='+'
-            fornitoriList={fornitoriQuery.data}
-            onClickSave={insertListino}
-            isSaveLoading={listinoInsert.isLoading}
-          />
+          <ModalListino />
         </h1>
 
         {/* form dropdown per selezionare il listino */}
