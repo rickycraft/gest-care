@@ -22,6 +22,14 @@ const basicMenuLinks = [
   { title: 'Login', path: '/login', },
 ]
 
+const basicMenuLinks = [
+  { title: 'Home', path: '/', },
+  { title: 'About', path: '/about', },
+  { title: 'Prodotti', path: '/prodotto', },
+  { title: 'Preventivi', path: '/preventivo', },
+  { title: 'Login', path: '/login', },
+]
+
 export default function Header() {
   const router = useRouter()
   const authQuery = trpc.useQuery(['auth.currentUser'])
