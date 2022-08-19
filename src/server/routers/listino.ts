@@ -24,6 +24,25 @@ export const listinoRouter = createProtectedRouter()
       return listni
     }
   })
+  .query("byId", {
+    input: z.object({
+      id: z.number()
+    }),
+    async resolve({ input }) {
+      if (input.id < 0) return undefined
+      const listino = await prisma.listino.findFirst({
+        where: { id: input.id },
+        select: {
+          id: true,
+          nome: true,
+          createdAt: true,
+          fornitore: true,
+        },
+      })
+      if (!listino) throw new TRPCError({ code: "NOT_FOUND" })
+      return listino
+    }
+  })
   .mutation("insert", {
     input: z.object({
       nome: z.string(),
@@ -31,7 +50,7 @@ export const listinoRouter = createProtectedRouter()
     }),
     async resolve({ input }) {
       try {
-        const listino = await prisma.listino.create({
+        await prisma.listino.create({
           data: {
             nome: input.nome.trim(),
             fornitore: {
@@ -41,9 +60,46 @@ export const listinoRouter = createProtectedRouter()
             }
           }
         })
-        return listino
       } catch {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
+      }
+    }
+  })
+  .mutation("update", {
+    input: z.object({
+      id: z.number(),
+      nome: z.string(),
+      fornitore: z.number(),
+    }),
+    async resolve({ input }) {
+      try {
+        return await prisma.listino.update({
+          where: { id: input.id },
+          data: {
+            nome: input.nome.trim(),
+            fornitore: {
+              connect: {
+                id: input.fornitore,
+              }
+            }
+          }
+        })
+      } catch {
+        throw new TRPCError({ code: "BAD_REQUEST" })
+      }
+    }
+  })
+  .mutation("delete", {
+    input: z.object({
+      id: z.number(),
+    }),
+    async resolve({ input }) {
+      try {
+        return await prisma.listino.delete({
+          where: { id: input.id },
+        })
+      } catch {
+        throw new TRPCError({ code: "BAD_REQUEST" })
       }
     }
   })

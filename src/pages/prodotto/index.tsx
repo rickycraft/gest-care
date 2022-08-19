@@ -10,12 +10,14 @@ import Alert from 'react-bootstrap/Alert'
 import TableRow from 'components/listino/TableRow'
 import ModalListino from 'components/listino/ModalListino'
 
+const invalidListino = -1
+
 export default function Prodotto() {
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
   const [nome, setNome] = useState('')
   const [prezzo, setPrezzo] = useState(0)
-  const [listino, setListino] = useState(0)
+  const [listino, setListino] = useState(-1)
 
   // trpc
   const prodQuery = trpc.useQuery(['prodotto.list', { listino }])
@@ -35,15 +37,6 @@ export default function Prodotto() {
       setErrorMsg('Errore nell eliminare il prodotto selezionato')
     }
   })
-
-  /*
-  useEffect(() => {
-    if (listinoInsert.isSuccess) {
-      setErrorMsg('')
-      listinoQuery.refetch()
-    }
-  }, [listinoInsert.isSuccess])
-  */
 
   useEffect(() => {
     if (!prodQuery.isSuccess) return
@@ -99,7 +92,7 @@ export default function Prodotto() {
       <main>
         <h1>
           Listino &nbsp;
-          <ModalListino />
+          <ModalListino listinoId={listino} updateListinoList={() => listinoQuery.refetch()} />
         </h1>
 
         {/* form dropdown per selezionare il listino */}
@@ -108,14 +101,16 @@ export default function Prodotto() {
             value={listino}
             onChange={(event) => { setListino(Number(event.currentTarget.value)) }}
           >
-            <option value='0'>Seleziona un listino</option> {/*TODO: cambiare value posto a 0 */}
+            <option value={invalidListino}>Seleziona un listino</option>
             {listinoQuery.data.map(element => (
-              <option key={element.id} value={element.id}>{element.nome}</option>
+              <option key={element.id} value={element.id}>
+                {element.nome}
+              </option>
             ))}
           </Form.Select>
         </Form.Group>
         {/*Tabella che mostra i prodotti del listino selezionato*/}
-        <Table bordered hover hidden={listino == 0}>
+        <Table bordered hover hidden={listino == -1}>
           <thead>
             <tr>
               <th>Nome prodotto</th>
@@ -126,6 +121,7 @@ export default function Prodotto() {
           <tbody>
             {prodQuery.data.map(prod => (
               <TableRow
+                key={prod.id}
                 rowId={prod.id}
                 rowName={prod.nome}
                 rowPrice={prod.prezzo}

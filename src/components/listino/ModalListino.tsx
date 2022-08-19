@@ -1,24 +1,38 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form, Spinner } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import { trpc } from 'utils/trpc'
 
-export default function ModalListino() {
-    const listinoInsert = trpc.useMutation('listino.insert', {
-        onSuccess() {
-            trpc.useContext().invalidateQueries(['listino.list'])
-        }
-    })
-    const fornitoriQuery = trpc.useQuery(['fornitore.list'])
+const invalidId = -1
 
+
+
+export default function ModalListino({
+    listinoId = invalidId,
+    updateListinoList,
+}: {
+    listinoId?: number,
+    updateListinoList: () => void,
+}) {
+    const trpcCallback = {
+        onSuccess() {
+            updateListinoList()
+        }
+    }
+    const listinoInsert = trpc.useMutation('listino.insert', trpcCallback)
+    const listinoUpdate = trpc.useMutation('listino.update', trpcCallback)
+    const listinoDelete = trpc.useMutation('listino.delete', trpcCallback)
+    const listinoQuery = trpc.useQuery(['listino.byId', { id: listinoId }])
+    const fornitoriQuery = trpc.useQuery(['fornitore.list'])
 
     const [show, setShow] = useState(false)
     const [nomeListino, setNomeListino] = useState('')
-    const [fornitoreId, setFornitoreId] = useState(-1)
+    const [fornitoreId, setFornitoreId] = useState(invalidId)
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
+    const isEditing = () => listinoId !== invalidId
     const insertListino = async () => {
         if (listinoInsert.isLoading) return
         listinoInsert.mutate({
@@ -26,13 +40,46 @@ export default function ModalListino() {
             fornitore: fornitoreId,
         })
     }
-    const isValid = () => fornitoreId != 0 && nomeListino.length > 4
+    const updateListino = () => {
+        if (listinoUpdate.isLoading) return
+        listinoUpdate.mutate({
+            id: listinoId,
+            nome: nomeListino,
+            fornitore: fornitoreId,
+        })
+    }
+    const deleteListino = () => {
+        if (listinoDelete.isLoading) return
+        listinoDelete.mutate({
+            id: listinoId,
+        })
+        handleClose()
+    }
+    const isValid = () => fornitoreId != invalidId && nomeListino.length > 4
 
-    if (!fornitoriQuery.isSuccess) return <Spinner animation="border" />
+    useEffect(() => {
+        if (!listinoQuery.isSuccess) return
+        if (listinoQuery.data === undefined) return
+
+        setNomeListino(listinoQuery.data.nome)
+        setFornitoreId(listinoQuery.data.fornitore.id)
+    }, [listinoQuery.isSuccess])
+
+    useEffect(() => {
+        if (listinoId != invalidId) listinoQuery.refetch()
+        else {
+            setNomeListino('')
+            setFornitoreId(invalidId)
+        }
+    }, [listinoId])
+
+    if (!fornitoriQuery.isSuccess || !listinoQuery) return <Spinner animation="border" />
 
     return (
         <>
-            <Button variant="primary" className="rounded-circle" onClick={handleShow}>+</Button>
+            <Button variant="primary" className="rounded-circle" onClick={handleShow}>
+                {isEditing() ? '✎' : '+'}
+            </Button>
             <Modal
                 show={show}
                 onHide={handleClose}
@@ -48,6 +95,7 @@ export default function ModalListino() {
                         <Form.Group className="mb-3" controlId="InputTextNomeListino">
                             <Form.Label>Nome listino</Form.Label>
                             <Form.Control
+                                value={nomeListino}
                                 isInvalid={nomeListino.length < 5}
                                 placeholder="Nome"
                                 autoFocus
@@ -59,11 +107,11 @@ export default function ModalListino() {
                         >
                             <Form.Label>Scegli fornitore</Form.Label>
                             <Form.Select
-                                isInvalid={fornitoreId == -1}
+                                isInvalid={fornitoreId == invalidId}
                                 value={fornitoreId}
                                 onChange={(event) => setFornitoreId(Number(event.currentTarget.value))}
                             >
-                                <option value={-1}>Seleziona un fornitore</option>
+                                <option value={invalidId}>Seleziona un fornitore</option>
                                 {fornitoriQuery.data.map(element => (
                                     <option key={element.id} value={element.id}>{element.nome}</option>
                                 ))}
@@ -73,15 +121,21 @@ export default function ModalListino() {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary"
+                    <Button variant='danger'
+                        onClick={() => deleteListino()}
+                    >
+                        Delete
+                    </Button>
+                    <Button variant={isEditing() ? 'warning' : 'primary'}
                         disabled={!isValid()}
                         onClick={() => {
                             if (!isValid()) return
-                            insertListino()
+                            if (isEditing()) updateListino()
+                            else insertListino()
                             handleClose()
                         }}
                     >
-                        Save
+                        {isEditing() ? 'Edit' : 'Save'}
                     </Button>
                 </Modal.Footer>
             </Modal>
