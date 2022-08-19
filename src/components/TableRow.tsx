@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { Button, ButtonGroup, Spinner } from 'react-bootstrap';
-import Form from 'react-bootstrap/Form';
-import { FcCancel, FcSupport } from 'react-icons/fc';
+import { useEffect, useState } from 'react'
+import { Button, ButtonGroup, Spinner } from 'react-bootstrap'
+import Form from 'react-bootstrap/Form'
+import { FcCancel, FcSupport } from 'react-icons/fc'
 
 const ONLY_DECIMAL_REGEX = /^\d+\.?\d*$/ //regex per il check del numero prezzo (TODO: inserire che può essere anche una stringa vuota)
 
@@ -36,11 +36,9 @@ export default function TableRow({
         if (ONLY_DECIMAL_REGEX.test(newPrezzo)) {
             setPrezzoIsInvalid(false)
         } else {
-            if (isEditable) {
-                setPrezzoIsInvalid(true)
-            }
+            if (isEditable) setPrezzoIsInvalid(true)
         }
-    }, [isEditable, newPrezzo]);
+    }, [isEditable, newPrezzo])
 
     //resetto se una query è stata mandata
     useEffect(() => {
@@ -48,30 +46,30 @@ export default function TableRow({
             setIsEditable(false)
             setNewPrezzo('')
         }
-    }, [isEditSuccess, prodPrezzoIniziale]);
+    }, [isEditSuccess, prodPrezzoIniziale])
 
 
     return (
         <tr key={key}>
             <td>{prodId}</td>
             <td>{prodNome}</td>
-            <td>
+            <td onDoubleClick={() => {
+                console.log('double click')
+                if (newPrezzo.length == 0) {
+                    setNewPrezzo(prodPrezzoIniziale)
+                }
+                setIsEditable(true)
+            }}>
                 {/*input text del prezzo di un prodotto che è scrivibile solo quando viene fatto doppio click
               */}
                 <Form.Control
                     id={'InputPrezzo' + prodId}
-                    isInvalid={prezzoIsInvalid}
+                    disabled={prezzoIsInvalid}
                     value={
                         (newPrezzo.length === 0 && !isEditable) ? prodPrezzoIniziale : newPrezzo
                     }
                     readOnly={!isEditable}
-                    onDoubleClick={() => {
-                        console.log('double click')
-                        if (newPrezzo.length == 0) {
-                            setNewPrezzo(prodPrezzoIniziale)
-                        }
-                        setIsEditable(true)
-                    }}
+
                     onInput={(event) => {
                         event.preventDefault()
                         console.log('new input')
@@ -100,8 +98,8 @@ export default function TableRow({
                         disabled={isEditLoading || prezzoIsInvalid || !isEditable}
                         onClick={() => {
                             //reset
-                            setIsEditable(false); 
-                            setIsEditable(false);
+                            setIsEditable(false)
+                            setIsEditable(false)
                             setNewPrezzo('')
                         }}
                     >
