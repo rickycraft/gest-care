@@ -4,7 +4,7 @@ import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import { useRouter } from 'next/router'
 import { trpc } from 'utils/trpc'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 const BasicMenuItem = ({ title, path }: { title: string, path: string }) => {
   return (
@@ -17,7 +17,8 @@ const BasicMenuItem = ({ title, path }: { title: string, path: string }) => {
 const basicMenuLinks = [
   { title: 'Home', path: '/', },
   { title: 'About', path: '/about', },
-  { title: 'Prodotti', path: '/prodotto', },
+  { title: 'Prodotti', path: '/listino/prodotto', },
+  { title: 'Perso', path: '/listino/personalizzazione', },
   { title: 'Preventivi', path: '/preventivo', },
   { title: 'Login', path: '/login', },
 ]
@@ -27,11 +28,13 @@ export default function Header() {
   const authQuery = trpc.useQuery(['auth.currentUser'])
   const [user, setUser] = useState('')
 
+  /*
   useMemo(() => {
     if (authQuery.isSuccess && authQuery.data.id > 0) {
       setUser(authQuery.data.username)
     }
   }, [authQuery.data])
+  */
 
   return (
 
