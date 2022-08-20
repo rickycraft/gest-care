@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { prisma } from 'server/prisma'
 import { TRPCError } from "@trpc/server"
 import { Prisma } from "@prisma/client"
+import { rowRouter } from './preventivo_row'
 
 const defaultPrevSelect = Prisma.validator<Prisma.PreventivoSelect>()({
   id: true,
@@ -64,3 +65,4 @@ export const prevRouter = createProtectedRouter()
       }
     }
   })
+  .merge('row.', rowRouter)

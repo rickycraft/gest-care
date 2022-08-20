@@ -6,6 +6,7 @@ import { fornitoreRouter } from './fornitore'
 import { authRouter } from './auth'
 import { listinoRouter } from './listino'
 import { persRouter } from './personalizzazione'
+import { prevRouter } from './preventivo'
 
 export const appRouter = createRouter()
   .transformer(superjson)
@@ -20,4 +21,5 @@ export const appRouter = createRouter()
   .merge('fornitore.', fornitoreRouter)
   .merge('listino.', listinoRouter)
   .merge('pers.', persRouter)
+  .merge('preventivo.', prevRouter)
 export type AppRouter = typeof appRouter
