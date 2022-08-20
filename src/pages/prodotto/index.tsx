@@ -2,31 +2,23 @@ import Head from 'next/head'
 import { trpc } from 'utils/trpc'
 import 'bootstrap/dist/css/bootstrap.css'
 import Table from 'react-bootstrap/Table'
-import Button from 'react-bootstrap/Button'
 import { useEffect, useState } from 'react'
-import { ButtonGroup, Form, Spinner } from 'react-bootstrap'
-import { FcDeleteRow, FcCheckmark } from "react-icons/fc"
+import { Form } from 'react-bootstrap'
 import Alert from 'react-bootstrap/Alert'
 import TableRow from 'components/listino/TableRow'
 import ModalListino from 'components/listino/ModalListino'
+import SubmitRow from 'components/listino/SubmitRow'
 
 const invalidListino = -1
 
 export default function Prodotto() {
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
-  const [nome, setNome] = useState('')
-  const [prezzo, setPrezzo] = useState(0)
   const [listino, setListino] = useState(-1)
 
   // trpc
   const prodQuery = trpc.useQuery(['prodotto.list', { listino }])
   const listinoQuery = trpc.useQuery(['listino.list'])
-  const prodottoInsert = trpc.useMutation('prodotto.insert', {
-    onError() {
-      setErrorMsg('Errore nel salvare un nuovo prodotto')
-    }
-  })
   const prodottoUpdate = trpc.useMutation('prodotto.update', {
     onError() {
       setErrorMsg('Errore nel aggiornare un prodotto')
@@ -40,23 +32,12 @@ export default function Prodotto() {
 
   useEffect(() => {
     if (!prodQuery.isSuccess) return
-    if (prodottoInsert.isSuccess || prodottoDelete.isSuccess || prodottoUpdate.isSuccess) {
+    if (prodottoDelete.isSuccess || prodottoUpdate.isSuccess) {
       setErrorMsg('')
       prodQuery.refetch()
     }
-  }, [prodottoInsert.isSuccess, prodottoDelete.isSuccess, prodottoUpdate.isSuccess])
+  }, [prodottoDelete.isSuccess, prodottoUpdate.isSuccess])
   //TODO: LASCIARE IL WARNING SOPRA ALTRIMENTI ESPLODE IL BROWSER DI CHIAMATE TRPC (prodQuery)
-
-  const insertProdotto = async () => {
-    if (prodottoInsert.isLoading) return
-    prodottoInsert.mutate({
-      nome,
-      prezzo,
-      listino,
-    })
-    setPrezzo(0)
-    setNome('')
-  }
 
   const updateProdotto = async (idProdotto: number, prezzo: number) => {
     if (prodottoUpdate.isLoading) return
@@ -73,8 +54,6 @@ export default function Prodotto() {
     })
 
   }
-
-  const isRowValid = () => nome.length > 0 && prezzo > 0
 
   if (!prodQuery.isSuccess || !listinoQuery.isSuccess) {
     return (
@@ -129,44 +108,12 @@ export default function Prodotto() {
                 onClickEdit={updateProdotto}
               />
             ))}
-            <tr>
-              <td>
-                <Form.Control name='InputTextNomeProdotto'
-                  value={nome}
-                  onChange={(event) => setNome(event.currentTarget.value)}
-                  placeholder="Nome prodotto"
-                />
-              </td>
-              <td>
-                <Form.Control name='InputTextPrezzoProdotto' type='number'
-                  value={(prezzo == 0) ? '' : prezzo}
-                  onChange={(event) => { event.preventDefault(); setPrezzo(Number(event.currentTarget.value)) }}
-                  onKeyPress={(event) => { if (event.key === 'Enter' && isRowValid()) insertProdotto() }}
-                  placeholder="Prezzo prodotto"
-                />
-              </td>
-              <td>
-                {/*Gruppo di bottoni "save" e "clean" per nuovo prodotto
-                    save: salva un nuovo prodotto
-                    clean: pulisce gli input text
-                  */}
-                <ButtonGroup>
-                  <Button name="SaveButton"
-                    variant="outline-success"
-                    disabled={!isRowValid()}
-                    onClick={() => insertProdotto()}
-                  >
-                    Save<FcCheckmark />
-                  </Button>
-                  <Button name="CleanButton"
-                    variant="outline-primary"
-                    onClick={() => { setPrezzo(0); setNome('') }}
-                  >
-                    Clean<FcDeleteRow />
-                  </Button>
-                </ButtonGroup>
-              </td>
-            </tr>
+            {/* riga per inserire un nuovo prodotto */}
+            <SubmitRow
+              listino={listino}
+              updateProdList={() => prodQuery.refetch()}
+              updateErrorMessage={(msg) => setErrorMsg(msg)}
+            />
           </tbody>
         </Table>
 
