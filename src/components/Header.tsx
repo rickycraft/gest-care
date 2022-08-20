@@ -18,6 +18,7 @@ const basicMenuLinks = [
   { title: 'Home', path: '/', },
   { title: 'About', path: '/about', },
   { title: 'Prodotti', path: '/listino/prodotto', },
+  { title: 'Perso', path: '/listino/personalizzazione', },
   { title: 'Preventivi', path: '/preventivo', },
   { title: 'Login', path: '/login', },
 ]

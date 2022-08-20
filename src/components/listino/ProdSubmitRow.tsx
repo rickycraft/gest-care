@@ -5,19 +5,19 @@ import { useEffect, useState } from 'react'
 import { ButtonGroup, Form, Spinner } from 'react-bootstrap'
 import { FcDeleteRow, FcCheckmark } from "react-icons/fc"
 
-export default function SubmitRow({
+export default function ProdSubmitRow({
   listino,
-  updateProdList,
+  updateList,
   updateErrorMessage,
 }: {
   listino: number,
-  updateProdList: () => void
+  updateList: () => void
   updateErrorMessage: (message: string) => void
 }) {
   const prodottoInsert = trpc.useMutation('prodotto.insert', {
     onSuccess() {
       updateErrorMessage('')
-      updateProdList()
+      updateList()
     },
     onError() {
       updateErrorMessage('Errore nel salvare un nuovo prodotto')
@@ -42,18 +42,18 @@ export default function SubmitRow({
   return (
     <tr>
       <td>
-        <Form.Control name='InputTextNomeProdotto'
+        <Form.Control name='InputTextNome'
           value={nome}
           onChange={(event) => setNome(event.currentTarget.value)}
-          placeholder="Nome prodotto"
+          placeholder="Nome"
         />
       </td>
       <td>
-        <Form.Control name='InputTextPrezzoProdotto' type='number'
+        <Form.Control name='InputTextPrezzo' type='number'
           value={(prezzo == 0) ? '' : prezzo}
           onChange={(event) => { event.preventDefault(); setPrezzo(Number(event.currentTarget.value)) }}
           onKeyPress={(event) => { if (event.key === 'Enter' && isRowValid()) insertProdotto() }}
-          placeholder="Prezzo prodotto"
+          placeholder="Prezzo"
         />
       </td>
       <td>

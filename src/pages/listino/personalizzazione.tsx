@@ -7,55 +7,55 @@ import { Form } from 'react-bootstrap'
 import Alert from 'react-bootstrap/Alert'
 import TableRow from 'components/listino/TableRow'
 import ModalListino from 'components/listino/ModalListino'
-import ProdSubmitRow from 'components/listino/ProdSubmitRow'
+import PersSubmitRow from 'components/listino/PersSubmitRow'
 
 const invalidListino = -1
 
-export default function Prodotto() {
+export default function Pers() {
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
   const [listino, setListino] = useState(-1)
 
   // trpc
-  const prodQuery = trpc.useQuery(['prodotto.list', { listino }])
   const listinoQuery = trpc.useQuery(['listino.list'])
-  const prodottoUpdate = trpc.useMutation('prodotto.update', {
+  const persQuery = trpc.useQuery(['pers.list', { listino }])
+  const persUpdate = trpc.useMutation('pers.update', {
     onError() {
-      setErrorMsg('Errore nel aggiornare un prodotto')
+      setErrorMsg('Errore nel aggiornare una personalizzazione')
     }
   })
-  const prodottoDelete = trpc.useMutation('prodotto.delete', {
+  const persDelete = trpc.useMutation('pers.delete', {
     onError() {
-      setErrorMsg('Errore nell eliminare il prodotto selezionato')
+      setErrorMsg('Errore nell eliminare la personalizzazione selezionata')
     }
   })
 
   useEffect(() => {
-    if (!prodQuery.isSuccess) return
-    if (prodottoDelete.isSuccess || prodottoUpdate.isSuccess) {
+    if (!persQuery.isSuccess) return
+    if (persDelete.isSuccess || persUpdate.isSuccess) {
       setErrorMsg('')
-      prodQuery.refetch()
+      persQuery.refetch()
     }
-  }, [prodottoDelete.isSuccess, prodottoUpdate.isSuccess])
-  //TODO: LASCIARE IL WARNING SOPRA ALTRIMENTI ESPLODE IL BROWSER DI CHIAMATE TRPC (prodQuery)
+  }, [persDelete.isSuccess, persUpdate.isSuccess])
+  //TODO: LASCIARE IL WARNING SOPRA ALTRIMENTI ESPLODE IL BROWSER DI CHIAMATE TRPC (persQuery)
 
-  const updateProdotto = async (idProdotto: number, prezzo: number) => {
-    if (prodottoUpdate.isLoading) return
-    prodottoUpdate.mutate({
-      id: idProdotto,
+  const updatePers = async (idPers: number, prezzo: number) => {
+    if (persUpdate.isLoading) return
+    persUpdate.mutate({
+      id: idPers,
       prezzo: prezzo,
     })
   }
 
-  const deleteProdotto = async (idProdotto: number) => {
-    if (prodottoDelete.isLoading) return
-    prodottoDelete.mutate({
-      id: idProdotto
+  const deletePers = async (idPers: number) => {
+    if (persDelete.isLoading) return
+    persDelete.mutate({
+      id: idPers
     })
 
   }
 
-  if (!prodQuery.isSuccess || !listinoQuery.isSuccess) {
+  if (!persQuery.isSuccess || !listinoQuery.isSuccess) {
     return (
       <div>Not ready</div>
     )
@@ -64,7 +64,7 @@ export default function Prodotto() {
   return (
     <div className="container">
       <Head>
-        <title>Prodotti</title>
+        <title>Personalizzazioni</title>
         <meta name="description" content="Created by ..." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -88,30 +88,30 @@ export default function Prodotto() {
             ))}
           </Form.Select>
         </Form.Group>
-        {/*Tabella che mostra i prodotti del listino selezionato*/}
+        {/*Tabella che mostra i persotti del listino selezionato*/}
         <Table bordered hover hidden={listino == -1}>
           <thead>
             <tr>
-              <th>Nome prodotto</th>
+              <th>Nome Personalizzazione</th>
               <th>Prezzo</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {prodQuery.data.map(prod => (
+            {persQuery.data.map(pers => (
               <TableRow
-                key={prod.id}
-                rowId={prod.id}
-                rowName={prod.nome}
-                rowPrice={prod.prezzo}
-                onClickDelete={deleteProdotto}
-                onClickEdit={updateProdotto}
+                key={pers.id}
+                rowId={pers.id}
+                rowName={pers.nome}
+                rowPrice={pers.prezzo}
+                onClickDelete={deletePers}
+                onClickEdit={updatePers}
               />
             ))}
-            {/* riga per inserire un nuovo prodotto */}
-            <ProdSubmitRow
+            {/* riga per inserire un nuovo Pers */}
+            <PersSubmitRow
               listino={listino}
-              updateList={() => prodQuery.refetch()}
+              updateList={() => persQuery.refetch()}
               updateErrorMessage={(msg) => setErrorMsg(msg)}
             />
           </tbody>
@@ -125,4 +125,3 @@ export default function Prodotto() {
     </div >
   )
 }
-
