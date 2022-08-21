@@ -7,11 +7,8 @@ import { rowRouter } from './preventivo_row'
 
 const defaultPrevSelect = Prisma.validator<Prisma.PreventivoSelect>()({
   id: true,
-  createdAt: true,
   nome: true,
-
   scuola: true,
-  rows: true,
   listino: true,
   lastEditedBy: true,
 })
@@ -31,7 +28,6 @@ export const prevRouter = createProtectedRouter()
     resolve: async ({ input }) => {
       return await prisma.preventivo.findFirst({
         where: { id: input.id },
-        select: defaultPrevSelect,
       })
     }
   })
