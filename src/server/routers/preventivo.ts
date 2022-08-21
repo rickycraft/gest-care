@@ -43,7 +43,7 @@ export const prevRouter = createProtectedRouter()
       })
     }
   })
-  .query('insert', {
+  .mutation('insert', {
     input: insertPrevSchema,
     resolve: async ({ input, ctx }) => {
       try {
