@@ -73,7 +73,7 @@ export default function ModalListino({
         }
     }, [listinoId])
 
-    if (!fornitoriQuery.isSuccess || !listinoQuery) return <Spinner animation="border" />
+    if (!fornitoriQuery.isSuccess || !listinoQuery.isSuccess) return <Spinner animation="border" />
 
     return (
         <>
