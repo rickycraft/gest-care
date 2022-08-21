@@ -4,40 +4,40 @@ import { prisma } from 'server/prisma'
 import { TRPCError } from "@trpc/server"
 import { Prisma } from "@prisma/client"
 
-const defaultProdSelect = Prisma.validator<Prisma.ProdottoSelect>()({
+const defaultPersSelect = Prisma.validator<Prisma.PersonalizzazioneSelect>()({
   id: true,
   nome: true,
   prezzo: true,
 })
 
-const insertProdSchema = z.object({
+const insertPersSchema = z.object({
   listino: z.number(),
   nome: z.string(),
   prezzo: z.number(),
 })
-export type insertProdType = z.infer<typeof insertProdSchema>
+export type insertPersType = z.infer<typeof insertPersSchema>
 
-const updateProdSchema = z.object({
+const updatePersSchema = z.object({
   id: z.number(),
   prezzo: z.number(),
 })
-export type updateProdType = z.infer<typeof updateProdSchema>
+export type updatePersType = z.infer<typeof updatePersSchema>
 
-export const prodRouter = createProtectedRouter()
+export const persRouter = createProtectedRouter()
   .query("byId", {
     input: z.object({
       id: z.number(),
     }),
     async resolve({ input }) {
       const { id } = input
-      const prodotto = await prisma.prodotto.findFirst({
+      const pers = await prisma.personalizzazione.findFirst({
         where: {
           id
         },
-        select: defaultProdSelect,
+        select: defaultPersSelect,
       })
-      if (!prodotto) throw new TRPCError({ code: "NOT_FOUND" })
-      return prodotto
+      if (!pers) throw new TRPCError({ code: "NOT_FOUND" })
+      return pers
     }
   })
   .query("list", {
@@ -46,51 +46,51 @@ export const prodRouter = createProtectedRouter()
     }),
     async resolve({ input }) {
       const { listino } = input
-      const prodotto = await prisma.prodotto.findMany({
+      const pers = await prisma.personalizzazione.findMany({
         where: {
           listinoId: listino
         },
-        select: defaultProdSelect,
+        select: defaultPersSelect,
         orderBy: {
           nome: "asc",
         },
       })
-      if (!prodotto) throw new TRPCError({ code: "NOT_FOUND" })
-      return prodotto
+      if (!pers) throw new TRPCError({ code: "NOT_FOUND" })
+      return pers
     }
   })
   .mutation("insert", {
-    input: insertProdSchema,
+    input: insertPersSchema,
     async resolve({ input }) {
-      if (input.prezzo <= 0) throw new TRPCError({ code: "BAD_REQUEST" })
       try {
-        return await prisma.prodotto.create({
+        const pers = await prisma.personalizzazione.create({
           data: {
             listinoId: input.listino,
             nome: input.nome.toLowerCase(),
             prezzo: input.prezzo,
           },
-          select: defaultProdSelect,
+          select: defaultPersSelect,
         })
-      } catch (error) {
+        return pers
+      } catch {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })
       }
     }
   })
   .mutation("update", {
-    input: updateProdSchema,
+    input: updatePersSchema,
     async resolve({ input }) {
       try {
-        const prodotto = await prisma.prodotto.update({
+        const pers = await prisma.personalizzazione.update({
           data: {
             prezzo: input.prezzo,
           },
           where: {
             id: input.id
           },
-          select: defaultProdSelect,
+          select: defaultPersSelect,
         })
-        return prodotto
+        return pers
       } catch {
         throw new TRPCError({ code: "NOT_FOUND" })
       }
@@ -102,13 +102,13 @@ export const prodRouter = createProtectedRouter()
     }),
     async resolve({ input }) {
       const { id } = input
-      const prodotto = await prisma.prodotto.delete({
+      const pers = await prisma.personalizzazione.delete({
         where: {
           id
         },
-        select: defaultProdSelect,
+        select: defaultPersSelect,
       })
-      if (!prodotto) throw new TRPCError({ code: "NOT_FOUND" })
+      if (!pers) throw new TRPCError({ code: "NOT_FOUND" })
       return
     }
   })
