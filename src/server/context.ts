@@ -16,11 +16,7 @@ export async function createContext({ req, res }: trpcNext.CreateNextContextOpti
   const unsealed = await unsealData(cookie, sessionOptions)
   // try parse cookie
   const result = sessionSchema.safeParse(unsealed)
-  if (!result.success) {
-    console.error("Invalid session data: ", result.error)
-    console.error(cookie)
-    return {}
-  }
+  if (!result.success) return {}
   // return correct user
   return {
     user: result.data.user,
