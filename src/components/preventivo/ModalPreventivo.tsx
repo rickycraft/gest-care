@@ -104,9 +104,11 @@ export default function ModalPreventivo({
 
     return (
         <>
-            <Button variant="primary" className="rounded-circle" onClick={openModal}>
-                +
-            </Button>
+            <div className='d-flex justify-content-end'>
+                <Button variant="primary" size='lg' className="rounded-circle" onClick={openModal}>
+                    +
+                </Button>
+            </div>
             <Modal
                 show={show}
                 onHide={handleClose}
