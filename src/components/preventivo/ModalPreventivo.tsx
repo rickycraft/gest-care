@@ -8,9 +8,11 @@ const invalidId = -1
 
 export default function ModalPreventivo({
     preventivoId = invalidId,
+    showModal,
     updatePreventivoList,
 }: {
     preventivoId?: number,
+    showModal: boolean
     updatePreventivoList: () => void,
 }) {
     const trpcCallback = {
@@ -19,21 +21,41 @@ export default function ModalPreventivo({
         }
     }
     const preventivoInsert = trpc.useMutation('preventivo.insert', trpcCallback)
-    const preventivoUpdate = trpc.useMutation('preventivo.update', trpcCallback)
     const preventivoDelete = trpc.useMutation('preventivo.delete', trpcCallback)
+    const preventivoUpdate = trpc.useMutation('preventivo.update', {
+        onSuccess() {
+            preventivoQuery.refetch()
+            updatePreventivoList()
+        }
+    })
 
     const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: preventivoId }])
-    const scuoleQuery = trpc.useQuery(['scuola.list']) //(TODO)
+    const scuoleQuery = trpc.useQuery(['scuola.list'])
     const listiniQuery = trpc.useQuery(['listino.list'])
 
     const [show, setShow] = useState(false)
+    const [isEditing, setEditing] = useState(false)
     const [nomePreventivo, setNomePreventivo] = useState('')
     const [listinoId, setListinoId] = useState(invalidId)
     const [scuolaId, setScuolaId] = useState(invalidId)
 
+    const openModal = () => {
+        setEditing(false)
+        resetFields()
+        setShow(true)
+    }
     const handleClose = () => setShow(false)
-    const handleShow = () => setShow(true)
-    const isEditing = () => preventivoId !== invalidId
+    const setFields = () => {
+        if (!preventivoQuery.isSuccess || preventivoQuery.data === null) return
+        setNomePreventivo(preventivoQuery.data.nome)
+        setListinoId(preventivoQuery.data.listinoId)
+        setScuolaId(preventivoQuery.data.scuolaId)
+    }
+    const resetFields = () => {
+        setNomePreventivo('')
+        setListinoId(invalidId)
+        setScuolaId(invalidId)
+    }
     const isValid = () => (scuolaId !== invalidId && listinoId !== invalidId && nomePreventivo.length > 4)
 
     const insertPreventivo = async () => {
@@ -62,34 +84,32 @@ export default function ModalPreventivo({
     }
 
     useEffect(() => {
-        if (!preventivoQuery.isSuccess) return
-        if (preventivoQuery.data === null) return
-
-        setNomePreventivo(preventivoQuery.data.nome)
-        setListinoId(preventivoQuery.data.listinoId)
-        setScuolaId(preventivoQuery.data.scuolaId)
+        resetFields()
+        setFields()
     }, [preventivoQuery.isSuccess])
 
     useEffect(() => {
-        if (preventivoId != invalidId) preventivoQuery.refetch()
-        else {
-            setNomePreventivo('')
-            setListinoId(invalidId) //tipo string > number
-            setScuolaId(invalidId)  //tipo string > number
-        }
+        if (preventivoId === invalidId) return
+        // check for data refresh
+        setFields()
+        setEditing(true)
+        setShow(true)
+    }, [showModal])
+    useEffect(() => {
+        if (preventivoId === invalidId) return
+        preventivoQuery.refetch()
     }, [preventivoId])
 
     if (!scuoleQuery.isSuccess || !preventivoQuery.isSuccess || !listiniQuery.isSuccess) return <Spinner animation="border" />
 
     return (
         <>
-            <Button variant="primary" className="rounded-circle" onClick={handleShow}>
-                {isEditing() ? '✎' : '+'}
+            <Button variant="primary" className="rounded-circle" onClick={openModal}>
+                +
             </Button>
             <Modal
                 show={show}
                 onHide={handleClose}
-                backdrop="static"
                 keyboard={false}
             >
                 <Modal.Header closeButton>
@@ -144,19 +164,19 @@ export default function ModalPreventivo({
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant='danger' onClick={() => deletePreventivo()} hidden={!isEditing()}>
+                    <Button variant='danger' onClick={() => deletePreventivo()} hidden={!isEditing}>
                         Delete
                     </Button>
-                    <Button variant={isEditing() ? 'warning' : 'primary'}
+                    <Button variant={isEditing ? 'warning' : 'primary'}
                         disabled={!isValid()}
                         onClick={() => {
                             if (!isValid()) return
-                            if (isEditing()) updatePreventivo()
+                            if (isEditing) updatePreventivo()
                             else insertPreventivo()
                             handleClose()
                         }}
                     >
-                        {isEditing() ? 'Edit' : 'Save'}
+                        {isEditing ? 'Edit' : 'Save'}
                     </Button>
                 </Modal.Footer>
             </Modal>

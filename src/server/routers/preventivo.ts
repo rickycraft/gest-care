@@ -49,7 +49,25 @@ export const prevRouter = createProtectedRouter()
     input: z.any(),
     resolve: async () => {
       return await prisma.preventivo.findMany({
-        select: defaultPrevSelect,
+        select: {
+          id: true,
+          nome: true,
+          scuola: {
+            select: {
+              nome: true,
+            },
+          },
+          listino: {
+            select: {
+              nome: true,
+            },
+          },
+          lastEditedBy: {
+            select: {
+              username: true,
+            }
+          },
+        },
         take: 10,
         orderBy: {
           createdAt: "desc",
