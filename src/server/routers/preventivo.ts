@@ -8,8 +8,8 @@ import { rowRouter } from './preventivo_row'
 const prevSelect = {
   id: true,
   nome: true,
-  scuola: true,
-  listino: true,
+  scuolaId: true,
+  listinoId: true,
   lastEditedBy: true,
 }
 const defaultPrevSelect = Prisma.validator<Prisma.PreventivoSelect>()(prevSelect)
@@ -96,11 +96,11 @@ export const prevRouter = createProtectedRouter()
   })
   .mutation('delete', {
     input: z.object({ id: z.number() }),
-    resolve: async ({ input, ctx }) => {
+    resolve: async ({ input }) => {
       try {
         return await prisma.preventivo.delete({
           where: { id: input.id },
-          select: {},
+          select: defaultPrevSelect,
         })
       } catch {
         throw new TRPCError({ code: "BAD_REQUEST" })
