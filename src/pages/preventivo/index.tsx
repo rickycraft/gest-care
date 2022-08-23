@@ -1,237 +1,179 @@
 import Head from 'next/head'
-// import { trpc } from 'utils/trpc'
-
+import { trpc } from 'utils/trpc'
 import 'bootstrap/dist/css/bootstrap.css'
 import Table from 'react-bootstrap/Table'
-import Button from 'react-bootstrap/Button'
-import ButtonGroup from 'react-bootstrap/ButtonGroup'
-import { useCallback, useEffect, useState } from 'react'
-import { Card, Col, Form, InputGroup } from 'react-bootstrap'
-import { FcDeleteRow, FcCheckmark, FcCancel, FcSupport } from "react-icons/fc"
+import { useEffect, useState } from 'react'
+import { Form, Spinner } from 'react-bootstrap'
 import Alert from 'react-bootstrap/Alert'
-import { MdPictureAsPdf } from "react-icons/md"
-import Row from 'react-bootstrap/Row'
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar'
 
-export default function Preventivo() {
 
+import TableRowPrev from 'components/preventivo/TableRowPrev'
+import PrevRowSubmitRow from 'components/preventivo/PrevRowSubmitRow'
+
+
+
+
+export default function Index() {
+  //stati vari
   const [errorMsg, setErrorMsg] = useState('')
-  const [newPDF, setNewPDF] = useState({ id: -1, nome: '', prezzo: -1, fornitore: -1 }) //prevType ATT brutto da modificare
-  const [newPreventivo, setNewPreventivo] = useState({
-    id: -1,
-    nome: '',
-    dataCreazione: Date.now(),
-    nomeScuola: '',
-    nomeFornitore: '',
-    ultimaModifica: Date.now(),
-    nomeUtenteUltimaModifica: ''
-  }) // TODO prevType ATT brutto da modificare
-  const [inputTextValues, setInputTextValues] = useState({
-    inputTextId: '',
-    inputTextNome: '',
-    inputTextNomeScuola: '',
-    inputTextNomeFornitore: '',
-    inputTextNomeUtenteUltimaModifica: ''
+  const [preventivoRow, setPreventivoRow] = useState(-1)
+  const [preventivo, setPreventivo] = useState(-1)
+
+  const preventiviQuery = trpc.useQuery(['preventivo.list'])
+
+
+  if (!preventiviQuery.isSuccess) {
+    return <Spinner animation="border" />
+  }
+
+
+  var prevId = -1
+  const invalidPreventivo = -1
+  // trpc
+  const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId }])
+
+  const listinoQuery = trpc.useQuery(['listino.list'])
+
+  const preventivoRowUpdate = trpc.useMutation('preventivo.row.update', {
+    onError() {
+      setErrorMsg('Errore aggiornamento riga preventivo')
+    }
   })
-  // const preventivoTrpc = trpc.useQuery(['preventivo.list'])
-  // const querySavePreventivo = trpc.useMutation(['preventivo.upsert'])
-  // const queryDeletePreventivo = trpc.useMutation(['preventivo.delete',])
 
 
-  const sendSaveRequest = useCallback(() => {
-    console.log('sendSaveRequest ' + newPreventivo)
-  }, [newPreventivo])
+  const prodottoUpdate = trpc.useMutation('prodotto.update', {
+    onError() {
+      setErrorMsg('Errore nel aggiornare un prodotto')
+    }
+  })
 
-  const sendEditRequest = useCallback(() => {
-    console.log('sendEditRequest ' + newPreventivo)
-  }, [newPreventivo])
+  //preventivo row delete ??
 
-  const sendDeleteRequest = useCallback((idDeletePreventivo: number) => {
-    console.log('sendDeleteRequest ' + idDeletePreventivo)
-  }, [])
+  const prodottoDelete = trpc.useMutation('prodotto.delete', {
+    onError() {
+      setErrorMsg('Errore nell eliminare il prodotto selezionato')
+    }
+  })
 
   useEffect(() => {
-    setNewPreventivo(
-      {
-        id: Number(inputTextValues.inputTextId),
-        nome: inputTextValues.inputTextNome,
-        dataCreazione: Date.now(),
-        nomeScuola: inputTextValues.inputTextNomeScuola,
-        nomeFornitore: inputTextValues.inputTextNomeFornitore,
-        ultimaModifica: Date.now(),
-        nomeUtenteUltimaModifica: inputTextValues.inputTextNomeUtenteUltimaModifica
-      }
+    if (!preventivoRowQuery.isSuccess) return
+    if ( /*prodottoDelete.isSuccess||*/  preventivoRowUpdate.isSuccess) {
+      setErrorMsg('')
+      preventivoRowQuery.refetch()
+    }
+  }, [/*prodottoDelete.isSuccess, */preventivoRowUpdate.isSuccess])
+  //TODO: LASCIARE IL WARNING SOPRA ALTRIMENTI ESPLODE IL BROWSER DI CHIAMATE TRPC (prodQuery)
 
+  const updatePreventivoRow = async (idPreventivo: number, idProdotto: number,
+    provComm: number, provRappre: number, provSc: number) => {
+    if (prodottoUpdate.isLoading) return
+    preventivoRowUpdate.mutate({
+      prevId: idPreventivo,
+      prodId: idProdotto,
+      provComm: provComm,
+      provRappre: provRappre,
+      provSc: provSc,
+      id: 0,
+      persId: 0
+    })
+  }
+  const updateProdotto = async (idProdotto: number, prezzo: number) => {
+    if (prodottoUpdate.isLoading) return
+    prodottoUpdate.mutate({
+      id: idProdotto,
+      prezzo: prezzo,
+    })
+  }
+  const deleteProdotto = async (idProdotto: number) => {
+    if (prodottoDelete.isLoading) return
+    prodottoDelete.mutate({
+      id: idProdotto
+    })
+
+  }
+
+  if (!preventivoRowQuery.isSuccess || !listinoQuery.isSuccess) {
+    return (
+      <div>Not ready</div>
     )
-  }, [inputTextValues])
-
-
-  const makePDF = useCallback(() => { //funzione che crea il pdf
-    console.log('makePDF ' + newPDF)
-  }, [newPDF])
-
-
-  // if (!preventivoTrpc.isSuccess) return (
-  //   <div>Not ready</div>
-  // )
+  }
 
   return (
     <div className="container">
       <Head>
-        <title>Preventivi</title>
+        <title>Righe Preventivo</title>
         <meta name="description" content="Created by ..." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <h1 className="mb-4">Preventivi</h1>
-        <p className="lead mb-4">Visualizza i preventivi</p>
-        {/*Table which shows all preventivi*/}
-        <ButtonGroup className="mb-2">
-          <Button variant="outline-warning" >Edit <FcSupport /></Button>
-          <Button variant="outline-danger" name="deleteButton" disabled={false} onClick={() => sendDeleteRequest(-1)}>Delete <FcCancel /></Button>
-          <Button variant="outline-dark" name="saveButton" onClick={makePDF}>PDF <MdPictureAsPdf /></Button>
-        </ButtonGroup>
-        <Table responsive striped bordered hover >
+        <h1>
+          Righe Preventivo &nbsp;
+        </h1>
+
+        {/* form dropdown per selezionare preventivo */}
+        <Form.Group className='mb-2'>
+          <Form.Select
+            value={prevId}
+            onChange={(event) => { setPreventivo(Number(event.currentTarget.value)) }}
+          >
+            <option value={invalidPreventivo}>Seleziona un preventivo</option>
+            {preventiviQuery.data.map(element => (
+              <option key={element.id} value={element.id}>
+                {element.nome}
+              </option>
+            ))}
+          </Form.Select>
+        </Form.Group>
+        {/*Tabella che mostra i prodotti del preventivo selezionato*/}
+        <Table bordered hover hidden={preventivo == -1}>
           <thead>
-            <tr >
+            <tr>
+              
+              <th>Id Prodotto</th>
+              <th>Prezzo Prodotto</th>
+              <th>Id Personalizzazione</th>
+              <th>Prezzo Personalizzazione</th>
+              <th>Provvigione School-Care</th>
+              <th>Provvigione Rappresentanti</th>
+              <th>Provvigione Fornitori</th>
+              <th>TOT</th>
               <th></th>
-              <th>Id preventivo</th>
-              <th>Nome preventivo</th>
-              <th>Data creazione</th>
-              <th>Nome scuola</th>
-              <th>Nome fornitore</th>
-              <th>Data ultima modifica</th>
-              <th>Utente ultima modifica</th>
             </tr>
           </thead>
           <tbody>
-            {/* {preventivoTrpc.data.map(preventivo => (
-              <tr key={preventivo.id}>
-                <td>{preventivo.id} </td>
-                <td>{preventivo.nome}</td>
-                <td> {preventivo.dataCreazione}</td>
-                <td> {preventivo.nomeScuola}</td>
-                <td> {preventivo.nomeFornitore}</td>
-                <td> {preventivo.ultimaModifica}</td>
-                <td> {preventivo.nomeUtenteUltimaModifica}</td>
-                <td>
-                  <ButtonGroup >
-                    <Button variant="outline-warning" >Edit <FcSupport /></Button>
-                    <Button variant="outline-danger" name="deleteButton" disabled={isSendingDelete} onClick={() => sendDeleteRequest(preventivo.id)}>Delete <FcCancel /></Button>
-                    <Button variant="outline-dark" name="saveButton" onClick={makePDF}>PDF <MdPictureAsPdf /></Button>
-                  </ButtonGroup>
-                </td>
-              </tr>
-            ))} */}
-            <tr >
-              <td>  <InputGroup className="mb-3">
-                <InputGroup.Checkbox aria-label="Checkbox for following text input" />
-              </InputGroup></td>
-              <td>preventivo.id </td>
-              <td>preventivo.nome</td>
-              <td> preventivo.dataCreazione</td>
-              <td> preventivo.nomeScuola</td>
-              <td> preventivo.nomeFornitore</td>
-              <td> preventivo.ultimaModifica</td>
-              <td> preventivo.nomeUtenteUltimaModifica</td>
-              {/*
-              <td>
-                <ButtonGroup>
-                  <Button variant="outline-warning" >Edit <FcSupport /></Button>
-                  <Button variant="outline-danger" name="deleteButton" disabled={false} onClick={() => sendDeleteRequest(-1)}>Delete <FcCancel /></Button>
-                  <Button variant="outline-dark" name="saveButton" onClick={makePDF}>PDF <MdPictureAsPdf /></Button>
-                </ButtonGroup>
-              </td>
-               */}
-            </tr>
+            {preventivoRowQuery.data.map(prevRow => (
+              <TableRowPrev
+                key={prevRow.id}
+                rowIdProd={prevRow.prodottoId}
+                rowPriceProdotto={1}
+                rowPers={prevRow.personalizzazioneId}
+                rowPricePers={1}
+                rowProvvSC={1}
+                // rowProvvSC={prevRow.provvigioneSC}
+                rowProvvRapp={1}
+                //   rowProvvRapp={prevRow.provvigioneRappre}
+                //rowProvvComm={prevRow.provvigioneComm}
+                rowProvvComm={1}
+
+                rowTot={1}
+
+                onClickDelete={deleteProdotto}
+                onClickEdit={updateProdotto} rowId={0}              />
+            ))}
+            {/* riga per inserire un nuovo prodotto*/}
+            <PrevRowSubmitRow
+              preventivo={prevId}
+              updateList={() => preventivoRowQuery.refetch()}
+              updateErrorMessage={(msg) => setErrorMsg(msg)}       />
+            
           </tbody>
         </Table>
-        <Card className="mt-5">
-          <Card.Body >
-            <Card.Title>Insert new preventivo</Card.Title>
-            <Form>
-              <Form.Group as={Row} className="mb-3" >
-                <Form.Label column sm="2">
-                  New id preventivo
-                </Form.Label>
-                <Col sm="10">
-                  <Form.Control id="disabledTextInput"
-                    value={inputTextValues.inputTextId}
-                    onChange={
-                      (event) => {
-                        setInputTextValues(
-                          {
-                            ...inputTextValues,
-                            inputTextId: (event.target as HTMLInputElement).value,
-                          }
-                        )
-                      }
-                    }
-                    placeholder="New id preventivo"
-                  />
-                </Col>
-                <Form.Label column sm="2">
-                  New nome preventivo
-                </Form.Label>
-                <Col sm="10">
-                  <Form.Control id="disabledTextInput"
-                    value={inputTextValues.inputTextNome}
-                    onChange={
-                      (event) => {
-                        setInputTextValues(
-                          {
-                            ...inputTextValues,
-                            inputTextNome: event.target.value,
-                          }
-                        )
-                      }
-                    }
-                    placeholder="New nome preventivo"
-                  />
-                </Col>
 
-                <Form.Label column sm="2">
-                  New nome scuola preventivo
-                </Form.Label>
-                <Col sm="10">
-                  <Form.Select id="disabledTextInput"
-                    value={inputTextValues.inputTextNomeScuola}
-                    onChange={
-                      (event) => {
-                        setInputTextValues(
-                          {
-                            ...inputTextValues,
-                            inputTextNomeScuola: event.target.value,
-                          }
-                        )
-                      }}
-                    placeholder="New nome scuola preventivo"
-                  >
-                    <option>New nome scuola preventivo</option>
-                    <option>New nome scuola preventivo2</option>
-                    <option>New nome scuola preventivo3</option>
-                  </Form.Select>
-                </Col>
-              </Form.Group>
-              <Button variant="outline-success" name="saveButton" onClick={sendSaveRequest}>Save <FcCheckmark /></Button>
-              <Button variant="outline-primary" name="cleanButton"
-                onClick={() => {
-
-                  setInputTextValues({ inputTextId: '', inputTextNome: '', inputTextNomeFornitore: '', inputTextNomeScuola: '', inputTextNomeUtenteUltimaModifica: '' })
-                }}>
-
-                Clean <FcDeleteRow /></Button>
-            </Form>
-          </Card.Body>
-        </Card>
-
-
+        {/* alert per mostrare i messaggi di errore */}
         <Alert variant='danger' hidden={errorMsg.length === 0}>
           {errorMsg}
         </Alert>
-        <div> Test: {newPreventivo.id}, {newPreventivo.nome},  {newPreventivo.nomeScuola}  </div>
       </main>
     </div >
   )
 }
-
