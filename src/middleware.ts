@@ -19,5 +19,5 @@ export async function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ['/about/:page*'],
+  matcher: ['/', '/listino/:page*', '/preventivo/:page*'],
 }

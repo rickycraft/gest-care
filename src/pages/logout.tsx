@@ -9,7 +9,9 @@ export default function Logout() {
 
   useEffect(() => {
     setUserAtom(defaultUserAtom)
-    router.push('/login')
+    fetch('/api/auth/logout').then(() => {
+      router.push('/login')
+    })
   }, [])
 
   return (
