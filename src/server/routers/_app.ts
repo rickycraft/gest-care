@@ -16,7 +16,7 @@ export const appRouter = createRouter()
       return 'yay!'
     },
   })
-  .merge('auth.', authRouter)
+  //.merge('auth.', authRouter)
   .merge('user.', userRouter)
   .merge('prodotto.', prodRouter)
   .merge('fornitore.', fornitoreRouter)

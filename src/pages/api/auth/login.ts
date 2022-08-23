@@ -8,8 +8,15 @@ const credSchema = z.object({
   password: z.string(),
 })
 
+const loginResponseSchema = z.object({
+  id: z.number(),
+  username: z.string(),
+  isLoggedIn: z.boolean(),
+})
+type loginResponse = z.infer<typeof loginResponseSchema>
+
 export default withSessionRoute(
-  async function loginRoute(req: NextApiRequest, res: NextApiResponse<{isLoggedIn: boolean}>) {
+  async function loginRoute(req: NextApiRequest, res: NextApiResponse<{ isLoggedIn: boolean }>) {
     // console.log('[DBG LOGIN]body: '+req.body.username+' '  + req.body.password)
     const cred = credSchema.safeParse(req.body)
     if (!cred.success) {
@@ -24,19 +31,19 @@ export default withSessionRoute(
       select: {
         id: true,
         username: true,
-      }, 
+      },
     })
     if (!findUser) {
-      res.send({ isLoggedIn:false })
+      res.send({ isLoggedIn: false })
       return
     }
-    const user = {
+    const user: loginResponse = {
       id: findUser.id,
       username: findUser.username,
       isLoggedIn: true,
     }
-    req.session.user = user 
+    req.session.user = user
     await req.session.save()
-    res.send({isLoggedIn:true})
+    res.send(user)
   },
 )

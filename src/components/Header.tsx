@@ -4,7 +4,9 @@ import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import { useRouter } from 'next/router'
 import { trpc } from 'utils/trpc'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { userAtom } from 'utils/atom'
+import { useAtom } from 'jotai'
 
 const BasicMenuItem = ({ title, path }: { title: string, path: string }) => {
   return (
@@ -16,54 +18,33 @@ const BasicMenuItem = ({ title, path }: { title: string, path: string }) => {
 
 const basicMenuLinks = [
   { title: 'Home', path: '/', },
-  { title: 'About', path: '/about', },
   { title: 'Prodotti', path: '/listino/prodotto', },
   { title: 'Perso', path: '/listino/personalizzazione', },
   { title: 'Preventivi', path: '/preventivo/list', },
-  { title: 'Login', path: '/login', },
 ]
 
-export default function Header() {
-  const router = useRouter()
-  const authQuery = trpc.useQuery(['auth.currentUser'])
-  const [user, setUser] = useState('')
+const invalidUser = -1
 
-  /*
-  useMemo(() => {
-    if (authQuery.isSuccess && authQuery.data.id > 0) {
-      setUser(authQuery.data.username)
-    }
-  }, [authQuery.data])
-  */
+export default function Header() {
+  const [user,] = useAtom(userAtom)
 
   return (
-
-
     /* <Navbar bg="dark" expand="lg">*/
     <Navbar bg="dark" variant="dark">
       <Container fluid>
         <Navbar.Brand>Gest-Care</Navbar.Brand>
-
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             {basicMenuLinks.map((link, index) => (
               <BasicMenuItem {...link} key={index} />
             ))}
-            <Link href='/login' >
-              <Nav.Link
-                onClick={async (e) => {
-                  await fetch('/api/auth/logout')
-                  router.push('/login')
-                }}
-              >
-                Logout
-              </Nav.Link>
-            </Link>
+            {user.isLoggedIn && <BasicMenuItem title="Logout" path="/logout" />}
+            {!user.isLoggedIn && <BasicMenuItem title="Login" path="/login" />}
           </Nav>
         </Navbar.Collapse>
-        <div>
-          Current user {user}
+        <div className='text-white' hidden={user.id == invalidUser}>
+          Current user {user.username}
         </div>
       </Container>
     </Navbar>
