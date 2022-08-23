@@ -1,9 +1,19 @@
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import LoginForm from 'components/LoginForm'
+import { useAtom } from 'jotai'
+import { userAtom } from 'utils/atom'
+import { z } from 'zod'
+
+const loginResponseSchema = z.object({
+  id: z.number(),
+  username: z.string(),
+  isLoggedIn: z.boolean(),
+})
 
 export default function Login() {
   const [errorMsg, setErrorMsg] = useState('')
+  const [, setUserAtom] = useAtom(userAtom)
   const router = useRouter()
 
   return (
@@ -24,10 +34,17 @@ export default function Login() {
               body: JSON.stringify(body),
             })
             if (response.ok) {
-              const json = await response.json()
-              const loggedIn = json['isLoggedIn']
-              if (!loggedIn) setErrorMsg("Wrong username or password!")
-              else router.push('/')
+              const result = loginResponseSchema.safeParse(await response.json())
+              if (!result.success) {
+                setErrorMsg('Login response malformed')
+                return
+              }
+              if (!result.data.isLoggedIn) {
+                setErrorMsg("Wrong username or password!")
+                return
+              }
+              setUserAtom(result.data)
+              router.push('/')
             } else {
               setErrorMsg('Server error')
             }

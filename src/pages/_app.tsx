@@ -44,6 +44,14 @@ function MyApp({ Component, pageProps }: AppProps) {
 export default withTRPC<AppRouter>({
   config() {
     return {
+      queryClientConfig: {
+        defaultOptions: {
+          queries: {
+            staleTime: 2 * 60 * 1000,
+            cacheTime: 10 * 60 * 1000,
+          }
+        }
+      },
       links: [
         // adds pretty logs to your console in development and logs errors in production
         loggerLink({
