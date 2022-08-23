@@ -32,7 +32,7 @@ export default function List() {
               </Card.Text>
             </Card.Body>
             <Card.Footer>
-              modificato l'ultima volta da: {prev.lastEditedBy.username}
+              modificato l&apos;ultima volta da: {prev.lastEditedBy.username}
             </Card.Footer>
           </Card>
         ))}
