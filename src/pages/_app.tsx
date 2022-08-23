@@ -18,7 +18,11 @@ function getBaseUrl() {
   if (typeof window !== 'undefined') {
     return ''
   }
+  if (process.env.URL) {
+    return process.env.URL
+  }
   return `http://localhost:${process.env.PORT ?? 3000}`
+
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -65,20 +69,5 @@ export default withTRPC<AppRouter>({
       transformer: superjson,
     }
   },
-  ssr: true,
-  responseMeta(opts) {
-    const ctx = opts.ctx as SSRContext
-    if (ctx.status) {
-      return {
-        status: ctx.status,
-      }
-    }
-    const error = opts.clientErrors[0]
-    if (error) {
-      return {
-        status: error.data?.httpStatus ?? 500,
-      }
-    }
-    return {}
-  },
+  ssr: false,
 })(MyApp)
