@@ -44,7 +44,7 @@ export default function Login() {
                 return
               }
               setUserAtom(result.data)
-              router.push('/')
+              window.location.replace(window.location.origin)
             } else {
               setErrorMsg('Server error')
             }
