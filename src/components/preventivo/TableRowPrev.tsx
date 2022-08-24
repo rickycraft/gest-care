@@ -6,6 +6,7 @@ import { FcCancel, FcSupport } from 'react-icons/fc'
  
 export default function TableRowPrev({
     rowId,
+    rowIdListino,
     rowIdProd,
     rowPriceProdotto,
     rowPers,
@@ -18,6 +19,7 @@ export default function TableRowPrev({
     onClickEdit,
 }: {
     rowId: number,
+    rowIdListino: number,
     rowIdProd: number,
     rowPriceProdotto: number,
     rowPers: number,
@@ -26,19 +28,20 @@ export default function TableRowPrev({
     rowProvvRapp: number,
     rowProvvComm: number,
     rowTot: number,
-    onClickEdit: (row_id: number, row_id_prod: number, row_pers: number) => void,
+    onClickEdit: (row_id: number,  rowId_listino: number,row_id_prod: number, row_pers: number) => void,
     onClickDelete: (row_id: number) => void,
 }) {
     const [isEditable, setIsEditable] = useState(false)
     const [newPers, setNewPers] = useState(rowPers)
  
-    const editRow = (id: number, idProd: number, idPers: number) => {
-        onClickEdit(id, idProd, idPers)
+    const editRow = (id: number, idListino: number,  idProd: number, idPers: number) => {
+        onClickEdit(id, idListino, idProd, idPers)
         setIsEditable(false)
     }
  
     return (
         <tr key={rowId}>
+            <td>{rowIdListino}</td>
             <td>{rowIdProd}</td>
             <td>{Number(rowPriceProdotto)}</td>
             <td>{rowPers}</td>

@@ -27,10 +27,10 @@ export default function Index() {
   }
 
 
-  var prevId = -1
+ 
   const invalidPreventivo = -1
   // trpc
-  const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId }])
+  const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId : preventivo }])
 
   const listinoQuery = trpc.useQuery(['listino.list'])
 
@@ -113,7 +113,7 @@ export default function Index() {
         {/* form dropdown per selezionare preventivo */}
         <Form.Group className='mb-2'>
           <Form.Select
-            value={prevId}
+            value={preventivo}
             onChange={(event) => { setPreventivo(Number(event.currentTarget.value)) }}
           >
             <option value={invalidPreventivo}>Seleziona un preventivo</option>
@@ -128,8 +128,8 @@ export default function Index() {
         <Table bordered hover hidden={preventivo == -1}>
           <thead>
             <tr>
-              
-              <th>Id Prodotto</th>
+              <th>Id_Listino_Prodotti</th>
+              <th>Id_Prodotto</th>
               <th>Prezzo Prodotto</th>
               <th>Id Personalizzazione</th>
               <th>Prezzo Personalizzazione</th>
@@ -144,16 +144,17 @@ export default function Index() {
             {preventivoRowQuery.data.map(prevRow => (
               <TableRowPrev
                 key={prevRow.id}
+                rowIdListino={1}//mi serve info Listino
                 rowIdProd={prevRow.prodottoId}
-                rowPriceProdotto={1}
+                rowPriceProdotto={1}//da fare subquery?
                 rowPers={prevRow.personalizzazioneId}
                 rowPricePers={1}
-                rowProvvSC={1}
+                rowProvvSC={Number(prevRow.provvigioneSC)}
                 // rowProvvSC={prevRow.provvigioneSC}
-                rowProvvRapp={1}
+                rowProvvRapp={Number(prevRow.provvigioneRappre)}
                 //   rowProvvRapp={prevRow.provvigioneRappre}
                 //rowProvvComm={prevRow.provvigioneComm}
-                rowProvvComm={1}
+                rowProvvComm={Number(prevRow.provvigioneComm)}
 
                 rowTot={1}
 
@@ -162,8 +163,8 @@ export default function Index() {
             ))}
             {/* riga per inserire un nuovo prodotto*/}
             <PrevRowSubmitRow
-              preventivo={prevId}
-              updateList={() => preventivoRowQuery.refetch()}
+              preventivo={preventivo}
+              updateList={() => preventivoRowQuery.refetch}
               updateErrorMessage={(msg) => setErrorMsg(msg)}       />
             
           </tbody>
