@@ -2,16 +2,31 @@ import Head from 'next/head'
 import { trpc } from 'utils/trpc'
 import 'bootstrap/dist/css/bootstrap.css'
 import Table from 'react-bootstrap/Table'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Spinner } from 'react-bootstrap'
 import Alert from 'react-bootstrap/Alert'
 import TableRowPrev from 'components/preventivo/TableRowPrev'
 import { Prisma } from '@prisma/client'
+import { useRouter } from 'next/router'
 
 const invalidId = -1
-const idPreventivo = 1
+
+const parseId = (id: any) => {
+  if (id == undefined || Array.isArray(id)) return null
+  const numId = Number(id)
+  if (isNaN(numId)) return null
+  return numId
+}
 
 export default function Index() {
+  // handle query
+  const router = useRouter()
+  const _id = parseId(router.query.id)
+  useEffect(() => {
+    if (_id == null) router.push('/preventivo')
+  }, [_id])
+  if (!_id) return <Spinner animation="border" variant="primary" />
+  const idPreventivo = useMemo(() => _id, [_id])
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
   const [listinoId, setListinoId] = useState(invalidId)
@@ -39,7 +54,10 @@ export default function Index() {
 
   useEffect(() => {
     if (!preventiviQuery.isSuccess) return
-    if (!preventiviQuery.data) return
+    if (!preventiviQuery.data) {
+      router.push('/preventivo/list')
+      return
+    }
     setListinoId(preventiviQuery.data.listinoId)
     prodottiQuery.refetch()
     persQuery.refetch()

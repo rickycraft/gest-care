@@ -6,4 +6,13 @@ const nextConfig = {
 
 module.exports = {
   output: 'standalone',
+  async redirects() {
+    return [
+      {
+        source: '/preventivo',
+        destination: '/preventivo/list',
+        permanent: false,
+      },
+    ]
+  },
 }

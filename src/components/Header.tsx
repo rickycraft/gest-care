@@ -21,7 +21,6 @@ const basicMenuLinks = [
   { title: 'Prodotti', path: '/listino/prodotto', },
   { title: 'Perso', path: '/listino/personalizzazione', },
   { title: 'Preventivi', path: '/preventivo/list', },
-  { title: 'PreventiviRows', path: '/preventivo', },
 ]
 
 const invalidUser = -1
