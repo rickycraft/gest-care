@@ -2,136 +2,84 @@ import Head from 'next/head'
 import { trpc } from 'utils/trpc'
 import 'bootstrap/dist/css/bootstrap.css'
 import Table from 'react-bootstrap/Table'
-import { useEffect, useState } from 'react'
+import { SetStateAction, useEffect, useState } from 'react'
 import { Form, Spinner } from 'react-bootstrap'
 import Alert from 'react-bootstrap/Alert'
-
-
 import TableRowPrev from 'components/preventivo/TableRowPrev'
 import PrevRowSubmitRow from 'components/preventivo/PrevRowSubmitRow'
+import { updatePrevRow } from 'server/routers/preventivo_row'
 
-
-
+const invalidId = -1
+const idPreventivo = 1
 
 export default function Index() {
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
-  const [preventivoRow, setPreventivoRow] = useState(-1)
-  const [preventivo, setPreventivo] = useState(-1)
+  const [listinoId, setListinoId] = useState(invalidId)
 
-  const preventiviQuery = trpc.useQuery(['preventivo.list'])
-
-
-  if (!preventiviQuery.isSuccess) {
-    return <Spinner animation="border" />
-  }
-
-
- 
-  const invalidPreventivo = -1
-  // trpc
-  const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId : preventivo }])
-
-  const listinoQuery = trpc.useQuery(['listino.list'])
-
+  const preventiviQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }])
+  const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId: idPreventivo }])
   const preventivoRowUpdate = trpc.useMutation('preventivo.row.update', {
     onError() {
       setErrorMsg('Errore aggiornamento riga preventivo')
+    },
+    onSuccess() {
+      trpc.useContext().invalidateQueries(['preventivo.row.list', { prevId: idPreventivo }])
     }
   })
-
-
-  const prodottoUpdate = trpc.useMutation('prodotto.update', {
+  const preventivoRowDelete = trpc.useMutation('preventivo.row.delete', {
     onError() {
-      setErrorMsg('Errore nel aggiornare un prodotto')
+      setErrorMsg('Errore eliminazione riga preventivo')
+    },
+    onSuccess() {
+      trpc.useContext().invalidateQueries(['preventivo.row.list', { prevId: idPreventivo }])
     }
   })
-
-  //preventivo row delete ??
-
-  const prodottoDelete = trpc.useMutation('prodotto.delete', {
-    onError() {
-      setErrorMsg('Errore nell eliminare il prodotto selezionato')
-    }
+  const prodottiQuery = trpc.useQuery(['prodotto.list', { listino: listinoId }], {
+    enabled: listinoId !== invalidId,
   })
+  const persQuery = trpc.useQuery(['pers.list', { listino: listinoId }], {
+    enabled: listinoId !== invalidId,
+  })
+
+  const updatePreventivoRow = (row: updatePrevRow) => {
+    if (preventivoRowUpdate.isLoading) return
+    preventivoRowUpdate.mutate(row)
+  }
+  const deletePreventivoRow = (rowId: number) => {
+    if (preventivoRowDelete.isLoading) return
+    preventivoRowDelete.mutate({ id: rowId })
+  }
 
   useEffect(() => {
-    if (!preventivoRowQuery.isSuccess) return
-    if ( /*prodottoDelete.isSuccess||*/  preventivoRowUpdate.isSuccess) {
-      setErrorMsg('')
-      preventivoRowQuery.refetch()
-    }
-  }, [/*prodottoDelete.isSuccess, */preventivoRowUpdate.isSuccess])
-  //TODO: LASCIARE IL WARNING SOPRA ALTRIMENTI ESPLODE IL BROWSER DI CHIAMATE TRPC (prodQuery)
+    if (!preventiviQuery.isSuccess) return
+    if (!preventiviQuery.data) return
+    setListinoId(preventiviQuery.data.listinoId)
+    prodottiQuery.refetch()
+    persQuery.refetch()
+  }, [preventiviQuery.status])
 
-  const updatePreventivoRow = async (idPreventivo: number, idProdotto: number,
-    provComm: number, provRappre: number, provSc: number) => {
-    if (prodottoUpdate.isLoading) return
-    preventivoRowUpdate.mutate({
-      prevId: idPreventivo,
-      prodId: idProdotto,
-      provComm: provComm,
-      provRappre: provRappre,
-      provSc: provSc,
-      id: 0,
-      persId: 0
-    })
-  }
-  const updateProdotto = async (idProdotto: number, prezzo: number) => {
-    if (prodottoUpdate.isLoading) return
-    prodottoUpdate.mutate({
-      id: idProdotto,
-      prezzo: prezzo,
-    })
-  }
-  const deleteProdotto = async (idProdotto: number) => {
-    if (prodottoDelete.isLoading) return
-    prodottoDelete.mutate({
-      id: idProdotto
-    })
 
-  }
-
-  if (!preventivoRowQuery.isSuccess || !listinoQuery.isSuccess) {
-    return (
-      <div>Not ready</div>
-    )
+  if (!preventivoRowQuery.isSuccess || !preventiviQuery.isSuccess || !prodottiQuery.isSuccess || !persQuery.isSuccess) {
+    return <Spinner animation="border" />
   }
 
   return (
     <div className="container">
       <Head>
         <title>Righe Preventivo</title>
-        <meta name="description" content="Created by ..." />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
         <h1>
           Righe Preventivo &nbsp;
         </h1>
-
-        {/* form dropdown per selezionare preventivo */}
-        <Form.Group className='mb-2'>
-          <Form.Select
-            value={preventivo}
-            onChange={(event) => { setPreventivo(Number(event.currentTarget.value)) }}
-          >
-            <option value={invalidPreventivo}>Seleziona un preventivo</option>
-            {preventiviQuery.data.map(element => (
-              <option key={element.id} value={element.id}>
-                {element.nome}
-              </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
         {/*Tabella che mostra i prodotti del preventivo selezionato*/}
-        <Table bordered hover hidden={preventivo == -1}>
+        <Table bordered hover >
           <thead>
             <tr>
-              <th>Id_Listino_Prodotti</th>
-              <th>Id_Prodotto</th>
+              <th>Prodotto</th>
               <th>Prezzo Prodotto</th>
-              <th>Id Personalizzazione</th>
+              <th>Personalizzazione</th>
               <th>Prezzo Personalizzazione</th>
               <th>Provvigione School-Care</th>
               <th>Provvigione Rappresentanti</th>
@@ -141,32 +89,22 @@ export default function Index() {
             </tr>
           </thead>
           <tbody>
-            {preventivoRowQuery.data.map(prevRow => (
+            {preventivoRowQuery.data.map((prevRow) => (
               <TableRowPrev
                 key={prevRow.id}
-                rowIdListino={1}//mi serve info Listino
-                rowIdProd={prevRow.prodottoId}
-                rowPriceProdotto={1}//da fare subquery?
-                rowPers={prevRow.personalizzazioneId}
-                rowPricePers={1}
-                rowProvvSC={Number(prevRow.provvigioneSC)}
-                // rowProvvSC={prevRow.provvigioneSC}
-                rowProvvRapp={Number(prevRow.provvigioneRappre)}
-                //   rowProvvRapp={prevRow.provvigioneRappre}
-                //rowProvvComm={prevRow.provvigioneComm}
-                rowProvvComm={Number(prevRow.provvigioneComm)}
-
-                rowTot={1}
-
-                onClickDelete={deleteProdotto}
-                onClickEdit={updateProdotto} rowId={0}              />
+                row={prevRow}
+                prodList={prodottiQuery.data}
+                persList={persQuery.data}
+                onClickDelete={(row_id) => deletePreventivoRow(row_id)}
+                onClickEdit={(row) => updatePreventivoRow(row)} />
             ))}
             {/* riga per inserire un nuovo prodotto*/}
+            {/*
             <PrevRowSubmitRow
-              preventivo={preventivo}
+              preventivo={idPreventivo}
               updateList={() => preventivoRowQuery.refetch}
-              updateErrorMessage={(msg) => setErrorMsg(msg)}       />
-            
+              updateErrorMessage={(msg) => setErrorMsg(msg)} />
+            */}
           </tbody>
         </Table>
 
