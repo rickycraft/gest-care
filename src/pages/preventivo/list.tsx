@@ -21,9 +21,9 @@ export default function List() {
     <>
       <div style={{ maxHeight: '60vh' }} className='mb-3'>
         {preventiviQuery.data.map((prev) => (
-          <Card key={prev.id} className='my-3' onClick={() => router.push(`/preventivo/${prev.id}`)}>
+          <Card key={prev.id} className='my-3'>
             <Card.Body>
-              <Card.Title>{prev.nome}</Card.Title>
+              <Card.Title onClick={() => router.push(`/preventivo/${prev.id}`)}>{prev.nome}</Card.Title>
               <Card.Text className='mb-0 d-flex justify-content-between'>
                 <>{prev.scuola.nome} - {prev.listino.nome}</>
                 <Button variant='info' onClick={() => {
