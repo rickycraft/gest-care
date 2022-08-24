@@ -21,12 +21,7 @@ const parseId = (id: any) => {
 export default function Index() {
   // handle query
   const router = useRouter()
-  const _id = parseId(router.query.id)
-  useEffect(() => {
-    if (_id == null) router.push('/preventivo')
-  }, [_id])
-  if (!_id) return <Spinner animation="border" variant="primary" />
-  const idPreventivo = useMemo(() => _id, [_id])
+  const idPreventivo = useMemo(() => parseId(router.query.id) ?? invalidId, [router.query])
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
   const [listinoId, setListinoId] = useState(invalidId)
@@ -38,10 +33,15 @@ export default function Index() {
     },
     onSuccess() {
       context.invalidateQueries(['preventivo.row.list', { prevId: idPreventivo }])
-    }
+    },
+    enabled: idPreventivo != invalidId,
   }
-  const preventiviQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }])
-  const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId: idPreventivo }])
+  const preventiviQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }], {
+    enabled: idPreventivo != invalidId,
+  })
+  const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId: idPreventivo }], {
+    enabled: idPreventivo != invalidId,
+  })
   const preventivoRowInsert = trpc.useMutation('preventivo.row.insert', preventivoRowCallback)
   const preventivoRowUpdate = trpc.useMutation('preventivo.row.update', preventivoRowCallback)
   const preventivoRowDelete = trpc.useMutation('preventivo.row.delete', preventivoRowCallback)
