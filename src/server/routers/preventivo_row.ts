@@ -13,6 +13,7 @@ const rowSchema = {
 }
 
 const insertRowSchema = z.object(rowSchema)
+export type insertPrevRow = z.infer<typeof insertRowSchema>
 
 const updateRowSchema = z.object({
   id: z.number(),

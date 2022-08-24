@@ -2,12 +2,11 @@ import Head from 'next/head'
 import { trpc } from 'utils/trpc'
 import 'bootstrap/dist/css/bootstrap.css'
 import Table from 'react-bootstrap/Table'
-import { SetStateAction, useEffect, useState } from 'react'
-import { Form, Spinner } from 'react-bootstrap'
+import { useEffect, useState } from 'react'
+import { Spinner } from 'react-bootstrap'
 import Alert from 'react-bootstrap/Alert'
 import TableRowPrev from 'components/preventivo/TableRowPrev'
-import PrevRowSubmitRow from 'components/preventivo/PrevRowSubmitRow'
-import { updatePrevRow } from 'server/routers/preventivo_row'
+import { Prisma } from '@prisma/client'
 
 const invalidId = -1
 const idPreventivo = 1
@@ -17,39 +16,25 @@ export default function Index() {
   const [errorMsg, setErrorMsg] = useState('')
   const [listinoId, setListinoId] = useState(invalidId)
 
+  const preventivoRowCallback = {
+    onError() {
+      setErrorMsg('Errore riga preventivo')
+    },
+    onSuccess() {
+      trpc.useContext().invalidateQueries(['preventivo.row.list', { prevId: idPreventivo }])
+    }
+  }
   const preventiviQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }])
   const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId: idPreventivo }])
-  const preventivoRowUpdate = trpc.useMutation('preventivo.row.update', {
-    onError() {
-      setErrorMsg('Errore aggiornamento riga preventivo')
-    },
-    onSuccess() {
-      trpc.useContext().invalidateQueries(['preventivo.row.list', { prevId: idPreventivo }])
-    }
-  })
-  const preventivoRowDelete = trpc.useMutation('preventivo.row.delete', {
-    onError() {
-      setErrorMsg('Errore eliminazione riga preventivo')
-    },
-    onSuccess() {
-      trpc.useContext().invalidateQueries(['preventivo.row.list', { prevId: idPreventivo }])
-    }
-  })
+  const preventivoRowInsert = trpc.useMutation('preventivo.row.insert', preventivoRowCallback)
+  const preventivoRowUpdate = trpc.useMutation('preventivo.row.update', preventivoRowCallback)
+  const preventivoRowDelete = trpc.useMutation('preventivo.row.delete', preventivoRowCallback)
   const prodottiQuery = trpc.useQuery(['prodotto.list', { listino: listinoId }], {
     enabled: listinoId !== invalidId,
   })
   const persQuery = trpc.useQuery(['pers.list', { listino: listinoId }], {
     enabled: listinoId !== invalidId,
   })
-
-  const updatePreventivoRow = (row: updatePrevRow) => {
-    if (preventivoRowUpdate.isLoading) return
-    preventivoRowUpdate.mutate(row)
-  }
-  const deletePreventivoRow = (rowId: number) => {
-    if (preventivoRowDelete.isLoading) return
-    preventivoRowDelete.mutate({ id: rowId })
-  }
 
   useEffect(() => {
     if (!preventiviQuery.isSuccess) return
@@ -95,9 +80,26 @@ export default function Index() {
                 row={prevRow}
                 prodList={prodottiQuery.data}
                 persList={persQuery.data}
-                onClickDelete={(row_id) => deletePreventivoRow(row_id)}
-                onClickEdit={(row) => updatePreventivoRow(row)} />
+                onClickInsert={() => { }}
+                onClickDelete={(row_id) => preventivoRowDelete.mutate({ id: row_id })}
+                onClickEdit={(row) => preventivoRowUpdate.mutate(row)} />
             ))}
+            <TableRowPrev
+              key={invalidId}
+              row={{
+                id: invalidId,
+                prodottoId: invalidId,
+                personalizzazioneId: invalidId,
+                preventivoId: idPreventivo,
+                provvigioneComm: new Prisma.Decimal(0),
+                provvigioneRappre: new Prisma.Decimal(0),
+                provvigioneSC: new Prisma.Decimal(0),
+              }}
+              prodList={prodottiQuery.data}
+              persList={persQuery.data}
+              onClickInsert={(new_row) => preventivoRowInsert.mutate(new_row)}
+              onClickDelete={() => { }}
+              onClickEdit={() => { }} />
             {/* riga per inserire un nuovo prodotto*/}
             {/*
             <PrevRowSubmitRow
