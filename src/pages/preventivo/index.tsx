@@ -45,7 +45,6 @@ export default function Index() {
     persQuery.refetch()
   }, [preventiviQuery.status])
 
-
   if (!preventivoRowQuery.isSuccess || !preventiviQuery.isSuccess || !prodottiQuery.isSuccess || !persQuery.isSuccess) {
     return <Spinner animation="border" />
   }
@@ -85,6 +84,7 @@ export default function Index() {
                 onClickDelete={(row_id) => preventivoRowDelete.mutate({ id: row_id })}
                 onClickEdit={(row) => preventivoRowUpdate.mutate(row)} />
             ))}
+            {/* Empty row */}
             <TableRowPrev
               key={invalidId}
               row={{
@@ -101,13 +101,6 @@ export default function Index() {
               onClickInsert={(new_row) => preventivoRowInsert.mutate(new_row)}
               onClickDelete={() => { }}
               onClickEdit={() => { }} />
-            {/* riga per inserire un nuovo prodotto*/}
-            {/*
-            <PrevRowSubmitRow
-              preventivo={idPreventivo}
-              updateList={() => preventivoRowQuery.refetch}
-              updateErrorMessage={(msg) => setErrorMsg(msg)} />
-            */}
           </tbody>
         </Table>
 
