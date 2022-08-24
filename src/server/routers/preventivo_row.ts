@@ -18,6 +18,7 @@ const updateRowSchema = z.object({
   id: z.number(),
   ...rowSchema,
 })
+export type updatePrevRow = z.infer<typeof updateRowSchema>
 
 export const rowRouter = createProtectedRouter()
   .query('list', {
@@ -62,6 +63,18 @@ export const rowRouter = createProtectedRouter()
             provvigioneRappre: input.provRappre,
             provvigioneComm: input.provComm,
           },
+        })
+      } catch {
+        throw new TRPCError({ code: "BAD_REQUEST" })
+      }
+    }
+  })
+  .mutation('delete', {
+    input: z.object({ id: z.number() }),
+    resolve: async ({ input }) => {
+      try {
+        return await prisma.preventivoRow.delete({
+          where: { id: input.id },
         })
       } catch {
         throw new TRPCError({ code: "BAD_REQUEST" })
