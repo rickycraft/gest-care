@@ -32,6 +32,7 @@ export default function TableRowPrev({
     })
     const [isEditable, setIsEditable] = useState((row.id == invalidId) ? true : false)
     const [newRow, setNewRow] = useState(rowMapper(row))
+    const resetRow = () => setNewRow(rowMapper(row))
 
 
     const prodotto = useMemo(() => prodList.find(p => p.id === newRow.prodId) ?? { id: invalidId, nome: '', prezzo: new Prisma.Decimal(0) }, [prodList, newRow.prodId])
@@ -114,7 +115,7 @@ export default function TableRowPrev({
                         {isEditable &&
                             <Button name='UndoButton' variant="outline-secondary"
                                 onClick={() => {
-                                    setNewRow(rowMapper(row))
+                                    resetRow()
                                     setIsEditable(false)
                                 }}>Undo<FcCancel />
                             </Button>
@@ -127,15 +128,15 @@ export default function TableRowPrev({
                     </ButtonGroup>
                     <ButtonGroup hidden={!isNew}>
                         <Button name="InsertButton" variant="outline-primary" disabled={!isValid}
-                            onClick={() => onClickInsert(newRow)}>
+                            onClick={() => {
+                                onClickInsert(newRow)
+                                resetRow()
+                            }}>
                             Salva<FcCheckmark />
                         </Button>
                         <Button name='UndoButton' variant="outline-secondary"
-                            onClick={() => {
-                                setNewRow(rowMapper(row))
-                                setIsEditable(false)
-                            }}>
-                            <span>Undo<FcCancel /></span>
+                            onClick={() => resetRow()}>
+                            <span>Clear<FcCancel /></span>
                         </Button>
                     </ButtonGroup>
                 </td>
