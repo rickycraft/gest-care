@@ -2,10 +2,11 @@ import { trpc } from 'utils/trpc'
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Spinner } from 'react-bootstrap'
 import ModalPreventivo from 'components/preventivo/ModalPreventivo'
+import { useRouter } from 'next/router'
 const invalidId = -1
 
 export default function List() {
-
+  const router = useRouter()
   const preventiviQuery = trpc.useQuery(['preventivo.list'])
   const [prevId, setPrevId] = useState(invalidId)
   const [showModal, setShowModal] = useState(false)
@@ -22,7 +23,7 @@ export default function List() {
         {preventiviQuery.data.map((prev) => (
           <Card key={prev.id} className='my-3'>
             <Card.Body>
-              <Card.Title>{prev.nome}</Card.Title>
+              <Card.Title onClick={() => router.push(`/preventivo/${prev.id}`)}>{prev.nome}</Card.Title>
               <Card.Text className='mb-0 d-flex justify-content-between'>
                 <>{prev.scuola.nome} - {prev.listino.nome}</>
                 <Button variant='info' onClick={() => {
