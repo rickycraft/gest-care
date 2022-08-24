@@ -15,13 +15,14 @@ export default function Index() {
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
   const [listinoId, setListinoId] = useState(invalidId)
+  const context = trpc.useContext()
 
   const preventivoRowCallback = {
     onError() {
       setErrorMsg('Errore riga preventivo')
     },
     onSuccess() {
-      trpc.useContext().invalidateQueries(['preventivo.row.list', { prevId: idPreventivo }])
+      context.invalidateQueries(['preventivo.row.list', { prevId: idPreventivo }])
     }
   }
   const preventiviQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }])
@@ -50,7 +51,7 @@ export default function Index() {
   }
 
   return (
-    <div className="container">
+    <div>
       <Head>
         <title>Righe Preventivo</title>
       </Head>
@@ -63,12 +64,12 @@ export default function Index() {
           <thead>
             <tr>
               <th>Prodotto</th>
-              <th>Prezzo Prodotto</th>
-              <th>Personalizzazione</th>
-              <th>Prezzo Personalizzazione</th>
-              <th>Provvigione School-Care</th>
-              <th>Provvigione Rappresentanti</th>
-              <th>Provvigione Fornitori</th>
+              <th></th>
+              <th>Pers</th>
+              <th></th>
+              <th>School-Care</th>
+              <th>Rappresentanti</th>
+              <th>Fornitori</th>
               <th>TOT</th>
               <th></th>
             </tr>
