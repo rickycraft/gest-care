@@ -40,7 +40,7 @@ export default function TableRowPrev({
     const total = useMemo(() => (
         newRow.provComm + newRow.provRappre + newRow.provSc
         + Number(prodotto.prezzo) + Number(pers.prezzo)
-    ).toPrecision(2), [newRow])
+    ).toFixed(2), [newRow])
     const isValid = useMemo(() => (Number(prodotto.prezzo) > 0 && Number(pers.prezzo) > 0
         && newRow.provComm > 0 && newRow.provRappre > 0 && newRow.provSc > 0)
         , [newRow])
