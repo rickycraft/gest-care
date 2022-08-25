@@ -11,14 +11,6 @@ export default function Home() {
 
       <main>
         <h1>Index page</h1>
-        <h2>If you logged in, your username is: </h2>
-
-        <div>
-          <a href="prodotto">
-            <h2>Go to prodotti &rarr;</h2>
-            <p>Pagina che serve a leggere o modificare la lista di prodotti</p>
-          </a>
-        </div>
       </main>
     </div>
   )

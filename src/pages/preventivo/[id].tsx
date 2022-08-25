@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import { trpc } from 'utils/trpc'
-import 'bootstrap/dist/css/bootstrap.css'
 import Table from 'react-bootstrap/Table'
 import { useEffect, useMemo, useState } from 'react'
 import { Spinner } from 'react-bootstrap'
