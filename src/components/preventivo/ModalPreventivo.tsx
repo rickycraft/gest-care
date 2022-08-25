@@ -30,14 +30,13 @@ export default function ModalPreventivo({
     })
 
     const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: preventivoId }])
-    const scuoleQuery = trpc.useQuery(['scuola.list'])
     const listiniQuery = trpc.useQuery(['listino.list'])
 
     const [show, setShow] = useState(false)
     const [isEditing, setEditing] = useState(false)
     const [nomePreventivo, setNomePreventivo] = useState('')
     const [listinoId, setListinoId] = useState(invalidId)
-    const [scuolaId, setScuolaId] = useState(invalidId)
+    const [scuola, setScuola] = useState('')
 
     const openModal = () => {
         setEditing(false)
@@ -49,21 +48,21 @@ export default function ModalPreventivo({
         if (!preventivoQuery.isSuccess || preventivoQuery.data === null) return
         setNomePreventivo(preventivoQuery.data.nome)
         setListinoId(preventivoQuery.data.listinoId)
-        setScuolaId(preventivoQuery.data.scuolaId)
+        setScuola(preventivoQuery.data.scuola)
     }
     const resetFields = () => {
         setNomePreventivo('')
         setListinoId(invalidId)
-        setScuolaId(invalidId)
+        setScuola('')
     }
-    const isValid = () => (scuolaId !== invalidId && listinoId !== invalidId && nomePreventivo.length > 4)
+    const isValid = () => (scuola !== '' && listinoId !== invalidId && nomePreventivo.length > 4)
 
     const insertPreventivo = async () => {
         if (preventivoInsert.isLoading) return
         preventivoInsert.mutate({
             listino: listinoId,
             nome: nomePreventivo,
-            scuola: scuolaId,
+            scuola: scuola,
         })
     }
     const updatePreventivo = () => {
@@ -72,7 +71,7 @@ export default function ModalPreventivo({
             id: preventivoId,
             nome: nomePreventivo,
             listino: listinoId,
-            scuola: scuolaId,
+            scuola: scuola,
         })
     }
     const deletePreventivo = () => {
@@ -100,7 +99,7 @@ export default function ModalPreventivo({
         preventivoQuery.refetch()
     }, [preventivoId])
 
-    if (!scuoleQuery.isSuccess || !preventivoQuery.isSuccess || !listiniQuery.isSuccess) return <Spinner animation="border" />
+    if (!preventivoQuery.isSuccess || !listiniQuery.isSuccess) return <Spinner animation="border" />
 
     return (
         <>
@@ -131,24 +130,16 @@ export default function ModalPreventivo({
                             />
                             <Form.Control.Feedback type="invalid">Il nome deve essere di almeno 5 caratteri</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="InputSelectScuola"
-                        >
-                            <Form.Label>Scegli la scuola</Form.Label>
-                            <Form.Select
-                                isInvalid={scuolaId == invalidId}
-                                value={scuolaId}
-                                onChange={(event) => setScuolaId(Number(event.currentTarget.value))}
-                            >
-                                <option value={invalidId}>Seleziona una scuola</option>
-                                {scuoleQuery.data.map(element => (
-                                    <option key={element.id} value={element.id}>{element.nome}</option>
-                                ))}
-                            </Form.Select>
+                        <Form.Group className="mb-3" controlId="InputSelectScuola">
+                            <Form.Control
+                                value={scuola}
+                                isInvalid={scuola.length < 5}
+                                placeholder="Scuola"
+                                onChange={(event) => setScuola(event.currentTarget.value)}
+                            />
                             <Form.Control.Feedback type="invalid">Scegli una scuola</Form.Control.Feedback>
                         </Form.Group>
-
-                        <Form.Group className="mb-3" controlId="InputSelectListino"
-                        >
+                        <Form.Group className="mb-3" controlId="InputSelectListino">
                             <Form.Label>Scegli il Listino</Form.Label>
                             <Form.Select
                                 isInvalid={listinoId == invalidId}

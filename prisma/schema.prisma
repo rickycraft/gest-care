@@ -18,13 +18,6 @@ model User {
   preventivi Preventivo[]
 }
 
-model Scuola {
-  id   Int    @id @default(autoincrement())
-  nome String @unique @db.VarChar(255)
-
-  preventivi Preventivo[]
-}
-
 model Fornitore {
   id   Int    @id @default(autoincrement())
   nome String @unique @db.VarChar(255)
@@ -72,12 +65,11 @@ model Preventivo {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   nome      String   @db.VarChar(255)
-  scuolaId  Int
+  scuola    String   @db.VarChar(100)
   listinoId Int
   userId    Int
 
   rows         PreventivoRow[]
-  scuola       Scuola          @relation(fields: [scuolaId], references: [id])
   listino      Listino         @relation(fields: [listinoId], references: [id])
   lastEditedBy User            @relation(fields: [userId], references: [id])
 }

@@ -25,7 +25,7 @@ export default function List() {
             <Card.Body>
               <Card.Title onClick={() => router.push(`/preventivo/${prev.id}`)}>{prev.nome}</Card.Title>
               <Card.Text className='mb-0 d-flex justify-content-between'>
-                <>{prev.scuola.nome} - {prev.listino.nome}</>
+                <>{prev.scuola} - {prev.listino.nome}</>
                 <Button variant='info' onClick={() => {
                   setPrevId(prev.id)
                   openModal()

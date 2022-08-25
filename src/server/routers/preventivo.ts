@@ -8,7 +8,7 @@ import { rowRouter } from './preventivo_row'
 const prevSelect = {
   id: true,
   nome: true,
-  scuolaId: true,
+  scuola: true,
   listinoId: true,
   lastEditedBy: true,
 }
@@ -17,7 +17,7 @@ const defaultPrevSelect = Prisma.validator<Prisma.PreventivoSelect>()(prevSelect
 const prevSchema = {
   nome: z.string(),
   listino: z.number(),
-  scuola: z.number(),
+  scuola: z.string(),
 }
 
 const insertPrevSchema = z.object(prevSchema)
@@ -52,11 +52,7 @@ export const prevRouter = createProtectedRouter()
         select: {
           id: true,
           nome: true,
-          scuola: {
-            select: {
-              nome: true,
-            },
-          },
+          scuola: true,
           listino: {
             select: {
               nome: true,
@@ -82,7 +78,7 @@ export const prevRouter = createProtectedRouter()
         return await prisma.preventivo.create({
           data: {
             nome: input.nome,
-            scuola: { connect: { id: input.scuola } },
+            scuola: input.scuola,
             listino: { connect: { id: input.listino } },
             lastEditedBy: { connect: { id: ctx.user.id } },
           },
@@ -101,7 +97,7 @@ export const prevRouter = createProtectedRouter()
           where: { id: input.id },
           data: {
             nome: input.nome,
-            scuola: { connect: { id: input.scuola } },
+            scuola: input.scuola,
             listino: { connect: { id: input.listino } },
             lastEditedBy: { connect: { id: ctx.user.id } },
           },
