@@ -31,6 +31,8 @@ export default function Index() {
       setErrorMsg('Errore riga preventivo')
     },
     onSuccess() {
+      context.invalidateQueries(['preventivo.list'])
+      context.invalidateQueries(['preventivo.byId', { id: idPreventivo }])
       context.invalidateQueries(['preventivo.row.list', { prevId: idPreventivo }])
     },
     enabled: idPreventivo != invalidId,
@@ -75,6 +77,7 @@ export default function Index() {
         <h1>
           Righe Preventivo &nbsp;
         </h1>
+        <p>ultima modifica alle {preventiviQuery.data?.editedAt.toLocaleString()}</p>
         {/*Tabella che mostra i prodotti del preventivo selezionato*/}
         <Table bordered hover >
           <thead>

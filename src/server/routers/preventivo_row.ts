@@ -21,6 +21,15 @@ const updateRowSchema = z.object({
 })
 export type updatePrevRow = z.infer<typeof updateRowSchema>
 
+const updateEditedAt = async (prevId: number) => {
+  await prisma.preventivo.update({
+    where: { id: prevId },
+    data: {
+      editedAt: new Date(),
+    }
+  })
+}
+
 export const rowRouter = createProtectedRouter()
   .query('list', {
     input: z.object({
@@ -36,7 +45,7 @@ export const rowRouter = createProtectedRouter()
     input: insertRowSchema,
     resolve: async ({ input }) => {
       try {
-        return await prisma.preventivoRow.create({
+        const preventivo = await prisma.preventivoRow.create({
           data: {
             preventivo: { connect: { id: input.prevId } },
             prodotto: { connect: { id: input.prodId } },
@@ -46,6 +55,8 @@ export const rowRouter = createProtectedRouter()
             provvigioneComm: input.provComm,
           },
         })
+        await updateEditedAt(input.prevId)
+        return preventivo
       } catch {
         throw new TRPCError({ code: "BAD_REQUEST" })
       }
@@ -55,7 +66,7 @@ export const rowRouter = createProtectedRouter()
     input: updateRowSchema,
     resolve: async ({ input }) => {
       try {
-        return await prisma.preventivoRow.update({
+        const preventivo = await prisma.preventivoRow.update({
           where: { id: input.id },
           data: {
             prodotto: { connect: { id: input.prodId } },
@@ -65,6 +76,8 @@ export const rowRouter = createProtectedRouter()
             provvigioneComm: input.provComm,
           },
         })
+        await updateEditedAt(input.prevId)
+        return preventivo
       } catch {
         throw new TRPCError({ code: "BAD_REQUEST" })
       }
@@ -74,9 +87,10 @@ export const rowRouter = createProtectedRouter()
     input: z.object({ id: z.number() }),
     resolve: async ({ input }) => {
       try {
-        return await prisma.preventivoRow.delete({
+        const row = await prisma.preventivoRow.delete({
           where: { id: input.id },
         })
+        await updateEditedAt(row.preventivoId)
       } catch {
         throw new TRPCError({ code: "BAD_REQUEST" })
       }

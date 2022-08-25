@@ -11,6 +11,7 @@ const prevSelect = {
   scuola: true,
   listinoId: true,
   lastEditedBy: true,
+  editedAt: true,
 }
 const defaultPrevSelect = Prisma.validator<Prisma.PreventivoSelect>()(prevSelect)
 
@@ -63,6 +64,7 @@ export const prevRouter = createProtectedRouter()
               username: true,
             }
           },
+          editedAt: true,
         },
         take: 10,
         orderBy: {
