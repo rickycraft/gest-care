@@ -2,7 +2,7 @@ import Head from 'next/head'
 import { trpc } from 'utils/trpc'
 import Table from 'react-bootstrap/Table'
 import { useEffect, useState } from 'react'
-import { Form } from 'react-bootstrap'
+import { Form, Spinner } from 'react-bootstrap'
 import Alert from 'react-bootstrap/Alert'
 import TableRow from 'components/listino/TableRow'
 import ModalListino from 'components/listino/ModalListino'
@@ -36,8 +36,6 @@ export default function Prodotto() {
       prodQuery.refetch()
     }
   }, [prodottoDelete.isSuccess, prodottoUpdate.isSuccess])
-  //TODO: LASCIARE IL WARNING SOPRA ALTRIMENTI ESPLODE IL BROWSER DI CHIAMATE TRPC (prodQuery)
-
   const updateProdotto = async (idProdotto: number, prezzo: number) => {
     if (prodottoUpdate.isLoading) return
     prodottoUpdate.mutate({
@@ -45,20 +43,12 @@ export default function Prodotto() {
       prezzo: prezzo,
     })
   }
-
   const deleteProdotto = async (idProdotto: number) => {
     if (prodottoDelete.isLoading) return
-    prodottoDelete.mutate({
-      id: idProdotto
-    })
-
+    prodottoDelete.mutate({ id: idProdotto })
   }
 
-  if (!prodQuery.isSuccess || !listinoQuery.isSuccess) {
-    return (
-      <div>Not ready</div>
-    )
-  }
+  if (!prodQuery.isSuccess || !listinoQuery.isSuccess) return <Spinner animation="border" variant="primary" />
 
   return (
     <div className="container">
@@ -70,7 +60,7 @@ export default function Prodotto() {
       <main>
         <h1>
           Listino &nbsp;
-          <ModalListino listinoId={listino} updateListinoList={() => listinoQuery.refetch()} />
+          <ModalListino listinoId={listino} />
         </h1>
 
         {/* form dropdown per selezionare il listino */}

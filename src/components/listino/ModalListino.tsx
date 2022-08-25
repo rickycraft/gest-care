@@ -6,24 +6,33 @@ import { trpc } from 'utils/trpc'
 
 const invalidId = -1
 
-
-
 export default function ModalListino({
     listinoId = invalidId,
-    updateListinoList,
 }: {
     listinoId?: number,
-    updateListinoList: () => void,
 }) {
+    const context = trpc.useContext()
     const trpcCallback = {
         onSuccess() {
-            updateListinoList()
+            context.invalidateQueries(['listino.list'])
+            context.invalidateQueries(['listino.byId', { id: listinoId }])
         }
     }
     const listinoInsert = trpc.useMutation('listino.insert', trpcCallback)
     const listinoUpdate = trpc.useMutation('listino.update', trpcCallback)
     const listinoDelete = trpc.useMutation('listino.delete', trpcCallback)
-    const listinoQuery = trpc.useQuery(['listino.byId', { id: listinoId }])
+    const listinoQuery = trpc.useQuery(['listino.byId', { id: listinoId }], {
+        onSuccess(data) {
+            if (data == null) {
+                setNomeListino('')
+                setFornitoreId(invalidId)
+            } else {
+                setNomeListino(data.nome)
+                setFornitoreId(data.fornitore.id)
+            }
+        },
+        keepPreviousData: true,
+    })
     const fornitoriQuery = trpc.useQuery(['fornitore.list'])
 
     const [show, setShow] = useState(false)
@@ -50,28 +59,12 @@ export default function ModalListino({
     }
     const deleteListino = () => {
         if (listinoDelete.isLoading) return
-        listinoDelete.mutate({
-            id: listinoId,
-        })
+        listinoDelete.mutate({ id: listinoId })
         handleClose()
     }
     const isValid = () => fornitoreId != invalidId && nomeListino.length > 4
 
-    useEffect(() => {
-        if (!listinoQuery.isSuccess) return
-        if (listinoQuery.data === undefined) return
-
-        setNomeListino(listinoQuery.data.nome)
-        setFornitoreId(listinoQuery.data.fornitore.id)
-    }, [listinoQuery.isSuccess])
-
-    useEffect(() => {
-        if (listinoId != invalidId) listinoQuery.refetch()
-        else {
-            setNomeListino('')
-            setFornitoreId(invalidId)
-        }
-    }, [listinoId])
+    useEffect(() => { listinoQuery.refetch() }, [listinoId])
 
     if (!fornitoriQuery.isSuccess || !listinoQuery.isSuccess) return <Spinner animation="border" />
 
@@ -86,7 +79,7 @@ export default function ModalListino({
                 keyboard={false}
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>Aggiungi un nuovo listino</Modal.Title>
+                    <Modal.Title>{isEditing() ? 'Modifica un' : 'Aggiungi un nuovo'} listino</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {/* Form per aggiungere un nuovo listino: nome listino + id fornitore */}
@@ -120,7 +113,7 @@ export default function ModalListino({
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant='danger'
+                    <Button variant='danger' hidden={!isEditing()}
                         onClick={() => deleteListino()}
                     >
                         Delete

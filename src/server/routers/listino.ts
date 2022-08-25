@@ -29,8 +29,7 @@ export const listinoRouter = createProtectedRouter()
       id: z.number()
     }),
     async resolve({ input }) {
-      if (input.id < 0) return undefined
-      const listino = await prisma.listino.findFirst({
+      return await prisma.listino.findFirst({
         where: { id: input.id },
         select: {
           id: true,
@@ -39,8 +38,6 @@ export const listinoRouter = createProtectedRouter()
           fornitore: true,
         },
       })
-      if (!listino) throw new TRPCError({ code: "NOT_FOUND" })
-      return listino
     }
   })
   .mutation("insert", {
