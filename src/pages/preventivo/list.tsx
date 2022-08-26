@@ -1,17 +1,21 @@
 import { trpc } from 'utils/trpc'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Button, Card, Spinner } from 'react-bootstrap'
-import ModalPreventivo from 'components/preventivo/ModalPreventivo'
+import ModalEdit from 'components/preventivo/ModalEditPreventivo'
 import { useRouter } from 'next/router'
+import ModalDelete from 'components/preventivo/ModalDeletePreventivo'
+import { MdDeleteOutline } from 'react-icons/md'
 const invalidId = -1
 
 export default function List() {
   const router = useRouter()
   const preventiviQuery = trpc.useQuery(['preventivo.list'])
   const [prevId, setPrevId] = useState(invalidId)
-  const [showModal, setShowModal] = useState(false)
+  const [showEdit, setShowEdit] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
 
-  const openModal = () => setShowModal(!showModal)
+  const openEdit = () => setShowEdit(!showEdit)
+  const openDelete = () => setShowDelete(!showDelete)
 
   if (!preventiviQuery.isSuccess) {
     return <Spinner animation="border" />
@@ -26,10 +30,16 @@ export default function List() {
               <Card.Title onClick={() => router.push(`/preventivo/${prev.id}`)}>{prev.nome}</Card.Title>
               <Card.Text className='mb-0 d-flex justify-content-between'>
                 <>{prev.scuola} - {prev.listino.nome}</>
-                <Button variant='info' onClick={() => {
-                  setPrevId(prev.id)
-                  openModal()
-                }}>✎</Button>
+                <span>
+                  <Button variant='info' className='me-3' onClick={() => {
+                    setPrevId(prev.id)
+                    openEdit()
+                  }}>✎</Button>
+                  <Button variant='danger' onClick={() => {
+                    setPrevId(prev.id)
+                    openDelete()
+                  }}><MdDeleteOutline /></Button>
+                </span>
               </Card.Text>
             </Card.Body>
             <Card.Footer>
@@ -38,9 +48,8 @@ export default function List() {
           </Card>
         ))}
       </div>
-      <ModalPreventivo preventivoId={prevId} showModal={showModal}
-        updatePreventivoList={() => preventiviQuery.refetch()}
-      />
+      <ModalEdit preventivoId={prevId} showModal={showEdit} />
+      <ModalDelete preventivoId={prevId} showModal={showDelete} />
     </>
   )
 }

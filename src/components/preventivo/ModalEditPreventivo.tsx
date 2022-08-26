@@ -6,33 +6,28 @@ import { trpc } from 'utils/trpc'
 
 const invalidId = -1
 
-export default function ModalPreventivo({
+export default function ModalEdit({
     preventivoId = invalidId,
     showModal,
-    updatePreventivoList,
 }: {
     preventivoId?: number,
     showModal: boolean
-    updatePreventivoList: () => void,
 }) {
+    const [show, setShow] = useState(false)
+
+    const context = trpc.useContext()
     const trpcCallback = {
         onSuccess() {
-            updatePreventivoList()
+            context.invalidateQueries(['preventivo.byId', { id: preventivoId }])
+            context.invalidateQueries(['preventivo.list'])
+            setShow(false)
         }
     }
     const preventivoInsert = trpc.useMutation('preventivo.insert', trpcCallback)
-    const preventivoDelete = trpc.useMutation('preventivo.delete', trpcCallback)
-    const preventivoUpdate = trpc.useMutation('preventivo.update', {
-        onSuccess() {
-            preventivoQuery.refetch()
-            updatePreventivoList()
-        }
-    })
-
+    const preventivoUpdate = trpc.useMutation('preventivo.update', trpcCallback)
     const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: preventivoId }])
     const listiniQuery = trpc.useQuery(['listino.list'])
 
-    const [show, setShow] = useState(false)
     const [isEditing, setEditing] = useState(false)
     const [nomePreventivo, setNomePreventivo] = useState('')
     const [listinoId, setListinoId] = useState(invalidId)
@@ -43,7 +38,6 @@ export default function ModalPreventivo({
         resetFields()
         setShow(true)
     }
-    const handleClose = () => setShow(false)
     const setFields = () => {
         if (!preventivoQuery.isSuccess || preventivoQuery.data === null) return
         setNomePreventivo(preventivoQuery.data.nome)
@@ -74,19 +68,11 @@ export default function ModalPreventivo({
             scuola: scuola,
         })
     }
-    const deletePreventivo = () => {
-        if (preventivoDelete.isLoading) return
-        preventivoDelete.mutate({
-            id: preventivoId,
-        })
-        handleClose()
-    }
 
     useEffect(() => {
         resetFields()
         setFields()
     }, [preventivoQuery.isSuccess])
-
     useEffect(() => {
         if (preventivoId === invalidId) return
         // check for data refresh
@@ -108,11 +94,7 @@ export default function ModalPreventivo({
                     +
                 </Button>
             </div>
-            <Modal
-                show={show}
-                onHide={handleClose}
-                keyboard={false}
-            >
+            <Modal show={show} onHide={() => setShow(false)} keyboard={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>Aggiungi un nuovo preventivo</Modal.Title>
                 </Modal.Header>
@@ -157,16 +139,12 @@ export default function ModalPreventivo({
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant='danger' onClick={() => deletePreventivo()} hidden={!isEditing}>
-                        Delete
-                    </Button>
                     <Button variant={isEditing ? 'warning' : 'primary'}
                         disabled={!isValid()}
                         onClick={() => {
                             if (!isValid()) return
                             if (isEditing) updatePreventivo()
                             else insertPreventivo()
-                            handleClose()
                         }}
                     >
                         {isEditing ? 'Edit' : 'Save'}
