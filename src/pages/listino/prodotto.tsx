@@ -3,10 +3,10 @@ import { trpc } from 'utils/trpc'
 import Table from 'react-bootstrap/Table'
 import { useEffect, useState } from 'react'
 import { Form, Spinner } from 'react-bootstrap'
-import Alert from 'react-bootstrap/Alert'
 import TableRow from 'components/listino/TableRow'
 import ModalListino from 'components/listino/ModalListino'
 import ProdSubmitRow from 'components/listino/ProdSubmitRow'
+import ErrorMessage from 'components/utils/ErrorMessage'
 
 const invalidListino = -1
 
@@ -31,11 +31,9 @@ export default function Prodotto() {
 
   useEffect(() => {
     if (!prodQuery.isSuccess) return
-    if (prodottoDelete.isSuccess || prodottoUpdate.isSuccess) {
-      setErrorMsg('')
-      prodQuery.refetch()
-    }
+    if (prodottoDelete.isSuccess || prodottoUpdate.isSuccess) prodQuery.refetch()
   }, [prodottoDelete.isSuccess, prodottoUpdate.isSuccess])
+
   const updateProdotto = async (idProdotto: number, prezzo: number) => {
     if (prodottoUpdate.isLoading) return
     prodottoUpdate.mutate({
@@ -107,9 +105,7 @@ export default function Prodotto() {
         </Table>
 
         {/* alert per mostrare i messaggi di errore */}
-        <Alert variant='danger' hidden={errorMsg.length === 0}>
-          {errorMsg}
-        </Alert>
+        <ErrorMessage message={errorMsg} />
       </main>
     </div >
   )

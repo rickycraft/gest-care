@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { FormEvent } from 'react'
-import { Alert, InputGroup } from 'react-bootstrap'
+import { InputGroup } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { FaUserCircle, FaKey } from "react-icons/fa"
+import ErrorMessage from './utils/ErrorMessage'
 
 const USER_REGEX = /^[A-z][A-z0-9-]{3,20}$/
 const PWD_REGEX_TEST = /\S{10,20}/
@@ -70,9 +71,7 @@ export default function LoginForm({
         Submit
       </Button>
 
-      <Alert variant='danger' hidden={errorMessage.length === 0} className='mt-3'>
-        {errorMessage}
-      </Alert>
+      <ErrorMessage message={errorMessage} />
 
     </Form>
 

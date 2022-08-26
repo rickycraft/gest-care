@@ -3,10 +3,10 @@ import { trpc } from 'utils/trpc'
 import Table from 'react-bootstrap/Table'
 import { useEffect, useState } from 'react'
 import { Form, Spinner } from 'react-bootstrap'
-import Alert from 'react-bootstrap/Alert'
 import TableRow from 'components/listino/TableRow'
 import ModalListino from 'components/listino/ModalListino'
 import PersSubmitRow from 'components/listino/PersSubmitRow'
+import ErrorMessage from 'components/utils/ErrorMessage'
 
 const invalidListino = -1
 
@@ -31,11 +31,9 @@ export default function Pers() {
 
   useEffect(() => {
     if (!persQuery.isSuccess) return
-    if (persDelete.isSuccess || persUpdate.isSuccess) {
-      setErrorMsg('')
-      persQuery.refetch()
-    }
+    if (persDelete.isSuccess || persUpdate.isSuccess) persQuery.refetch()
   }, [persDelete.isSuccess, persUpdate.isSuccess])
+
   const updatePers = async (idPers: number, prezzo: number) => {
     if (persUpdate.isLoading) return
     persUpdate.mutate({
@@ -107,9 +105,7 @@ export default function Pers() {
         </Table>
 
         {/* alert per mostrare i messaggi di errore */}
-        <Alert variant='danger' hidden={errorMsg.length === 0}>
-          {errorMsg}
-        </Alert>
+        <ErrorMessage message={errorMsg} />
       </main>
     </div >
   )

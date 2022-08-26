@@ -3,10 +3,10 @@ import { trpc } from 'utils/trpc'
 import Table from 'react-bootstrap/Table'
 import { useEffect, useMemo, useState } from 'react'
 import { Spinner } from 'react-bootstrap'
-import Alert from 'react-bootstrap/Alert'
 import TableRowPrev from 'components/preventivo/TableRowPrev'
 import { Prisma } from '@prisma/client'
 import { useRouter } from 'next/router'
+import ErrorMessage from 'components/utils/ErrorMessage'
 
 const invalidId = -1
 
@@ -125,9 +125,7 @@ export default function Index() {
         </Table>
 
         {/* alert per mostrare i messaggi di errore */}
-        <Alert variant='danger' hidden={errorMsg.length === 0}>
-          {errorMsg}
-        </Alert>
+        <ErrorMessage message={errorMsg} />
       </main>
     </div >
   )
