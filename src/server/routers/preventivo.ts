@@ -4,6 +4,7 @@ import { prisma } from 'server/prisma'
 import { TRPCError } from "@trpc/server"
 import { Prisma } from "@prisma/client"
 import { rowRouter } from './preventivo_row'
+import { optsRouter } from './preventivo_opts'
 
 const prevSelect = {
   id: true,
@@ -30,6 +31,15 @@ const updatePrevSchema = z.object({
 })
 export type updatePrevType = z.infer<typeof updatePrevSchema>
 
+export const updateEditedAt = async (prevId: number, userdId: number) => {
+  await prisma.preventivo.update({
+    where: { id: prevId },
+    data: {
+      editedAt: new Date(),
+      userId: userdId,
+    }
+  })
+}
 
 export const prevRouter = createProtectedRouter()
   .query('byId', {
@@ -77,16 +87,23 @@ export const prevRouter = createProtectedRouter()
     input: insertPrevSchema,
     resolve: async ({ input, ctx }) => {
       try {
-        return await prisma.preventivo.create({
+        const opts = await prisma.preventivoOption.findMany()
+        const preventivo = await prisma.preventivo.create({
           data: {
             nome: input.nome,
             scuola: input.scuola,
             listino: { connect: { id: input.listino } },
             lastEditedBy: { connect: { id: ctx.user.id } },
+            editedAt: new Date(),
+            options: {
+              connect: opts.map(opt => ({ id: opt.id })),
+            }
           },
           select: defaultPrevSelect
         })
-      } catch {
+        return preventivo
+      } catch (e) {
+        console.error(e)
         throw new TRPCError({ code: "BAD_REQUEST" })
       }
     }
@@ -124,3 +141,4 @@ export const prevRouter = createProtectedRouter()
     }
   })
   .merge('row.', rowRouter)
+  .merge('opts.', optsRouter)

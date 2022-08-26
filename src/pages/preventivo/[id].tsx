@@ -7,6 +7,7 @@ import TableRowPrev from 'components/preventivo/TableRowPrev'
 import { Prisma } from '@prisma/client'
 import { useRouter } from 'next/router'
 import ErrorMessage from 'components/utils/ErrorMessage'
+import ModalOptions from 'components/preventivo/ModalOptionsPreventivo'
 
 const invalidId = -1
 
@@ -123,7 +124,7 @@ export default function Index() {
               onClickEdit={() => { }} />
           </tbody>
         </Table>
-
+        <ModalOptions prevId={idPreventivo} />
         {/* alert per mostrare i messaggi di errore */}
         <ErrorMessage message={errorMsg} />
       </main>

@@ -71,8 +71,9 @@ model Preventivo {
   editedAt  DateTime @default(now())
 
   rows         PreventivoRow[]
-  listino      Listino         @relation(fields: [listinoId], references: [id])
-  lastEditedBy User            @relation(fields: [userId], references: [id])
+  options      PreventivoOption[]
+  listino      Listino            @relation(fields: [listinoId], references: [id])
+  lastEditedBy User               @relation(fields: [userId], references: [id])
 }
 
 model PreventivoRow {
@@ -87,4 +88,12 @@ model PreventivoRow {
   preventivo        Preventivo        @relation(fields: [preventivoId], references: [id], onDelete: Cascade)
   prodotto          Prodotto          @relation(fields: [prodottoId], references: [id], onDelete: Cascade)
   personalizzazione Personalizzazione @relation(fields: [personalizzazioneId], references: [id], onDelete: Cascade)
+}
+
+model PreventivoOption {
+  id       Int     @id @default(autoincrement())
+  nome     String  @db.VarChar(255)
+  selected Boolean @default(false)
+
+  preventivi Preventivo[]
 }

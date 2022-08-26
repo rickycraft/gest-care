@@ -2,6 +2,7 @@ import { createProtectedRouter } from "server/createRouter"
 import { z } from 'zod'
 import { prisma } from 'server/prisma'
 import { TRPCError } from "@trpc/server"
+import { updateEditedAt } from './preventivo'
 
 const rowSchema = {
   prevId: z.number(),
@@ -20,16 +21,6 @@ const updateRowSchema = z.object({
   ...rowSchema,
 })
 export type updatePrevRow = z.infer<typeof updateRowSchema>
-
-const updateEditedAt = async (prevId: number, userdId: number) => {
-  await prisma.preventivo.update({
-    where: { id: prevId },
-    data: {
-      editedAt: new Date(),
-      userId: userdId,
-    }
-  })
-}
 
 export const rowRouter = createProtectedRouter()
   .query('list', {
