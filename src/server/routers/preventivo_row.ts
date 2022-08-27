@@ -2,7 +2,7 @@ import { createProtectedRouter } from "server/createRouter"
 import { z } from 'zod'
 import { prisma } from 'server/prisma'
 import { TRPCError } from "@trpc/server"
-import { updateEditedAt } from './preventivo'
+import { isLocked, updateEditedAt } from './preventivo'
 
 const rowSchema = {
   prevId: z.number(),
@@ -37,6 +37,7 @@ export const rowRouter = createProtectedRouter()
     input: insertRowSchema,
     resolve: async ({ input, ctx }) => {
       try {
+        await isLocked(input.prevId)
         const preventivo = await prisma.preventivoRow.create({
           data: {
             preventivo: { connect: { id: input.prevId } },
@@ -58,6 +59,7 @@ export const rowRouter = createProtectedRouter()
     input: updateRowSchema,
     resolve: async ({ input, ctx }) => {
       try {
+        await isLocked(input.prevId)
         const preventivo = await prisma.preventivoRow.update({
           where: { id: input.id },
           data: {
@@ -79,7 +81,11 @@ export const rowRouter = createProtectedRouter()
     input: z.object({ id: z.number() }),
     resolve: async ({ input, ctx }) => {
       try {
-        const row = await prisma.preventivoRow.delete({
+        const row = await prisma.preventivoRow.findFirstOrThrow({
+          where: { id: input.id },
+        })
+        await isLocked(row.preventivoId)
+        await prisma.preventivoRow.delete({
           where: { id: input.id },
         })
         await updateEditedAt(row.preventivoId, ctx.user.id)

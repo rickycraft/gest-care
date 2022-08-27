@@ -69,6 +69,7 @@ model Preventivo {
   listinoId Int
   userId    Int
   editedAt  DateTime @default(now())
+  locked    Boolean  @default(false)
 
   rows         PreventivoRow[]
   options      PreventivoOption[]

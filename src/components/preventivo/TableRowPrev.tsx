@@ -11,6 +11,7 @@ export default function TableRowPrev({
     row,
     prodList,
     persList,
+    locked,
     onClickInsert,
     onClickDelete,
     onClickEdit,
@@ -18,6 +19,7 @@ export default function TableRowPrev({
     row: PreventivoRow,
     prodList: inferQueryOutput<'prodotto.list'>,
     persList: inferQueryOutput<'pers.list'>,
+    locked: boolean,
     onClickInsert: (new_row: insertPrevRow) => void,
     onClickEdit: (row: updatePrevRow) => void,
     onClickDelete: (row_id: number) => void,
@@ -51,7 +53,9 @@ export default function TableRowPrev({
     }
 
     return (
-        <tr key={row.id} onDoubleClick={() => setIsEditable(true)}>
+        <tr key={row.id} onDoubleClick={() => {
+            if (!locked) setIsEditable(true)
+        }}>
             <td>
                 <Form.Select
                     disabled={!isEditable}
@@ -104,7 +108,7 @@ export default function TableRowPrev({
                 delete: elimina il prodotto della riga*/}
             {
                 <td>
-                    <ButtonGroup hidden={isNew}>
+                    <ButtonGroup hidden={isNew || locked}>
                         <Button name='EditButton' variant="outline-success" disabled={!isValid}
                             onClick={() => {
                                 onClickEdit({ id: row.id, ...newRow, })
@@ -126,7 +130,7 @@ export default function TableRowPrev({
                             </Button>
                         }
                     </ButtonGroup>
-                    <ButtonGroup hidden={!isNew}>
+                    <ButtonGroup hidden={!isNew || locked}>
                         <Button name="InsertButton" variant="outline-primary" disabled={!isValid}
                             onClick={() => {
                                 onClickInsert(newRow)

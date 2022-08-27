@@ -13,6 +13,7 @@ const prevSelect = {
   listinoId: true,
   lastEditedBy: true,
   editedAt: true,
+  locked: true,
 }
 const defaultPrevSelect = Prisma.validator<Prisma.PreventivoSelect>()(prevSelect)
 
@@ -39,6 +40,17 @@ export const updateEditedAt = async (prevId: number, userdId: number) => {
       userId: userdId,
     }
   })
+}
+
+export const isLocked = async (prevId: number) => {
+  const prev = await prisma.preventivo.findFirst({
+    where: { id: prevId },
+    select: { locked: true },
+  })
+  const locked = (prev === null) ? true : prev.locked
+  if (locked) {
+    throw new TRPCError({ code: "FORBIDDEN", message: "Preventivo locked" })
+  }
 }
 
 export const prevRouter = createProtectedRouter()
@@ -75,6 +87,7 @@ export const prevRouter = createProtectedRouter()
             }
           },
           editedAt: true,
+          locked: true,
         },
         take: 10,
         orderBy: {
@@ -112,6 +125,7 @@ export const prevRouter = createProtectedRouter()
     input: updatePrevSchema,
     resolve: async ({ input, ctx }) => {
       try {
+        await isLocked(input.id)
         return await prisma.preventivo.update({
           where: { id: input.id },
           data: {
@@ -131,9 +145,23 @@ export const prevRouter = createProtectedRouter()
     input: z.object({ id: z.number() }),
     resolve: async ({ input }) => {
       try {
+        await isLocked(input.id)
         return await prisma.preventivo.delete({
           where: { id: input.id },
           select: defaultPrevSelect,
+        })
+      } catch {
+        throw new TRPCError({ code: "BAD_REQUEST" })
+      }
+    }
+  })
+  .mutation('lock', {
+    input: z.object({ id: z.number() }),
+    resolve: async ({ input }) => {
+      try {
+        await prisma.preventivo.update({
+          where: { id: input.id },
+          data: { locked: true },
         })
       } catch {
         throw new TRPCError({ code: "BAD_REQUEST" })

@@ -38,7 +38,7 @@ export default function Index() {
     },
     enabled: idPreventivo != invalidId,
   }
-  const preventiviQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }], {
+  const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }], {
     enabled: idPreventivo != invalidId,
   })
   const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId: idPreventivo }], {
@@ -55,19 +55,25 @@ export default function Index() {
   })
 
   useEffect(() => {
-    if (!preventiviQuery.isSuccess) return
-    if (!preventiviQuery.data) {
+    if (!preventivoQuery.isSuccess) return
+    if (!preventivoQuery.data) {
       router.push('/preventivo/list')
       return
     }
-    setListinoId(preventiviQuery.data.listinoId)
+    setListinoId(preventivoQuery.data.listinoId)
     prodottiQuery.refetch()
     persQuery.refetch()
-  }, [preventiviQuery.status])
+  }, [preventivoQuery.status])
+  const locked = useMemo(() => {
+    if (!preventivoQuery.data) return true
+    return preventivoQuery.data.locked
+  }, [preventivoQuery.data])
 
-  if (!preventivoRowQuery.isSuccess || !preventiviQuery.isSuccess || !prodottiQuery.isSuccess || !persQuery.isSuccess) {
+  if (!preventivoRowQuery.isSuccess || !preventivoQuery.isSuccess || !prodottiQuery.isSuccess || !persQuery.isSuccess) {
     return <Spinner animation="border" />
   }
+
+  if (preventivoQuery.data === null) return <Spinner animation="border" />
 
   return (
     <div>
@@ -78,7 +84,7 @@ export default function Index() {
         <h1>
           Righe Preventivo &nbsp;
         </h1>
-        <p>ultima modifica alle {preventiviQuery.data?.editedAt.toLocaleString()}</p>
+        <p>ultima modifica alle {preventivoQuery.data.editedAt.toLocaleString()}</p>
         {/*Tabella che mostra i prodotti del preventivo selezionato*/}
         <Table bordered hover >
           <thead>
@@ -97,6 +103,7 @@ export default function Index() {
           <tbody>
             {preventivoRowQuery.data.map((prevRow) => (
               <TableRowPrev
+                locked={locked}
                 key={prevRow.id}
                 row={prevRow}
                 prodList={prodottiQuery.data}
@@ -106,8 +113,9 @@ export default function Index() {
                 onClickEdit={(row) => preventivoRowUpdate.mutate(row)} />
             ))}
             {/* Empty row */}
-            <TableRowPrev
+            {!locked && <TableRowPrev
               key={invalidId}
+              locked={false}
               row={{
                 id: invalidId,
                 prodottoId: invalidId,
@@ -121,10 +129,10 @@ export default function Index() {
               persList={persQuery.data}
               onClickInsert={(new_row) => preventivoRowInsert.mutate(new_row)}
               onClickDelete={() => { }}
-              onClickEdit={() => { }} />
+              onClickEdit={() => { }} />}
           </tbody>
         </Table>
-        <ModalOptions prevId={idPreventivo} />
+        {!locked && <ModalOptions prevId={idPreventivo} />}
         {/* alert per mostrare i messaggi di errore */}
         <ErrorMessage message={errorMsg} />
       </main>
