@@ -132,7 +132,7 @@ export default function Index() {
               onClickEdit={() => { }} />}
           </tbody>
         </Table>
-        <ModalOptions prevId={idPreventivo} locked={locked} />
+        <ModalOptions prevId={idPreventivo} />
         {/* alert per mostrare i messaggi di errore */}
         <ErrorMessage message={errorMsg} />
       </main>
