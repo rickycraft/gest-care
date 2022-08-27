@@ -16,18 +16,17 @@ const BasicMenuItem = ({ title, path }: { title: string, path: string }) => {
 }
 
 const basicMenuLinks = [
-  { title: 'Home', path: '/', },
-  { title: 'Prodotti', path: '/listino/prodotto', },
-  { title: 'Perso', path: '/listino/personalizzazione', },
-  { title: 'Preventivi', path: '/preventivo/list', },
+  { title: 'Home', path: '/', hidden: false },
+  { title: 'Prodotti', path: '/listino/prodotto', hidden: true },
+  { title: 'Perso', path: '/listino/personalizzazione', hidden: true },
+  { title: 'Preventivi', path: '/preventivo/list', hidden: false },
 ]
 
 const invalidUser = -1
+const defaultRole = 'user'
 
 export default function Header() {
   const [user,] = useAtom(userAtom)
-  const [pageLoaded, setPageLoaded] = useState(false)
-  useEffect(() => setPageLoaded(true), [])
 
   return (
     <Navbar bg="dark" variant="dark" expand="lg">
@@ -36,16 +35,15 @@ export default function Header() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            {basicMenuLinks.map((link, index) => (
-              <BasicMenuItem {...link} key={index} />
-            ))}
+            {basicMenuLinks.filter(link => !link.hidden || user.role != defaultRole)
+              .map((link, index) => (
+                <BasicMenuItem {...link} key={index} />
+              ))}
           </Nav>
           <Nav>
-            {(pageLoaded && user.id != invalidUser) &&
-              <NavDropdown align="end" title={user.username.toUpperCase()} menuVariant="dark">
-                <NavDropdown.Item href="/logout">Logout</NavDropdown.Item>
-              </NavDropdown>
-            }
+            <NavDropdown align="end" title={user.username.toUpperCase()} menuVariant="dark">
+              <NavDropdown.Item href="/logout">Logout</NavDropdown.Item>
+            </NavDropdown>
           </Nav>
         </Navbar.Collapse>
       </Container>

@@ -1,7 +1,10 @@
 import Header from './Header'
-import Footer from './Footer'
+import { useState, useEffect } from 'react'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const [pageLoaded, setPageLoaded] = useState(false)
+  useEffect(() => setPageLoaded(true), [])
+
   return (
     <>
       <style jsx global>{`
@@ -19,7 +22,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
         }
       `}</style>
-      <Header />
+      {pageLoaded && <Header />}
 
       <main>
         <div className='p-4'>{children}</div>
