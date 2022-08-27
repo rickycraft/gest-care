@@ -42,7 +42,7 @@ export default function ModalOptions({
                   optionId: opt.id,
                   selected: e.target.checked as boolean,
                 })} />
-              <Form.Check.Label>{opt.nome}</Form.Check.Label>
+              <Form.Check.Label>{opt.short}</Form.Check.Label>
             </Form.Check>
           ))}
         </Modal.Body>

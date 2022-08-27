@@ -95,6 +95,7 @@ model PreventivoRow {
 
 model PreventivoOption {
   id       Int     @id @default(autoincrement())
+  short    String  @db.VarChar(50)
   nome     String  @db.VarChar(255)
   selected Boolean @default(false)
 
