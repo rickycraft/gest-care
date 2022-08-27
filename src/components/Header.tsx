@@ -2,11 +2,10 @@ import Link from 'next/link'
 import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
-import { useRouter } from 'next/router'
-import { trpc } from 'utils/trpc'
 import { useEffect, useMemo, useState } from 'react'
 import { userAtom } from 'utils/atom'
 import { useAtom } from 'jotai'
+import { NavDropdown } from 'react-bootstrap'
 
 const BasicMenuItem = ({ title, path }: { title: string, path: string }) => {
   return (
@@ -27,10 +26,11 @@ const invalidUser = -1
 
 export default function Header() {
   const [user,] = useAtom(userAtom)
+  const [pageLoaded, setPageLoaded] = useState(false)
+  useEffect(() => setPageLoaded(true), [])
 
   return (
-    /* <Navbar bg="dark" expand="lg">*/
-    <Navbar bg="dark" variant="dark">
+    <Navbar bg="dark" variant="dark" expand="lg">
       <Container fluid>
         <Navbar.Brand>Gest-Care</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -39,13 +39,15 @@ export default function Header() {
             {basicMenuLinks.map((link, index) => (
               <BasicMenuItem {...link} key={index} />
             ))}
-            {user.isLoggedIn && <BasicMenuItem title="Logout" path="/logout" />}
-            {!user.isLoggedIn && <BasicMenuItem title="Login" path="/login" />}
+          </Nav>
+          <Nav>
+            {(pageLoaded && user.id != invalidUser) &&
+              <NavDropdown align="end" title={user.username.toUpperCase()} menuVariant="dark">
+                <NavDropdown.Item href="/logout">Logout</NavDropdown.Item>
+              </NavDropdown>
+            }
           </Nav>
         </Navbar.Collapse>
-        <div className='text-white' hidden={user.id == invalidUser}>
-          Current user {user.username}
-        </div>
       </Container>
     </Navbar>
   )
