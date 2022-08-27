@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FormEvent } from 'react'
 import { InputGroup } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button'
@@ -14,34 +14,16 @@ export default function LoginForm({
   onSubmit,
 }: {
   errorMessage: string
-  onSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>
+  onSubmit: (user: string, password: string) => Promise<void>
 }) {
-  const [isPasswordInvalid, setIsPasswordInvalid] = useState(false)
-  const [isUsernameInvalid, setIsUsernameInvalid] = useState(false)
   const [usernameValue, setUsernameValue] = useState('')
   const [passwordValue, setPasswordValue] = useState('')
-
-  useEffect(() => {
-    //check regexp password
-    if (USER_REGEX.test(usernameValue) || usernameValue == '') {
-      setIsUsernameInvalid(false)
-    } else {
-      setIsUsernameInvalid(true)
-    }
-  }, [usernameValue])
-
-  useEffect(() => {
-    //check regexp password
-    if (PWD_REGEX_TEST.test(passwordValue) || passwordValue == '') {
-      setIsPasswordInvalid(false)
-    } else {
-      setIsPasswordInvalid(true)
-    }
-  }, [passwordValue])
+  const usernameValid = useMemo(() => USER_REGEX.test(usernameValue), [usernameValue])
+  const passwordValid = useMemo(() => PWD_REGEX_TEST.test(passwordValue), [passwordValue])
 
   return (
-    <Form onSubmit={async (event) => {
-      await onSubmit(event)
+    <Form onSubmit={async () => {
+      await onSubmit(usernameValue, passwordValue)
       setUsernameValue('')
       setPasswordValue('')
     }}>
@@ -49,8 +31,8 @@ export default function LoginForm({
         <Form.Label>Username</Form.Label>
         <InputGroup hasValidation>
           <InputGroup.Text id="inputGroupPrepend"><FaUserCircle /></InputGroup.Text>
-          <Form.Control type="text" required isInvalid={isUsernameInvalid} placeholder="Enter username" value={usernameValue}
-            onChange={(event) => { setUsernameValue(event.currentTarget.value) }} />
+          <Form.Control type="text" required isInvalid={!usernameValid} placeholder="Enter username" value={usernameValue}
+            onChange={(event) => setUsernameValue(event.currentTarget.value)} />
           <Form.Control.Feedback type="invalid" >
             Please choose a real username
           </Form.Control.Feedback>
@@ -60,8 +42,8 @@ export default function LoginForm({
         <Form.Label>Password</Form.Label>
         <InputGroup hasValidation >
           <InputGroup.Text id="inputGroupPrepend"><FaKey /></InputGroup.Text>
-          <Form.Control type="password" required isInvalid={isPasswordInvalid} placeholder="Enter Password" value={passwordValue}
-            onChange={(event) => { setPasswordValue(event.currentTarget.value) }} />
+          <Form.Control type="password" required isInvalid={!passwordValid} placeholder="Enter Password" value={passwordValue}
+            onChange={(event) => setPasswordValue(event.currentTarget.value)} />
           <Form.Control.Feedback type="invalid" >
             Your password must be minimum 8 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
           </Form.Control.Feedback>

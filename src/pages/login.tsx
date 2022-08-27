@@ -8,30 +8,24 @@ import { z } from 'zod'
 const loginResponseSchema = z.object({
   id: z.number(),
   username: z.string(),
+  role: z.string(),
   isLoggedIn: z.boolean(),
 })
 
 export default function Login() {
   const [errorMsg, setErrorMsg] = useState('')
   const [, setUserAtom] = useAtom(userAtom)
-  const router = useRouter()
 
   return (
     <div className="login">
       <LoginForm
         errorMessage={errorMsg}
-        onSubmit={async (event) => {
-          event.preventDefault()
-          const body = {
-            username: event.currentTarget.username.value,
-            password: event.currentTarget.password.value
-          }
+        onSubmit={async (username, password) => {
           try {
-            // console.log('[DBG LOGIN] body: '+body.username+' '  + body.password)
             const response = await fetch('/api/auth/login', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(body),
+              body: JSON.stringify({ username, password }),
             })
             if (response.ok) {
               const result = loginResponseSchema.safeParse(await response.json())
