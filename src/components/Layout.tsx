@@ -25,9 +25,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className='p-4'>{children}</div>
       </main>
 
-      <div className="fixed-bottom">
+      {/* <div className="fixed-bottom">
         <Footer></Footer>
-      </div>
+      </div> */}
 
     </>
   )
