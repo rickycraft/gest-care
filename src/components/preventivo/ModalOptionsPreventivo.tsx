@@ -5,10 +5,8 @@ import { MdReceipt } from 'react-icons/md'
 
 export default function ModalOptions({
   prevId,
-  locked,
 }: {
   prevId: number,
-  locked: boolean,
 }) {
   const [show, setShow] = useState(false)
 
@@ -36,13 +34,13 @@ export default function ModalOptions({
         <Modal.Body>
           {optionQuery.data.options.map((opt) => (
             <Form.Check key={opt.id}>
-              <Form.Check.Input type="checkbox" defaultChecked={opt.selected} disabled={locked}
+              <Form.Check.Input type="checkbox" defaultChecked={opt.selected}
                 onChange={(e) => optionEdit.mutate({
                   prevId: prevId,
                   optionId: opt.id,
                   selected: e.target.checked as boolean,
                 })} />
-              <Form.Check.Label>{opt.nome}</Form.Check.Label>
+              <Form.Check.Label>{opt.short}</Form.Check.Label>
             </Form.Check>
           ))}
         </Modal.Body>
