@@ -78,11 +78,11 @@ export default function Index() {
   return (
     <div>
       <Head>
-        <title>Righe Preventivo</title>
+        <title>Preventivo</title>
       </Head>
       <main>
         <h1>
-          Righe Preventivo &nbsp;
+          {preventivoQuery.data.nome.toUpperCase()}
         </h1>
         <p>ultima modifica alle {preventivoQuery.data.editedAt.toLocaleString()}</p>
         {/*Tabella che mostra i prodotti del preventivo selezionato*/}
