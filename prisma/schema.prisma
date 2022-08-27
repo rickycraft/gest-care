@@ -89,6 +89,8 @@ model PreventivoRow {
   preventivo        Preventivo        @relation(fields: [preventivoId], references: [id], onDelete: Cascade)
   prodotto          Prodotto          @relation(fields: [prodottoId], references: [id], onDelete: Cascade)
   personalizzazione Personalizzazione @relation(fields: [personalizzazioneId], references: [id], onDelete: Cascade)
+
+  @@unique([preventivoId, prodottoId, personalizzazioneId])
 }
 
 model PreventivoOption {
