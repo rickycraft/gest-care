@@ -25,7 +25,7 @@ export default function List() {
 
   return (
     <>
-      <div style={{ maxHeight: '60vh' }} className='mb-3'>
+      <div className='mb-3'>
         {preventiviQuery.data.map((prev) => (
           <Card key={prev.id} className='my-3'>
             <Card.Body>
