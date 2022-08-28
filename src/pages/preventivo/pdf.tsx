@@ -1,7 +1,8 @@
 import { Prisma } from '@prisma/client'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { useEffect, useState } from 'react'
-import { Button, Image, ListGroup, Spinner, Table } from 'react-bootstrap'
+import Script from 'next/script'
+import { useEffect } from 'react'
+import { Table } from 'react-bootstrap'
 import { prisma } from 'server/prisma'
 import { z } from 'zod'
 
@@ -118,20 +119,25 @@ type Option = {
 export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   if (props.idPreventivo === invalidId) return <div>Invalid id</div>
 
-  const [isButtonHidden, setButtonHidden] = useState(false)
+  const opt = { image: { type: 'png', quality: 1 } }
 
   useEffect(() => {
-    if (!isButtonHidden) return
-    window.print()
-    //setButtonHidden(false)
-  }, [isButtonHidden])
+    (window as any).html2pdf()
+      .from(document.body)
+      .set(opt)
+      .save('preventivo_' + props.preventivo.scuola + '.pdf')
+  }, [])
 
   return (
     <div className='px-4 d-flex flex-column h-100 justify-content-between' style={{ fontSize: "12pt" }}>
+      <Script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+        integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+        crossOrigin="anonymous" referrerPolicy="no-referrer"
+      />
       <div className='d-flex justify-content-between'>
         <div className='d-flex' />
         <h2 className='text-center my-auto'>Preventivo {props.preventivo.scuola}</h2>
-        <Image src='/LOGOSC.svg' width={150} height={150} />
+        <img src='/vercel.png' width={150} height={150} />
       </div>
       <div>
         <Table bordered className='border-dark fs-5'>
@@ -180,9 +186,6 @@ export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof 
             destinatario è proibita, ai sensi dell&lsquo;art. 616 c.p. e del Reg. UE 2016/679.</span><br />
           <span>School Care • Bologna (BO) • +39 388 42 27 061</span>
         </p>
-        <Button variant="primary" onClick={() => setButtonHidden(true)} hidden={isButtonHidden}>
-          Stampa
-        </Button>
       </div>
     </div >
   )
