@@ -4,7 +4,7 @@ import { Button, Card, Spinner } from 'react-bootstrap'
 import ModalEdit from 'components/preventivo/ModalEditPreventivo'
 import { useRouter } from 'next/router'
 import ModalDelete from 'components/preventivo/ModalDeletePreventivo'
-import { MdCreate, MdDeleteOutline, MdLock, MdLockOpen } from 'react-icons/md'
+import { MdCreate, MdDeleteOutline, MdDownload, MdLock, MdLockOpen } from 'react-icons/md'
 import ModalLock from 'components/preventivo/ModalLockPreventivo'
 import { useAtom } from 'jotai'
 import { userAtom } from 'utils/atom'
@@ -43,19 +43,30 @@ export default function List() {
               <Card.Title onClick={() => router.push(`/preventivo/${prev.id}`)}>{prev.nome}</Card.Title>
               <Card.Text className='mb-0 d-flex justify-content-between'>
                 <>{prev.scuola} - {prev.listino.nome}</>
-                {prev.locked && canUnlockPreventivo(user.role) && (
-                  <Button variant='secondary' className='me-3' onClick={() => openModal(prev.id, prev.locked, openLock)}><MdLockOpen /></Button>
-                )}
-                <span hidden={prev.locked}>
-                  <Button variant='secondary' className='me-3' onClick={() => openModal(prev.id, prev.locked, openLock)}>
-                    <MdLock />
-                  </Button>
-                  <Button variant='info' className='me-3' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
-                    <MdCreate />
-                  </Button>
-                  <Button variant='danger' onClick={() => openModal(prev.id, prev.locked, openDelete)}>
-                    <MdDeleteOutline />
-                  </Button>
+                <span>
+                  {prev.locked && canUnlockPreventivo(user.role) && (
+                    <Button variant='secondary' className='me-3' onClick={() => openModal(prev.id, prev.locked, openLock)}><MdLockOpen /></Button>
+                  )}
+                  {prev.locked ? (
+                    <Button variant='primary'
+                      onClick={() => router.push({
+                        pathname: '/preventivo/pdf',
+                        query: { id: prev.id },
+                      })}
+                    ><MdDownload /></Button>
+                  ) : (
+                    <>
+                      <Button variant='secondary' className='me-3' onClick={() => openModal(prev.id, prev.locked, openLock)}>
+                        <MdLock />
+                      </Button>
+                      <Button variant='info' className='me-3' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
+                        <MdCreate />
+                      </Button>
+                      <Button variant='danger' onClick={() => openModal(prev.id, prev.locked, openDelete)}>
+                        <MdDeleteOutline />
+                      </Button>
+                    </>
+                  )}
                 </span>
               </Card.Text>
             </Card.Body>

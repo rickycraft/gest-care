@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { userAtom } from 'utils/atom'
 import { useAtom } from 'jotai'
 import { NavDropdown } from 'react-bootstrap'
+import { useRouter } from 'next/router'
 
 const BasicMenuItem = ({ title, path }: { title: string, path: string }) => {
   return (
@@ -22,11 +23,14 @@ const basicMenuLinks = [
   { title: 'Preventivi', path: '/preventivo/list', hidden: false },
 ]
 
-const invalidUser = -1
+const emptyPages = ["/login", "/preventivo/pdf"]
 const defaultRole = 'user'
 
 export default function Header() {
+  const router = useRouter()
   const [user,] = useAtom(userAtom)
+
+  if (emptyPages.includes(router.pathname)) return null
 
   return (
     <Navbar bg="dark" variant="dark" expand="lg">
