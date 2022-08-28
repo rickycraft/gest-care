@@ -119,14 +119,6 @@ type Option = {
 export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const opt = { image: { type: 'png', quality: 1 } }
 
-  useEffect(() => {
-    if (props.idPreventivo === invalidId) return
-    (window as any).html2pdf()
-      .from(document.body)
-      .set(opt)
-      .save('preventivo_' + props.preventivo.scuola + '.pdf')
-  }, [])
-
   if (props.idPreventivo === invalidId) return <div>Invalid id</div>
 
   return (
@@ -134,6 +126,9 @@ export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof 
       <Script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
         integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
         crossOrigin="anonymous" referrerPolicy="no-referrer"
+        onReady={() => {
+          (window as any).html2pdf().from(document.body).set(opt).save('preventivo_' + props.preventivo.scuola + '.pdf')
+        }}
       />
       <div className='d-flex justify-content-between'>
         <div className='d-flex' />
