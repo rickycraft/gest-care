@@ -94,7 +94,7 @@ export default function Index() {
               <th>Pers</th>
               <th></th>
               <th>School-Care</th>
-              <th>Commericiale</th>
+              <th>Commerciale</th>
               <th>Rappresentanti</th>
               <th>TOT</th>
               <th></th>
