@@ -1,16 +1,11 @@
 import { Prisma } from '@prisma/client'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Script from 'next/script'
-import { useEffect } from 'react'
 import { Image, Table } from 'react-bootstrap'
 import { prisma } from 'server/prisma'
 import { z } from 'zod'
 
 const invalidId = -1
-
-const pdfSchema = z.object({
-  idPreventivo: z.number(),
-})
 
 const addDecimals = (values: Prisma.Decimal[]) => {
   const tot = values.reduce((acc, curr) => acc.add(curr), new Prisma.Decimal(0))
@@ -122,7 +117,7 @@ export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof 
   if (props.idPreventivo === invalidId) return <div>Invalid id</div>
 
   return (
-    <div className='px-4 d-flex flex-column h-100 justify-content-between' style={{ fontSize: "12pt" }}>
+    <div className='px-4 h-100' style={{ fontSize: "12pt" }}>
       <Script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
         integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
         crossOrigin="anonymous" referrerPolicy="no-referrer"
@@ -130,10 +125,10 @@ export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof 
           (window as any).html2pdf().from(document.body).set(opt).save('preventivo_' + props.preventivo.scuola + '.pdf')
         }}
       />
-      <div className='d-flex justify-content-between'>
+      <div className='d-flex justify-content-between mb-3'>
         <div className='d-flex' />
         <h2 className='text-center my-auto'>Preventivo {props.preventivo.scuola}</h2>
-        <Image src='/vercel.png' width={150} height={150} alt="sc-logo" />
+        <Image src='/logo_sc.png' width={150} height={150} alt="sc-logo" />
       </div>
       <div>
         <Table bordered className='border-dark fs-5'>
@@ -167,7 +162,7 @@ export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof 
             ))}
         </ul>
       </div>
-      <div className='text-center'>
+      <div className='text-center mt-5'>
         <span className='fw-bold'>
           <p>
             Firmando questo documento l&lsquo;interessato/gli interessati si impegna/no a rispettare il proprio impegno nel progetto sovradescritto. <br />
