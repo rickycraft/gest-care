@@ -2,6 +2,7 @@
 .env*
 .vscode
 prisma/migrations
+public/*.png
 
 # dependencies
 /node_modules
