@@ -1,5 +1,5 @@
-import { withIronSessionApiRoute } from "iron-session/next";
-import { NextApiHandler } from "next";
+import { withIronSessionApiRoute } from "iron-session/next"
+import { NextApiHandler } from "next"
 import { IronSessionOptions } from "iron-session"
 import { z } from "zod"
 
@@ -7,10 +7,11 @@ export const sessionSchema = z.object({
   user: z.object({
     id: z.number(),
     username: z.string(),
+    role: z.string(),
   })
-});
+})
 
-export const IRON_COOKIE = "iron-cookie";
+export const IRON_COOKIE = "iron-cookie"
 
 export const sessionOptions: IronSessionOptions = {
   password: process.env.IRON_TOKEN || "complex_password_at_least_32_characters_long",
@@ -19,18 +20,19 @@ export const sessionOptions: IronSessionOptions = {
   cookieOptions: {
     secure: process.env.NODE_ENV === "production",
   },
-};
+}
 
 export function withSessionRoute(handler: NextApiHandler) {
-  return withIronSessionApiRoute(handler, sessionOptions);
+  return withIronSessionApiRoute(handler, sessionOptions)
 }
 
 declare module "iron-session" {
   interface IronSessionData {
     user?: {
-      id: number;
-      username: string;
-      isLoggedIn : boolean; //ATT aggiunto
-    };
+      id: number
+      username: string
+      role: string
+      isLoggedIn: boolean //ATT aggiunto
+    }
   }
 }

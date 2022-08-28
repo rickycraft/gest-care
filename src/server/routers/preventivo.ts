@@ -5,6 +5,7 @@ import { TRPCError } from "@trpc/server"
 import { Prisma } from "@prisma/client"
 import { rowRouter } from './preventivo_row'
 import { optsRouter } from './preventivo_opts'
+import { canUnlockPreventivo } from 'utils/role'
 
 const prevSelect = {
   id: true,
@@ -162,6 +163,20 @@ export const prevRouter = createProtectedRouter()
         await prisma.preventivo.update({
           where: { id: input.id },
           data: { locked: true },
+        })
+      } catch {
+        throw new TRPCError({ code: "BAD_REQUEST" })
+      }
+    }
+  })
+  .mutation('unlock', {
+    input: z.object({ id: z.number() }),
+    resolve: async ({ input, ctx }) => {
+      if (!canUnlockPreventivo(ctx.user.role)) throw new TRPCError({ code: "FORBIDDEN" })
+      try {
+        await prisma.preventivo.update({
+          where: { id: input.id },
+          data: { locked: false },
         })
       } catch {
         throw new TRPCError({ code: "BAD_REQUEST" })
