@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Script from 'next/script'
 import { useEffect } from 'react'
-import { Table } from 'react-bootstrap'
+import { Image, Table } from 'react-bootstrap'
 import { prisma } from 'server/prisma'
 import { z } from 'zod'
 
@@ -117,16 +117,17 @@ type Option = {
 }
 
 export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  if (props.idPreventivo === invalidId) return <div>Invalid id</div>
-
   const opt = { image: { type: 'png', quality: 1 } }
 
   useEffect(() => {
+    if (props.idPreventivo === invalidId) return
     (window as any).html2pdf()
       .from(document.body)
       .set(opt)
       .save('preventivo_' + props.preventivo.scuola + '.pdf')
   }, [])
+
+  if (props.idPreventivo === invalidId) return <div>Invalid id</div>
 
   return (
     <div className='px-4 d-flex flex-column h-100 justify-content-between' style={{ fontSize: "12pt" }}>
@@ -137,7 +138,7 @@ export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof 
       <div className='d-flex justify-content-between'>
         <div className='d-flex' />
         <h2 className='text-center my-auto'>Preventivo {props.preventivo.scuola}</h2>
-        <img src='/vercel.png' width={150} height={150} />
+        <Image src='/vercel.png' width={150} height={150} alt="sc-logo" />
       </div>
       <div>
         <Table bordered className='border-dark fs-5'>
