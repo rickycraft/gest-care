@@ -127,30 +127,33 @@ export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof 
   }, [isButtonHidden])
 
   return (
-    <div className='px-4 d-flex flex-column h-100 justify-content-between' style={{ fontSize: "0.7rem" }}>
+    <div className='px-4 d-flex flex-column h-100 justify-content-between' style={{ fontSize: "12pt" }}>
       <div className='d-flex justify-content-between'>
         <div className='d-flex' />
         <h2 className='text-center my-auto'>Preventivo {props.preventivo.scuola}</h2>
         <Image src='/LOGOSC.svg' width={150} height={150} />
       </div>
-      <Table bordered className='border-dark fs-6'>
-        <thead className='bg-warning'>
-          <tr>
-            <th>Prodotto</th>
-            <th>Personalizzazione</th>
-            <th>Totale</th>
-          </tr>
-        </thead>
-        <tbody>
-          {props.rows.map((row: Row) => (
-            <tr key={row.id}>
-              <td>{row.prodotto}</td>
-              <td>{row.perso}</td>
-              <td>{row.totale}</td>
+      <div>
+        <Table bordered className='border-dark fs-5'>
+          <thead className='bg-warning'>
+            <tr>
+              <th>Prodotto</th>
+              <th>Personalizzazione</th>
+              <th>Totale</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {props.rows.map((row: Row) => (
+              <tr key={row.id}>
+                <td>{row.prodotto}</td>
+                <td>{row.perso}</td>
+                <td>{row.totale}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+        <h6>In tabella è indicato la bozza del preventivo dei prodotti SC con personalizzazione richiesta dai rappresentanti.</h6>
+      </div>
       <div>
         <span>Il prezzo include:</span>
         <ul>
@@ -172,7 +175,7 @@ export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof 
           </p>
         </span>
         <p className='fw-light'>
-          <span className='fst-italic'>Le informazioni, i dati e le notizie contenute nella presente comunicazione e i relativi allegati sono di natura privata e come tali possono essere riservate e sono,
+          <span className='fst-italic' style={{ fontSize: "8pt" }}>Le informazioni, i dati e le notizie contenute nella presente comunicazione e i relativi allegati sono di natura privata e come tali possono essere riservate e sono,
             comunque, destinate esclusivamente ai destinatari indicati in epigrafe. La diffusione, distribuzione e/o la copia di questi da parte di qualsiasi soggetto diverso dal
             destinatario è proibita, ai sensi dell&lsquo;art. 616 c.p. e del Reg. UE 2016/679.</span><br />
           <span>School Care • Bologna (BO) • +39 388 42 27 061</span>
