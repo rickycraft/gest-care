@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { useEffect, useState } from 'react'
-import { Button, ListGroup, Spinner, Table } from 'react-bootstrap'
+import { Button, Image, ListGroup, Spinner, Table } from 'react-bootstrap'
 import { prisma } from 'server/prisma'
 import { z } from 'zod'
 
@@ -88,7 +88,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (isNaN(idPreventivo)) return invalidProps
 
   const preventivo = await getPreventivo(idPreventivo)
-  console.log(preventivo)
   if (preventivo == null) return invalidProps
   const rows = await getRows(idPreventivo)
   const options = await getOptions(idPreventivo)
@@ -124,14 +123,18 @@ export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof 
   useEffect(() => {
     if (!isButtonHidden) return
     window.print()
-    setButtonHidden(false)
+    //setButtonHidden(false)
   }, [isButtonHidden])
 
   return (
-    <div>
-      <h2>Preventivo {props.preventivo.scuola}</h2>
-      <Table striped bordered className='mb-3'>
-        <thead>
+    <div className='px-4 d-flex flex-column h-100 justify-content-between' style={{ fontSize: "0.7rem" }}>
+      <div className='d-flex justify-content-between'>
+        <div className='d-flex' />
+        <h2 className='text-center my-auto'>Preventivo {props.preventivo.scuola}</h2>
+        <Image src='/LOGOSC.svg' width={150} height={150} />
+      </div>
+      <Table bordered className='border-dark fs-6'>
+        <thead className='bg-warning'>
           <tr>
             <th>Prodotto</th>
             <th>Personalizzazione</th>
@@ -149,19 +152,35 @@ export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof 
         </tbody>
       </Table>
       <div>
-        <ListGroup variant='flush' as="ol" numbered>
+        <span>Il prezzo include:</span>
+        <ul>
           {props.options.filter((option: Option) => option.selected)
             .map((option: Option) => (
-              <ListGroup.Item key={option.id} as="li">
+              <li key={option.id}>
                 {option.nome}
-              </ListGroup.Item>
+              </li>
             ))}
-        </ListGroup>
+        </ul>
       </div>
-      <Button variant="primary" onClick={() => setButtonHidden(true)} hidden={isButtonHidden}>
-        Stampa
-      </Button>
-    </div>
+      <div className='text-center'>
+        <span className='fw-bold'>
+          <p>
+            Firmando questo documento l&lsquo;interessato/gli interessati si impegna/no a rispettare il proprio impegno nel progetto sovradescritto. <br />
+          </p>
+          <p>
+            Firma (R) {"_".repeat(30)} Firma (SC) {"_".repeat(30)}
+          </p>
+        </span>
+        <p className='fw-light'>
+          <span className='fst-italic'>Le informazioni, i dati e le notizie contenute nella presente comunicazione e i relativi allegati sono di natura privata e come tali possono essere riservate e sono,
+            comunque, destinate esclusivamente ai destinatari indicati in epigrafe. La diffusione, distribuzione e/o la copia di questi da parte di qualsiasi soggetto diverso dal
+            destinatario è proibita, ai sensi dell&lsquo;art. 616 c.p. e del Reg. UE 2016/679.</span><br />
+          <span>School Care • Bologna (BO) • +39 388 42 27 061</span>
+        </p>
+        <Button variant="primary" onClick={() => setButtonHidden(true)} hidden={isButtonHidden}>
+          Stampa
+        </Button>
+      </div>
+    </div >
   )
 }
-
