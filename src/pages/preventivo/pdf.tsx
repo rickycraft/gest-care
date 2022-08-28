@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { ListGroup, Spinner, Table } from 'react-bootstrap'
+import { useEffect, useState } from 'react'
+import { Button, ListGroup, Spinner, Table } from 'react-bootstrap'
 import { prisma } from 'server/prisma'
 import { z } from 'zod'
 
@@ -117,7 +118,15 @@ type Option = {
 
 export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   if (props.idPreventivo === invalidId) return <div>Invalid id</div>
-  console.log(props)
+
+  const [isButtonHidden, setButtonHidden] = useState(false)
+
+  useEffect(() => {
+    if (!isButtonHidden) return
+    window.print()
+    setButtonHidden(false)
+  }, [isButtonHidden])
+
   return (
     <div>
       <h2>Preventivo {props.preventivo.scuola}</h2>
@@ -149,6 +158,9 @@ export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof 
             ))}
         </ListGroup>
       </div>
+      <Button variant="primary" onClick={() => setButtonHidden(true)} hidden={isButtonHidden}>
+        Stampa
+      </Button>
     </div>
   )
 }
