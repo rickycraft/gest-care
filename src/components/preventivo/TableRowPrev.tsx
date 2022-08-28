@@ -84,19 +84,19 @@ export default function TableRowPrev({
                 </Form.Select>
             </td>
             <td>{Number(pers.prezzo)}</td>
-            <td><Form.Control value={(newRow.provSc == 0) ? '' : newRow.provSc} type="number" disabled={!isEditable}
+            <td><Form.Control value={newRow.provSc} type="number" disabled={!isEditable}
                 onInput={(e) => setNewRow({
                     ...newRow,
                     provSc: Number(e.currentTarget.value)
                 })} />
             </td>
-            <td><Form.Control value={(newRow.provComm == 0) ? '' : newRow.provComm} type="number" disabled={!isEditable}
+            <td><Form.Control value={newRow.provComm} type="number" disabled={!isEditable}
                 onInput={(e) => setNewRow({
                     ...newRow,
                     provComm: Number(e.currentTarget.value)
                 })} />
             </td>
-            <td><Form.Control value={(newRow.provRappre == 0) ? '' : newRow.provRappre} type="number" disabled={!isEditable}
+            <td><Form.Control value={newRow.provRappre} type="number" disabled={!isEditable}
                 onInput={(e) => setNewRow({
                     ...newRow,
                     provRappre: Number(e.currentTarget.value)
