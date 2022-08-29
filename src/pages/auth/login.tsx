@@ -37,7 +37,7 @@ export default function Login() {
   }
 
   return (
-    <div className='d-flex h-100 justify-content-center'>
+    <div className='d-flex justify-content-center' style={{ height: "70vh" }}>
       <Form onSubmit={(e) => {
         e.preventDefault()
         const elements = (e.target as HTMLFormElement).elements
