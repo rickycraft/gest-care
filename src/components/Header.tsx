@@ -22,6 +22,7 @@ const basicMenuLinks = [
   { title: 'Prodotti', path: '/listino/prodotto', hidden: true },
   { title: 'Perso', path: '/listino/personalizzazione', hidden: true },
   { title: 'Preventivi', path: '/preventivo/list', hidden: false },
+  { title: 'Ordini', path: '/ordine/list', hidden: false },
 ]
 
 const emptyPages = ["/auth/login", "/auth/logout", "/preventivo/pdf"]
