@@ -54,7 +54,7 @@ const getPreventivo = async (idPreventivo: number) => {
       scuola: true
     }
   })
-  if (preventivo?.locked === false) return null
+  // if (preventivo?.locked === false) return null
   return preventivo
 }
 
