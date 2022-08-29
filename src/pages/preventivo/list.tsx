@@ -41,25 +41,25 @@ export default function List() {
           <Card key={prev.id} className='my-3'>
             <Card.Body>
               <Card.Title onClick={() => router.push(`/preventivo/${prev.id}`)}>{prev.nome}</Card.Title>
-              <Card.Text className='mb-0 d-flex justify-content-between'>
-                <>{prev.scuola} - {prev.listino.nome}</>
-                <span>
+              <Card.Text className='mb-0 d-flex justify-content-between flex-wrap'>
+                <span className='d-flex flex-nowrap'>{prev.scuola} - {prev.listino.nome}</span>
+                <span className='d-flex flex-nowrap'>
                   {prev.locked && canUnlockPreventivo(user.role) && (
-                    <Button variant='secondary' className='me-3' onClick={() => openModal(prev.id, prev.locked, openLock)}><MdLockOpen /></Button>
+                    <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}><MdLockOpen /></Button>
                   )}
-                  {prev.locked ? (
-                    <Button variant='primary'
-                      onClick={() => router.push({
-                        pathname: '/preventivo/pdf',
-                        query: { id: prev.id },
-                      })}
-                    ><MdDownload /></Button>
-                  ) : (
+                  {prev.locked ? (null) : (
                     <>
-                      <Button variant='secondary' className='me-3' onClick={() => openModal(prev.id, prev.locked, openLock)}>
+                      <Button variant='primary' className='me-2'
+                        onClick={
+                          () => router.push({
+                            pathname: '/preventivo/pdf',
+                            query: { id: prev.id },
+                          })}
+                      ><MdDownload /></Button>
+                      <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}>
                         <MdLock />
                       </Button>
-                      <Button variant='info' className='me-3' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
+                      <Button variant='info' className='me-2' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
                         <MdCreate />
                       </Button>
                       <Button variant='danger' onClick={() => openModal(prev.id, prev.locked, openDelete)}>
@@ -74,7 +74,8 @@ export default function List() {
               <>modificato l&apos;ultima volta da: {prev.lastEditedBy.username}, alle {prev.editedAt.toLocaleString()}</>
             </Card.Footer>
           </Card>
-        ))}
+        ))
+        }
       </div>
       <ModalEdit preventivoId={prevId} showModal={showEdit} />
       <ModalDelete preventivoId={prevId} showModal={showDelete} />
