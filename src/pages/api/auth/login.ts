@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { withSessionRoute } from "server/iron"
 import { prisma } from 'server/prisma'
 import { z } from "zod"
+import bcrypt from 'bcrypt'
 
 const credSchema = z.object({
   username: z.string(),
@@ -24,17 +25,14 @@ export default withSessionRoute(
       return
     }
     const findUser = await prisma.user.findFirst({
-      where: {
-        username: cred.data.username,
-        password: cred.data.password,
-      },
-      select: {
-        id: true,
-        username: true,
-        role: true,
-      },
+      where: { username: cred.data.username },
     })
     if (!findUser) {
+      res.send({ isLoggedIn: false })
+      return
+    }
+    const valid = await bcrypt.compare(cred.data.password, findUser.password)
+    if (!valid) {
       res.send({ isLoggedIn: false })
       return
     }
