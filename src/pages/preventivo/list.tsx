@@ -44,18 +44,18 @@ export default function List() {
               <Card.Text className='mb-0 d-flex justify-content-between flex-wrap'>
                 <span className='d-flex flex-nowrap'>{prev.scuola} - {prev.listino.nome}</span>
                 <span className='d-flex flex-nowrap'>
+                  <Button variant='primary' className='me-2'
+                    onClick={
+                      () => router.push({
+                        pathname: '/preventivo/pdf',
+                        query: { id: prev.id },
+                      })}
+                  ><MdDownload /></Button>
                   {prev.locked && canUnlockPreventivo(user.role) && (
                     <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}><MdLockOpen /></Button>
                   )}
                   {prev.locked ? (null) : (
                     <>
-                      <Button variant='primary' className='me-2'
-                        onClick={
-                          () => router.push({
-                            pathname: '/preventivo/pdf',
-                            query: { id: prev.id },
-                          })}
-                      ><MdDownload /></Button>
                       <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}>
                         <MdLock />
                       </Button>
