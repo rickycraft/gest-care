@@ -9,6 +9,7 @@ import { useRouter } from 'next/router'
 import ErrorMessage from 'components/utils/ErrorMessage'
 import ModalOptions from 'components/preventivo/ModalOptionsPreventivo'
 
+
 const invalidId = -1
 
 const parseId = (id: any) => {
@@ -132,6 +133,7 @@ export default function Index() {
               onClickEdit={() => { }} />}
           </tbody>
         </Table>
+        </div>
         <ModalOptions prevId={idPreventivo} />
         {/* alert per mostrare i messaggi di errore */}
         <ErrorMessage message={errorMsg} />
