@@ -76,7 +76,7 @@ export default function Pers() {
           </Form.Select>
         </Form.Group>
         {/*Tabella che mostra i persotti del listino selezionato*/}
-        <Table bordered hover hidden={listino == -1}>
+        <Table bordered hover hidden={listino == -1} responsive>
           <thead>
             <tr>
               <th>Nome Personalizzazione</th>
