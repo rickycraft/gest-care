@@ -86,17 +86,15 @@ export default function Index() {
       <style type="text/css">
         {`
             .table:not(thead){
-              display: block; max-height: 50vh; overflow-y: auto;
-              <!--width:800px;-->
-
+              display: block;
+              max-height: 60vh;
+              overflow-y: auto;
             }
-
             .table thead tr{
               position: sticky;
               top: 0;
               background-color: white;
              }
-
             tbody tr:last-child{
               background-color: white;
               position: sticky;
@@ -105,35 +103,38 @@ export default function Index() {
           }
           ` }
       </style>
-      <Table bordered responsive>
+      <Table bordered responsive className='w-100'>
+        <style type="text/css"> {`
+          .t-input-number {
+            width: 8%;
+            min-width: 5em;
+          }
+          .t-number {
+            width: 5%;
+            min-width: 4em;
+          }
+          .t-select {
+            min-width: 10em;
+          }
+          .btn {
+              display: flex;
+              align-items: center;
+              flex-wrap: nowrap;
+              margin-left: auto;
+              margin-right: auto;
+          }
+        `} </style>
         <thead>
           <tr>
-            <style type="text/css">  {`
-             .prodottoId, .persId{
-                  width:20%;
-                  height:15%;
-              }
-              .price{
-                width:5%;
-                height:15%;
-              }
-              .buttons{
-                width:10%;  height:15%;
-              }
-              .provv{
-                width:7%;  height:15%;;
-              }
-
-             ` } </style>
-            <th className="prodottoId"> Prodotto</th>
-            <th className="price"></th>
-            <th className="persId">Pers</th>
-            <th className="price"></th>
-            <th className="provv">SC</th>
-            <th className="provv">Comm.</th>
-            <th className="provv">Rappr.</th>
-            <th className="price">TOT</th>
-            <th className="buttons"></th>
+            <th className='t-select'>Prodotto</th>
+            <th className='t-number'></th>
+            <th className='t-select'>Pers</th>
+            <th className='t-number'></th>
+            <th className='t-input-number'>SC</th>
+            <th className='t-input-number'>Comm.</th>
+            <th className='t-input-number'>Rappr.</th>
+            <th className='t-number'>TOT</th>
+            <th style={{ width: "16%" }}></th>
           </tr>
         </thead>
         <tbody>
@@ -168,7 +169,6 @@ export default function Index() {
             onClickEdit={() => { }} />}
         </tbody>
       </Table>
-
       <ModalOptions prevId={idPreventivo} />
       {/* alert per mostrare i messaggi di errore */}
       <ErrorMessage message={errorMsg} />
