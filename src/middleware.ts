@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const cookie = request.cookies.get("iron-cookie")
-  if (cookie === undefined) return NextResponse.redirect(new URL('/login', request.nextUrl.origin))
+  if (cookie === undefined) return NextResponse.redirect(new URL('/auth/login', request.nextUrl.origin))
   // check for role here
 
   return next

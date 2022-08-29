@@ -23,7 +23,7 @@ const basicMenuLinks = [
   { title: 'Preventivi', path: '/preventivo/list', hidden: false },
 ]
 
-const emptyPages = ["/login", "/preventivo/pdf"]
+const emptyPages = ["/auth/login", "/preventivo/pdf"]
 const defaultRole = 'user'
 
 export default function Header() {
@@ -46,7 +46,7 @@ export default function Header() {
           </Nav>
           <Nav>
             <NavDropdown align="end" title={user.username.toUpperCase()} menuVariant="dark">
-              <NavDropdown.Item href="/logout">Logout</NavDropdown.Item>
+              <NavDropdown.Item href="/auth/logout">Logout</NavDropdown.Item>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
