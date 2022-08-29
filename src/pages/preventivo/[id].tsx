@@ -88,17 +88,17 @@ export default function Index() {
         <p>ultima modifica alle {preventivoQuery.data.editedAt.toLocaleString()}</p>
         {/*Tabella che mostra i prodotti del preventivo selezionato*/}
         <style type="text/css">
-            {`
-            .table:not(thead){    
-              display: block;  height: 600px; overflow-y: scroll; width:1000px;
-            } 
+          {`
+            .table:not(thead){
+              display: block; height: 50vh; overflow-y: scroll;
+            }
 
             .table thead tr{
               position: sticky;
               top: 0;
-              background-color: white;          
+              background-color: white;
              }
-             
+
             tbody tr:last-child{
               background: white;
               position: sticky;
@@ -106,7 +106,7 @@ export default function Index() {
             }
           }
           ` }
-            </style>
+        </style>
         <Table bordered hover responsive>
           <thead>
             <tr>
@@ -153,7 +153,7 @@ export default function Index() {
               onClickEdit={() => { }} />}
           </tbody>
         </Table>
-        
+
         <ModalOptions prevId={idPreventivo} />
         {/* alert per mostrare i messaggi di errore */}
         <ErrorMessage message={errorMsg} />
