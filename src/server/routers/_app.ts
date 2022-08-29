@@ -6,6 +6,7 @@ import { fornitoreRouter } from './fornitore'
 import { listinoRouter } from './listino'
 import { persRouter } from './personalizzazione'
 import { prevRouter } from './preventivo'
+import { authRouter } from './auth'
 
 export const appRouter = createRouter()
   .transformer(superjson)
@@ -14,7 +15,7 @@ export const appRouter = createRouter()
       return 'yay!'
     },
   })
-  //.merge('auth.', authRouter)
+  .merge('auth.', authRouter)
   .merge('user.', userRouter)
   .merge('prodotto.', prodRouter)
   .merge('fornitore.', fornitoreRouter)
