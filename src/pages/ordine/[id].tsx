@@ -1,3 +1,4 @@
+import TableRow from 'components/ordine/TableRow'
 import { useRouter } from 'next/router'
 import { useMemo } from 'react'
 import { Card, Spinner, Table } from 'react-bootstrap'
@@ -35,15 +36,14 @@ export default function Index() {
         <tbody>
           {
             ordineQuery.data.OrdineRow.map(row => (
-              <tr key={row.id}>
-                <td>{row.prevRow.prodotto.nome}</td>
-                <td>Pezzi</td>
-                <td>{Number(row.prevRow.prodotto.prezzo)}</td>
-                <td>{Number(row.prevRow.provvigioneSC)}</td>
-                <td>{Number(row.prevRow.provvigioneComm)}</td>
-                <td>{Number(row.prevRow.provvigioneRappre)}</td>
-                <td>Totale</td>
-              </tr>
+              <TableRow key={row.id}
+                _quantity={row.quantity}
+                prod={row.prevRow.prodotto}
+                pers={row.prevRow.personalizzazione}
+                provvSC={Number(row.prevRow.provvigioneSC)}
+                provvComm={Number(row.prevRow.provvigioneComm)}
+                provvRappre={Number(row.prevRow.provvigioneRappre)}
+              />
             ))
           }
         </tbody>
