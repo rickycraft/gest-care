@@ -53,10 +53,27 @@ export default function TableRowPrev({
     }
 
     return (
-        <tr key={row.id} onDoubleClick={() => {
+    
+        <tr className="tr" key={row.id} onDoubleClick={() => {
             if (!locked) setIsEditable(true)
         }}>
-            <td>
+                <style type="text/css">  {`
+             .row{
+                width:100%;  
+                       
+                margin-left: 0px;
+                border: none;
+            }
+
+            .tr{
+                
+                height:15px !Important;
+            }
+           
+              }
+            
+             ` } </style>
+            <td className="row">
                 <Form.Select
                     disabled={!isEditable}
                     isInvalid={newRow.prodId == invalidId && !isNew}

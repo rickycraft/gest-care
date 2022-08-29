@@ -91,6 +91,8 @@ export default function Index() {
           {`
             .table:not(thead){
               display: block; height: 50vh; overflow-y: scroll;
+              <!--width:800px;-->
+              
             }
 
             .table thead tr{
@@ -100,7 +102,7 @@ export default function Index() {
              }
 
             tbody tr:last-child{
-              background: white;
+              background-color: white;
               position: sticky;
               bottom: 0;
             }
@@ -110,20 +112,39 @@ export default function Index() {
         <Table bordered hover responsive>
           <thead>
             <tr>
-              <th>Prodotto</th>
-              <th></th>
-              <th>Pers</th>
-              <th></th>
-              <th>School-Care</th>
-              <th>Commerciale</th>
-              <th>Rappresentanti</th>
-              <th>TOT</th>
-              <th></th>
+            <style type="text/css">  {`
+             .prodottoId, .persId{  
+                  width:20%;  
+                  height:15%;
+              } 
+              .price{  
+                width:5%;  
+                height:15%;
+              }
+              .buttons{
+                width:10%;  height:15%;
+              }
+              .provv{
+                width:7%;  height:15%;;
+              }
+            
+             ` } </style>
+              <th className="prodottoId"> Prodotto</th>
+              <th className="price"></th>
+              <th className="persId">Pers</th>
+              <th className="price"></th>
+              <th className="provv">SC</th>
+              <th className="provv">Comm.</th>
+              <th className="provv">Rappr.</th>
+              <th className="price">TOT</th>
+              <th className="buttons"></th>
             </tr>
           </thead>
+          
           <tbody>
+         
             {preventivoRowQuery.data.map((prevRow) => (
-              <TableRowPrev
+              <TableRowPrev 
                 locked={locked}
                 key={prevRow.id}
                 row={prevRow}
