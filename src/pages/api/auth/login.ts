@@ -21,19 +21,19 @@ export default withSessionRoute(
   async function loginRoute(req: NextApiRequest, res: NextApiResponse<loginResponse | { isLoggedIn: boolean }>) {
     const cred = credSchema.safeParse(req.body)
     if (!cred.success) {
-      res.status(400).end()
+      res.status(401).end()
       return
     }
     const findUser = await prisma.user.findFirst({
       where: { username: cred.data.username },
     })
     if (!findUser) {
-      res.send({ isLoggedIn: false })
+      res.status(401).end()
       return
     }
     const valid = await bcrypt.compare(cred.data.password, findUser.password)
     if (!valid) {
-      res.send({ isLoggedIn: false })
+      res.status(401).end()
       return
     }
     const user: loginResponse = {

@@ -1,9 +1,14 @@
 import { useRouter } from 'next/router'
-import React, { useState } from 'react'
-import LoginForm from 'components/LoginForm'
 import { useAtom } from 'jotai'
 import { userAtom } from 'utils/atom'
 import { z } from 'zod'
+import { useEffect, useMemo, useState } from 'react'
+import { FormEvent } from 'react'
+import { InputGroup } from 'react-bootstrap'
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import { FaUserCircle, FaKey } from "react-icons/fa"
+import ErrorMessage from 'components/utils/ErrorMessage'
 
 const loginResponseSchema = z.object({
   id: z.number(),
@@ -16,37 +21,57 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState('')
   const [, setUserAtom] = useAtom(userAtom)
 
+  const submit = (username: string, password: string) => {
+    fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    }).then(res => res.json())
+      .then(res => {
+        const result = loginResponseSchema.safeParse(res)
+        if (!result.success) {
+          setErrorMsg('Login response malformed')
+          return
+        }
+        setUserAtom(result.data)
+        window.location.href = window.location.origin
+      }).catch(() => setErrorMsg('Username o Passoword errati'))
+  }
+
   return (
-    <div className="login">
-      <LoginForm
-        errorMessage={errorMsg}
-        onSubmit={async (username, password) => {
-          try {
-            const response = await fetch('/api/auth/login', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ username, password }),
-            })
-            if (response.ok) {
-              const result = loginResponseSchema.safeParse(await response.json())
-              if (!result.success) {
-                setErrorMsg('Login response malformed')
-                return
-              }
-              if (!result.data.isLoggedIn) {
-                setErrorMsg("Wrong username or password!")
-                return
-              }
-              setUserAtom(result.data)
-              window.location.replace(window.location.origin)
-            } else {
-              setErrorMsg('Server error')
-            }
-          } catch (error) {
-            setErrorMsg('An unexpected error happened')
-          }
-        }}
-      />
+    <div className='d-flex h-100 justify-content-center'>
+      <Form onSubmit={(e) => {
+        e.preventDefault()
+        const elements = (e.target as HTMLFormElement).elements
+        const username = elements.namedItem('username') as HTMLInputElement
+        const password = elements.namedItem('password') as HTMLInputElement
+        submit(username.value, password.value)
+      }} className='d-flex flex-column justify-content-center col-6'>
+        <Form.Group className="mb-3" controlId="username">
+          <Form.Label>Username</Form.Label>
+          <InputGroup hasValidation>
+            <InputGroup.Text id="inputGroupPrepend"><FaUserCircle /></InputGroup.Text>
+            <Form.Control type="text" required placeholder="Enter username" />
+            <Form.Control.Feedback type="invalid" >
+              Please choose a real username
+            </Form.Control.Feedback>
+          </InputGroup >
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="password" >
+          <Form.Label>Password</Form.Label>
+          <InputGroup hasValidation >
+            <InputGroup.Text id="inputGroupPrepend"><FaKey /></InputGroup.Text>
+            <Form.Control type="password" required placeholder="Enter password" />
+            <Form.Control.Feedback type="invalid" >
+              Your password must be minimum 8 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
+            </Form.Control.Feedback>
+          </InputGroup >
+        </Form.Group>
+        <Button variant="primary" type="submit">
+          Submit
+        </Button>
+        <ErrorMessage message={errorMsg} />
+      </Form>
     </div>
   )
 }
