@@ -76,6 +76,7 @@ model Preventivo {
   options      PreventivoOption[]
   listino      Listino            @relation(fields: [listinoId], references: [id])
   lastEditedBy User               @relation(fields: [userId], references: [id])
+  Ordine       Ordine[]
 }
 
 model PreventivoRow {
@@ -90,6 +91,7 @@ model PreventivoRow {
   preventivo        Preventivo        @relation(fields: [preventivoId], references: [id], onDelete: Cascade)
   prodotto          Prodotto          @relation(fields: [prodottoId], references: [id], onDelete: Cascade)
   personalizzazione Personalizzazione @relation(fields: [personalizzazioneId], references: [id], onDelete: Cascade)
+  OrdineRow         OrdineRow[]
 
   @@unique([preventivoId, prodottoId, personalizzazioneId])
 }
@@ -101,4 +103,26 @@ model PreventivoOption {
   selected Boolean @default(false)
 
   preventivi Preventivo[]
+}
+
+model Ordine {
+  id           Int     @id @default(autoincrement())
+  preventivoId Int
+  totSC        Decimal @default(0) @db.Decimal(10, 2)
+  totRappre    Decimal @default(0) @db.Decimal(10, 2)
+  totComm      Decimal @default(0) @db.Decimal(10, 2)
+
+  preventivo Preventivo @relation(fields: [preventivoId], references: [id])
+
+  @@unique([preventivoId])
+}
+
+model OrdineRow {
+  id       Int @id @default(autoincrement())
+  quantity Int @default(0)
+
+  prevRow         PreventivoRow @relation(fields: [preventivoRowId], references: [id])
+  preventivoRowId Int
+
+  @@unique([preventivoRowId])
 }
