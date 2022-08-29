@@ -53,27 +53,10 @@ export default function TableRowPrev({
     }
 
     return (
-    
         <tr className="tr" key={row.id} onDoubleClick={() => {
             if (!locked) setIsEditable(true)
         }}>
-                <style type="text/css">  {`
-             .row{
-                width:100%;  
-                       
-                margin-left: 0px;
-                border: none;
-            }
-
-            .tr{
-                
-                height:15px !Important;
-            }
-           
-              }
-            
-             ` } </style>
-            <td className="row">
+            <td>
                 <Form.Select
                     disabled={!isEditable}
                     isInvalid={newRow.prodId == invalidId && !isNew}
@@ -101,19 +84,19 @@ export default function TableRowPrev({
                 </Form.Select>
             </td>
             <td>{Number(pers.prezzo)}</td>
-            <td><Form.Control value={newRow.provSc} type="number" disabled={!isEditable}
+            <td><Form.Control value={newRow.provSc} type="number" disabled={!isEditable} className="p-1"
                 onInput={(e) => setNewRow({
                     ...newRow,
                     provSc: Number(e.currentTarget.value)
                 })} />
             </td>
-            <td><Form.Control value={newRow.provComm} type="number" disabled={!isEditable}
+            <td><Form.Control value={newRow.provComm} type="number" disabled={!isEditable} className="p-1"
                 onInput={(e) => setNewRow({
                     ...newRow,
                     provComm: Number(e.currentTarget.value)
                 })} />
             </td>
-            <td><Form.Control value={newRow.provRappre} type="number" disabled={!isEditable}
+            <td><Form.Control value={newRow.provRappre} type="number" disabled={!isEditable} className="p-1"
                 onInput={(e) => setNewRow({
                     ...newRow,
                     provRappre: Number(e.currentTarget.value)
@@ -123,8 +106,8 @@ export default function TableRowPrev({
             {/*Gruppo di bottoni "edit" e "delete" per ogni riga prodotto
                 edit: modifica il prodotto della riga  (TODO)
                 delete: elimina il prodotto della riga*/}
-            {
-                <td>
+            <td>
+                {isEditable ? (
                     <ButtonGroup hidden={isNew || locked}>
                         <Button name='EditButton' variant="outline-success" disabled={!isValid}
                             onClick={() => {
@@ -133,35 +116,31 @@ export default function TableRowPrev({
                             }}>
                             Salva<FcSupport />
                         </Button>
-                        {isEditable &&
-                            <Button name='UndoButton' variant="outline-secondary"
-                                onClick={() => {
-                                    resetRow()
-                                    setIsEditable(false)
-                                }}>Undo<FcCancel />
-                            </Button>
-                        }
-                        {!isEditable &&
-                            <Button name="DeleteButton" variant="outline-danger"
-                                onClick={() => onClickDelete(row.id)}>Delete<FcEmptyTrash />
-                            </Button>
-                        }
-                    </ButtonGroup>
-                    <ButtonGroup hidden={!isNew || locked}>
-                        <Button name="InsertButton" variant="outline-primary" disabled={!isValid}
-                            onClick={() => {
-                                onClickInsert(newRow)
-                                resetRow()
-                            }}>
-                            Salva<FcCheckmark />
-                        </Button>
                         <Button name='UndoButton' variant="outline-secondary"
-                            onClick={() => resetRow()}>
-                            <span>Clear<FcCancel /></span>
+                            onClick={() => {
+                                resetRow()
+                                setIsEditable(false)
+                            }}>Undo<FcCancel />
                         </Button>
                     </ButtonGroup>
-                </td>
-            }
+                ) : (
+                    <Button name="DeleteButton" variant="outline-danger"
+                        onClick={() => onClickDelete(row.id)}>Delete<FcEmptyTrash />
+                    </Button>
+                )}
+                <ButtonGroup hidden={!isNew || locked}>
+                    <Button name="InsertButton" variant="outline-primary" disabled={!isValid}
+                        onClick={() => {
+                            onClickInsert(newRow)
+                            resetRow()
+                        }}>
+                        Salva<FcCheckmark />
+                    </Button>
+                    <Button name='UndoButton' variant="outline-secondary" onClick={() => resetRow()}>
+                        Clear<FcCancel />
+                    </Button>
+                </ButtonGroup>
+            </td>
         </tr >
     )
 }
