@@ -32,7 +32,7 @@ export default function Login() {
           return
         }
         setUserAtom(result.data)
-        window.location.href = window.location.origin
+        window.location.href = window.location.origin + '/preventivo/list'
       }).catch(() => setErrorMsg('Username o Passoword errati'))
   }
 
