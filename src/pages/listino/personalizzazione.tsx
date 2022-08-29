@@ -50,23 +50,9 @@ export default function Pers() {
 
   return (
     <div className="container">
-      <Head>
-        <title>Personalizzazioni</title>
-        <meta name="description" content="Created by ..." />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main>
-        <h1>
-          Listino &nbsp;
-          <ModalListino listinoId={listino} />
-        </h1>
-
-        {/* form dropdown per selezionare il listino */}
-        <Form.Group className='mb-2'>
-          <Form.Select
-            value={listino}
-            onChange={(event) => { setListino(Number(event.currentTarget.value)) }}
-          >
+      <div className='d-flex mb-2'>
+        <Form.Group className='me-2'>
+          <Form.Select value={listino} onChange={(event) => { setListino(Number(event.currentTarget.value)) }}>
             <option value={invalidListino}>Seleziona un listino</option>
             {listinoQuery.data.map(element => (
               <option key={element.id} value={element.id}>
@@ -75,38 +61,39 @@ export default function Pers() {
             ))}
           </Form.Select>
         </Form.Group>
-        {/*Tabella che mostra i persotti del listino selezionato*/}
-        <Table bordered hover hidden={listino == -1} responsive>
-          <thead>
-            <tr>
-              <th>Nome Personalizzazione</th>
-              <th>Prezzo</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {persQuery.data.map(pers => (
-              <TableRow
-                key={pers.id}
-                rowId={pers.id}
-                rowName={pers.nome}
-                rowPrice={pers.prezzo}
-                onClickDelete={deletePers}
-                onClickEdit={updatePers}
-              />
-            ))}
-            {/* riga per inserire un nuovo Pers */}
-            <PersSubmitRow
-              listino={listino}
-              updateList={() => persQuery.refetch()}
-              updateErrorMessage={(msg) => setErrorMsg(msg)}
+        <ModalListino listinoId={listino} />
+      </div>
+      {/*Tabella che mostra i persotti del listino selezionato*/}
+      <Table bordered hover hidden={listino == -1} responsive className='bg-white'>
+        <thead>
+          <tr>
+            <th>Nome Personalizzazione</th>
+            <th>Prezzo</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {persQuery.data.map(pers => (
+            <TableRow
+              key={pers.id}
+              rowId={pers.id}
+              rowName={pers.nome}
+              rowPrice={pers.prezzo}
+              onClickDelete={deletePers}
+              onClickEdit={updatePers}
             />
-          </tbody>
-        </Table>
+          ))}
+          {/* riga per inserire un nuovo Pers */}
+          <PersSubmitRow
+            listino={listino}
+            updateList={() => persQuery.refetch()}
+            updateErrorMessage={(msg) => setErrorMsg(msg)}
+          />
+        </tbody>
+      </Table>
 
-        {/* alert per mostrare i messaggi di errore */}
-        <ErrorMessage message={errorMsg} />
-      </main>
+      {/* alert per mostrare i messaggi di errore */}
+      <ErrorMessage message={errorMsg} />
     </div >
   )
 }
