@@ -2,6 +2,44 @@ import { createProtectedRouter } from "server/createRouter"
 import { z } from 'zod'
 import { prisma } from 'server/prisma'
 import { TRPCError } from "@trpc/server"
+import { Prisma } from '@prisma/client'
+
+const ordineById = async (id: number) => await prisma.ordine.findFirst({
+  where: { id },
+  select: {
+    id: true,
+    totSC: true,
+    totRappre: true,
+    totComm: true,
+    preventivo: {
+      select: { nome: true }
+    },
+    OrdineRow: {
+      select: {
+        id: true,
+        quantity: true,
+        prevRow: {
+          select: {
+            provvigioneSC: true,
+            provvigioneRappre: true,
+            provvigioneComm: true,
+            prodotto: true,
+            personalizzazione: true,
+          }
+        }
+      }
+    },
+  }
+})
+
+type Total = {
+  qt: number,
+  costo: Prisma.Decimal,
+  sc: Prisma.Decimal,
+  comm: Prisma.Decimal,
+  rappre: Prisma.Decimal,
+  tot: Prisma.Decimal,
+}
 
 export const ordineRouter = createProtectedRouter()
   .query("byId", {
@@ -9,35 +47,48 @@ export const ordineRouter = createProtectedRouter()
       id: z.number(),
     }),
     async resolve({ input }) {
-      const ordine = await prisma.ordine.findFirst({
-        where: { id: input.id },
-        select: {
-          id: true,
-          totSC: true,
-          totRappre: true,
-          totComm: true,
-          preventivo: {
-            select: { nome: true }
-          },
-          OrdineRow: {
-            select: {
-              id: true,
-              quantity: true,
-              prevRow: {
-                select: {
-                  provvigioneSC: true,
-                  provvigioneRappre: true,
-                  provvigioneComm: true,
-                  prodotto: true,
-                  personalizzazione: true,
-                }
-              }
-            }
-          },
-        }
-      })
+      const ordine = await ordineById(input.id)
       if (!ordine) throw new TRPCError({ code: "BAD_REQUEST" })
       return ordine
+    }
+  })
+  .query("totals", {
+    input: z.object({
+      id: z.number(),
+    }),
+    async resolve({ input }) {
+      const ordine = await ordineById(input.id)
+      if (!ordine) throw new TRPCError({ code: "BAD_REQUEST" })
+      const rows = ordine.OrdineRow.map(row => {
+        const costo = row.prevRow.prodotto.prezzo
+          .add(row.prevRow.personalizzazione.prezzo)
+          .mul(row.quantity)
+        const sc = row.prevRow.provvigioneSC.mul(row.quantity)
+        const comm = row.prevRow.provvigioneComm.mul(row.quantity)
+        const rappre = row.prevRow.provvigioneRappre.mul(row.quantity)
+        const qt = row.quantity
+        return {
+          costo, sc, rappre, comm, qt,
+          tot: costo.add(sc).add(comm).add(rappre),
+        }
+      })
+      const totals = rows.reduce((acc, row) => {
+        acc.qt += row.qt
+        acc.costo = acc.costo.add(row.costo)
+        acc.sc = acc.sc.add(row.sc)
+        acc.rappre = acc.rappre.add(row.rappre)
+        acc.comm = acc.comm.add(row.comm)
+        acc.tot = acc.tot.add(row.tot)
+        return acc
+      })
+      return {
+        qt: totals.qt,
+        costo: totals.costo.toNumber(),
+        sc: totals.sc.toNumber(),
+        comm: totals.comm.toNumber(),
+        rappre: totals.rappre.toNumber(),
+        tot: totals.tot.toNumber(),
+      }
     }
   })
   .query("list", {

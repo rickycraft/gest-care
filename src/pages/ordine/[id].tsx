@@ -16,16 +16,24 @@ export default function Index() {
   // handle query
   const router = useRouter()
   const idOrdine = useMemo(() => parseId(router.query.id) ?? invalidId, [router.query])
-  const ordineQuery = trpc.useQuery(['ordine.byId', { id: idOrdine }])
+  const ordineQuery = trpc.useQuery(['ordine.byId', { id: idOrdine }], {
+    enabled: idOrdine !== invalidId,
+  })
+  const totalsQuery = trpc.useQuery(['ordine.totals', { id: idOrdine }], {
+    enabled: idOrdine !== invalidId,
+  })
   const ordineEdit = trpc.useMutation(['ordine.editRow'], {
-    onSuccess: () => ordineQuery.refetch(),
+    onSuccess: () => {
+      ordineQuery.refetch()
+      totalsQuery.refetch()
+    },
   })
 
   const editRow = (id: number, quantity: number) => {
     ordineEdit.mutate({ rowId: id, quantity })
   }
 
-  if (!ordineQuery.isSuccess) return <Spinner animation="border" />
+  if (!ordineQuery.isSuccess || !totalsQuery.isSuccess) return <Spinner animation="border" />
 
   return (
     <Card body>
@@ -56,6 +64,16 @@ export default function Index() {
               />
             ))
           }
+          <tr>
+            <td></td>
+            <td>{totalsQuery.data.qt}</td>
+            <td>{totalsQuery.data.costo}</td>
+            <td>{totalsQuery.data.sc}</td>
+            <td>{totalsQuery.data.comm}</td>
+            <td>{totalsQuery.data.rappre}</td>
+            <td>{totalsQuery.data.tot}</td>
+            <td></td>
+          </tr>
         </tbody>
       </Table>
     </Card>
