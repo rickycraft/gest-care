@@ -86,7 +86,7 @@ export default function Index() {
         </h1>
         <p>ultima modifica alle {preventivoQuery.data.editedAt.toLocaleString()}</p>
         {/*Tabella che mostra i prodotti del preventivo selezionato*/}
-        <Table bordered hover >
+        <Table bordered hover responsive>
           <thead>
             <tr>
               <th>Prodotto</th>

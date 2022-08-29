@@ -76,7 +76,7 @@ export default function Prodotto() {
           </Form.Select>
         </Form.Group>
         {/*Tabella che mostra i prodotti del listino selezionato*/}
-        <Table bordered hover hidden={listino == -1}>
+        <Table bordered hover hidden={listino == -1} responsive>
           <thead>
             <tr>
               <th>Nome prodotto</th>
