@@ -7,6 +7,7 @@ import { userAtom } from 'utils/atom'
 import { useAtom } from 'jotai'
 import { NavDropdown } from 'react-bootstrap'
 import { useRouter } from 'next/router'
+import { canEditUser } from 'utils/role'
 
 const BasicMenuItem = ({ title, path }: { title: string, path: string }) => {
   return (
@@ -46,6 +47,7 @@ export default function Header() {
           </Nav>
           <Nav>
             <NavDropdown align="end" title={user.username.toUpperCase()} menuVariant="dark">
+              {canEditUser(user.role) && <NavDropdown.Item href="/auth/user">Utenti</NavDropdown.Item>}
               <NavDropdown.Item href="/auth/logout">Logout</NavDropdown.Item>
             </NavDropdown>
           </Nav>
