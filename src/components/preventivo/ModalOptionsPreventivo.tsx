@@ -28,7 +28,8 @@ export default function ModalOptions({
           <style type="text/css">
             {`
             .btn-primary{
-              background-color: purple; 
+              position: relative;
+              left: 900px;
             } 
 
           ` }
