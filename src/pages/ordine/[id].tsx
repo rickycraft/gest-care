@@ -17,6 +17,13 @@ export default function Index() {
   const router = useRouter()
   const idOrdine = useMemo(() => parseId(router.query.id) ?? invalidId, [router.query])
   const ordineQuery = trpc.useQuery(['ordine.byId', { id: idOrdine }])
+  const ordineEdit = trpc.useMutation(['ordine.editRow'], {
+    onSuccess: () => ordineQuery.refetch(),
+  })
+
+  const editRow = (id: number, quantity: number) => {
+    ordineEdit.mutate({ rowId: id, quantity })
+  }
 
   if (!ordineQuery.isSuccess) return <Spinner animation="border" />
 
@@ -32,17 +39,20 @@ export default function Index() {
           <th>Comm.</th>
           <th>Rappr.</th>
           <th>TOT</th>
+          <th></th>
         </thead>
         <tbody>
           {
             ordineQuery.data.OrdineRow.map(row => (
               <TableRow key={row.id}
+                id={row.id}
                 _quantity={row.quantity}
                 prod={row.prevRow.prodotto}
                 pers={row.prevRow.personalizzazione}
                 provvSC={Number(row.prevRow.provvigioneSC)}
                 provvComm={Number(row.prevRow.provvigioneComm)}
                 provvRappre={Number(row.prevRow.provvigioneRappre)}
+                onChange={editRow}
               />
             ))
           }

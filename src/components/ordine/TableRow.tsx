@@ -1,24 +1,34 @@
 import { Personalizzazione, Prodotto } from '@prisma/client'
-import { useMemo, useState } from 'react'
-import { Form, Spinner } from 'react-bootstrap'
+import { useEffect, useMemo, useState } from 'react'
+import { Button, ButtonGroup, Form, Spinner } from 'react-bootstrap'
+import { FcCancel } from 'react-icons/fc'
+import { MdCancel, MdSave } from 'react-icons/md'
 
 
 export default function TableRow({
+  id,
   _quantity,
   prod,
   pers,
   provvSC,
   provvComm,
   provvRappre,
+  onChange,
 }: {
+  id: number,
   _quantity: number,
   prod: Prodotto,
   pers: Personalizzazione,
   provvSC: number,
   provvComm: number,
   provvRappre: number,
+  onChange: (id: number, quantity: number) => void,
 }) {
   const [quantity, setQuantity] = useState(_quantity)
+  useEffect(() => {
+    setQuantity(_quantity)
+  }, [_quantity])
+
   const totSC = useMemo(() => quantity * provvSC, [quantity, provvSC])
   const totComm = useMemo(() => quantity * provvComm, [quantity, provvComm])
   const totRappre = useMemo(() => quantity * provvRappre, [quantity, provvRappre])
@@ -26,7 +36,6 @@ export default function TableRow({
   const total = useMemo(() => quantity * (
     totSC + totComm + totRappre + totProd
   ), [totSC, totComm, totRappre, totProd])
-
   const totals = useMemo(() => (
     <>
       <td>{totProd.toFixed(2)}</td>
@@ -44,6 +53,10 @@ export default function TableRow({
         <Form.Control type='number' value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
       </td>
       {totals}
+      <ButtonGroup hidden={_quantity == quantity}>
+        <Button variant="outline-success" onClick={() => onChange(id, quantity)}>SALVA<MdSave /></Button>
+        <Button variant="outline-secondary" onClick={() => setQuantity(_quantity)}>ANNULLA<MdCancel /></Button>
+      </ButtonGroup>
     </tr>
   )
 }
