@@ -34,7 +34,7 @@ export default function Index() {
         </thead>
         <tbody>
           {
-            ordineQuery.data.rows.map(row => (
+            ordineQuery.data.OrdineRow.map(row => (
               <tr key={row.id}>
                 <td>{row.prevRow.prodotto.nome}</td>
                 <td>Pezzi</td>

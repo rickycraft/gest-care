@@ -11,12 +11,14 @@ export const ordineRouter = createProtectedRouter()
     async resolve({ input }) {
       const ordine = await prisma.ordine.findFirst({
         where: { id: input.id },
-        include: { preventivo: true }
-      })
-      if (!ordine) throw new TRPCError({ code: "BAD_REQUEST" })
-      const rows = await prisma.preventivoRow.findFirst({
-        where: { preventivoId: ordine.preventivoId },
         select: {
+          id: true,
+          totSC: true,
+          totRappre: true,
+          totComm: true,
+          preventivo: {
+            select: { nome: true }
+          },
           OrdineRow: {
             select: {
               id: true,
@@ -24,18 +26,18 @@ export const ordineRouter = createProtectedRouter()
               prevRow: {
                 select: {
                   provvigioneSC: true,
-                  provvigioneComm: true,
                   provvigioneRappre: true,
+                  provvigioneComm: true,
                   prodotto: true,
                   personalizzazione: true,
                 }
               }
             }
-          }
+          },
         }
       })
-      if (!rows) throw new TRPCError({ code: "BAD_REQUEST" })
-      return { ...ordine, rows: rows.OrdineRow }
+      if (!ordine) throw new TRPCError({ code: "BAD_REQUEST" })
+      return ordine
     }
   })
   .query("list", {
@@ -68,13 +70,16 @@ export const ordineRouter = createProtectedRouter()
           where: { preventivoId: input.preventivoId },
           select: { id: true }
         })
-        await prisma.ordine.create({
+        const ordine = await prisma.ordine.create({
           data: {
             preventivo: { connect: { id: input.preventivoId } },
           }
         })
         await prisma.ordineRow.createMany({
-          data: rows.map(row => ({ preventivoRowId: row.id }))
+          data: rows.map(row => ({
+            preventivoRowId: row.id,
+            ordineId: ordine.id
+          }))
         })
       } catch {
         throw new TRPCError({ code: "BAD_REQUEST" })
