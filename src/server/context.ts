@@ -1,7 +1,7 @@
 import { inferAsyncReturnType } from '@trpc/server'
 import { unsealData } from "iron-session"
 import * as trpcNext from '@trpc/server/adapters/next'
-import { IRON_COOKIE, sessionOptions, sessionSchema } from "./iron"
+import { IRON_COOKIE, ironSessionOptions, sessionSchema } from "utils/iron"
 
 
 // auth for server side
@@ -13,7 +13,7 @@ export async function createContext({ req, res }: trpcNext.CreateNextContextOpti
   const cookie = req.cookies[IRON_COOKIE]
   // check if cookie is present
   if (!cookie) return {}
-  const unsealed = await unsealData(cookie, sessionOptions)
+  const unsealed = await unsealData(cookie, ironSessionOptions)
   // try parse cookie
   const result = sessionSchema.safeParse(unsealed)
   if (!result.success) return {}
