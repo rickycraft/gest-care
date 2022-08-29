@@ -112,17 +112,20 @@ model Ordine {
   totRappre    Decimal @default(0) @db.Decimal(10, 2)
   totComm      Decimal @default(0) @db.Decimal(10, 2)
 
-  preventivo Preventivo @relation(fields: [preventivoId], references: [id])
+  preventivo Preventivo  @relation(fields: [preventivoId], references: [id])
+  OrdineRow  OrdineRow[]
 
   @@unique([preventivoId])
 }
 
 model OrdineRow {
-  id       Int @id @default(autoincrement())
-  quantity Int @default(0)
-
-  prevRow         PreventivoRow @relation(fields: [preventivoRowId], references: [id])
+  id              Int @id @default(autoincrement())
+  quantity        Int @default(0)
+  ordineId        Int
   preventivoRowId Int
+
+  ordine  Ordine        @relation(fields: [ordineId], references: [id], onDelete: Cascade)
+  prevRow PreventivoRow @relation(fields: [preventivoRowId], references: [id])
 
   @@unique([preventivoRowId])
 }
