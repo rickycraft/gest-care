@@ -86,7 +86,7 @@ export default function Index() {
       <style type="text/css">
         {`
             .table:not(thead){
-              display: block; height: 50vh; overflow-y: scroll;
+              display: block; max-height: 50vh; overflow-y: auto;
               <!--width:800px;-->
 
             }

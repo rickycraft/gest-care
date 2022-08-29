@@ -18,7 +18,7 @@ const BasicMenuItem = ({ title, path }: { title: string, path: string }) => {
 }
 
 const basicMenuLinks = [
-  { title: 'Home', path: '/', hidden: false },
+  // { title: 'Home', path: '/', hidden: false },
   { title: 'Prodotti', path: '/listino/prodotto', hidden: true },
   { title: 'Perso', path: '/listino/personalizzazione', hidden: true },
   { title: 'Preventivi', path: '/preventivo/list', hidden: false },
