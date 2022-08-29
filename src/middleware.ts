@@ -1,19 +1,17 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-//import { IRON_COOKIE } from 'server/iron'
+import { getIronSession } from "iron-session/edge"
+import { ironSessionOptions } from 'utils/iron'
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const next = NextResponse.next()
+  if (process.env.NODE_ENV === 'development') return next
 
-  if (process.env.NODE_ENV === 'development') {
-    return next
-  }
+  const session = await getIronSession(request, next, ironSessionOptions)
+  if (session.user === undefined) return NextResponse.redirect(new URL('/auth/login', request.nextUrl.origin))
 
-  const cookie = request.cookies.get("iron-cookie")
-  if (cookie === undefined) return NextResponse.redirect(new URL('/auth/login', request.nextUrl.origin))
-  // check for role here
-
+  // can check for role here
   return next
 }
 
