@@ -3,6 +3,7 @@ import { Button, Form, Modal, Spinner } from 'react-bootstrap'
 import { trpc } from 'utils/trpc'
 import { MdReceipt } from 'react-icons/md'
 
+
 export default function ModalOptions({
   prevId,
 }: {
@@ -22,8 +23,19 @@ export default function ModalOptions({
 
   return (
     <>
-      <div className='d-flex justify-content-end'>
-        <Button variant="primary" size='lg' className="rounded-circle" onClick={() => setShow(true)}>
+      {/*<div className='d-flex justify-content-end'>*/}
+      <div /*className='position-absolute top-50 end-0 translate-middle-x'*/>
+          <style type="text/css">
+            {`
+            .btn-primary{
+              background-color: purple; 
+            } 
+
+          ` }
+            
+          </style>
+
+        <Button  variant="primary" size='lg' className="rounded-circle" onClick={() => setShow(true)}>
           <MdReceipt />
         </Button>
       </div>
