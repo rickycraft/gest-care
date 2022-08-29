@@ -29,8 +29,9 @@ export default function User() {
           e.preventDefault()
           const target = e.target as any
           const password = target.password.value as string
-          console.log(username, userId)
-          userMutate.mutate({ username, password, role })
+          const _username = (isUserManual) ? username : (userQuery.data.find(u => u.id == userId)?.username)
+          if (_username === undefined) return
+          userMutate.mutate({ username: _username, password, role })
           target.reset()
           setUserId(invalidId)
           setUsername('')
