@@ -2,7 +2,7 @@ import Head from 'next/head'
 import { trpc } from 'utils/trpc'
 import Table from 'react-bootstrap/Table'
 import { useEffect, useMemo, useState } from 'react'
-import { Spinner } from 'react-bootstrap'
+import { Card, Spinner } from 'react-bootstrap'
 import TableRowPrev from 'components/preventivo/TableRowPrev'
 import { Prisma } from '@prisma/client'
 import { useRouter } from 'next/router'
@@ -77,22 +77,18 @@ export default function Index() {
   if (preventivoQuery.data === null) return <Spinner animation="border" />
 
   return (
-    <div>
-      <Head>
-        <title>Preventivo</title>
-      </Head>
-      <main>
-        <h1>
-          {preventivoQuery.data.nome.toUpperCase()}
-        </h1>
-        <p>ultima modifica alle {preventivoQuery.data.editedAt.toLocaleString()}</p>
-        {/*Tabella che mostra i prodotti del preventivo selezionato*/}
-        <style type="text/css">
-          {`
+    <Card body>
+      <h1>
+        {preventivoQuery.data.nome.toUpperCase()}
+      </h1>
+      <p>ultima modifica alle {preventivoQuery.data.editedAt.toLocaleString()}</p>
+      {/*Tabella che mostra i prodotti del preventivo selezionato*/}
+      <style type="text/css">
+        {`
             .table:not(thead){
               display: block; height: 50vh; overflow-y: scroll;
               <!--width:800px;-->
-              
+
             }
 
             .table thead tr{
@@ -108,17 +104,17 @@ export default function Index() {
             }
           }
           ` }
-        </style>
-        <Table bordered hover responsive>
-          <thead>
-            <tr>
+      </style>
+      <Table bordered responsive>
+        <thead>
+          <tr>
             <style type="text/css">  {`
-             .prodottoId, .persId{  
-                  width:20%;  
+             .prodottoId, .persId{
+                  width:20%;
                   height:15%;
-              } 
-              .price{  
-                width:5%;  
+              }
+              .price{
+                width:5%;
                 height:15%;
               }
               .buttons{
@@ -127,58 +123,55 @@ export default function Index() {
               .provv{
                 width:7%;  height:15%;;
               }
-            
+
              ` } </style>
-              <th className="prodottoId"> Prodotto</th>
-              <th className="price"></th>
-              <th className="persId">Pers</th>
-              <th className="price"></th>
-              <th className="provv">SC</th>
-              <th className="provv">Comm.</th>
-              <th className="provv">Rappr.</th>
-              <th className="price">TOT</th>
-              <th className="buttons"></th>
-            </tr>
-          </thead>
-          
-          <tbody>
-         
-            {preventivoRowQuery.data.map((prevRow) => (
-              <TableRowPrev 
-                locked={locked}
-                key={prevRow.id}
-                row={prevRow}
-                prodList={prodottiQuery.data}
-                persList={persQuery.data}
-                onClickInsert={() => { }}
-                onClickDelete={(row_id) => preventivoRowDelete.mutate({ id: row_id })}
-                onClickEdit={(row) => preventivoRowUpdate.mutate(row)} />
-            ))}
-            {/* Empty row */}
-            {!locked && <TableRowPrev
-              key={invalidId}
-              locked={false}
-              row={{
-                id: invalidId,
-                prodottoId: invalidId,
-                personalizzazioneId: invalidId,
-                preventivoId: idPreventivo,
-                provvigioneComm: new Prisma.Decimal(0),
-                provvigioneRappre: new Prisma.Decimal(0),
-                provvigioneSC: new Prisma.Decimal(0),
-              }}
+            <th className="prodottoId"> Prodotto</th>
+            <th className="price"></th>
+            <th className="persId">Pers</th>
+            <th className="price"></th>
+            <th className="provv">SC</th>
+            <th className="provv">Comm.</th>
+            <th className="provv">Rappr.</th>
+            <th className="price">TOT</th>
+            <th className="buttons"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {preventivoRowQuery.data.map((prevRow) => (
+            <TableRowPrev
+              locked={locked}
+              key={prevRow.id}
+              row={prevRow}
               prodList={prodottiQuery.data}
               persList={persQuery.data}
-              onClickInsert={(new_row) => preventivoRowInsert.mutate(new_row)}
-              onClickDelete={() => { }}
-              onClickEdit={() => { }} />}
-          </tbody>
-        </Table>
+              onClickInsert={() => { }}
+              onClickDelete={(row_id) => preventivoRowDelete.mutate({ id: row_id })}
+              onClickEdit={(row) => preventivoRowUpdate.mutate(row)} />
+          ))}
+          {/* Empty row */}
+          {!locked && <TableRowPrev
+            key={invalidId}
+            locked={false}
+            row={{
+              id: invalidId,
+              prodottoId: invalidId,
+              personalizzazioneId: invalidId,
+              preventivoId: idPreventivo,
+              provvigioneComm: new Prisma.Decimal(0),
+              provvigioneRappre: new Prisma.Decimal(0),
+              provvigioneSC: new Prisma.Decimal(0),
+            }}
+            prodList={prodottiQuery.data}
+            persList={persQuery.data}
+            onClickInsert={(new_row) => preventivoRowInsert.mutate(new_row)}
+            onClickDelete={() => { }}
+            onClickEdit={() => { }} />}
+        </tbody>
+      </Table>
 
-        <ModalOptions prevId={idPreventivo} />
-        {/* alert per mostrare i messaggi di errore */}
-        <ErrorMessage message={errorMsg} />
-      </main>
-    </div >
+      <ModalOptions prevId={idPreventivo} />
+      {/* alert per mostrare i messaggi di errore */}
+      <ErrorMessage message={errorMsg} />
+    </Card>
   )
 }

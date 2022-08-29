@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Form, Spinner } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
+import { MdEdit } from 'react-icons/md'
 import { trpc } from 'utils/trpc'
 
 const invalidId = -1
@@ -71,7 +72,7 @@ export default function ModalListino({
     return (
         <>
             <Button variant="primary" className="rounded-circle" onClick={handleShow}>
-                {isEditing() ? '✎' : '+'}
+                {isEditing() ? <MdEdit /> : '+'}
             </Button>
             <Modal
                 show={show}

@@ -50,23 +50,10 @@ export default function Prodotto() {
 
   return (
     <div className="container">
-      <Head>
-        <title>Prodotti</title>
-        <meta name="description" content="Created by ..." />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main>
-        <h1>
-          Listino &nbsp;
-          <ModalListino listinoId={listino} />
-        </h1>
-
-        {/* form dropdown per selezionare il listino */}
-        <Form.Group className='mb-2'>
-          <Form.Select
-            value={listino}
-            onChange={(event) => { setListino(Number(event.currentTarget.value)) }}
-          >
+      {/* form dropdown per selezionare il listino */}
+      <div className='d-flex mb-2'>
+        <Form.Group className='me-2'>
+          <Form.Select value={listino} onChange={(event) => { setListino(Number(event.currentTarget.value)) }}>
             <option value={invalidListino}>Seleziona un listino</option>
             {listinoQuery.data.map(element => (
               <option key={element.id} value={element.id}>
@@ -75,38 +62,40 @@ export default function Prodotto() {
             ))}
           </Form.Select>
         </Form.Group>
-        {/*Tabella che mostra i prodotti del listino selezionato*/}
-        <Table bordered hover hidden={listino == -1} responsive>
-          <thead>
-            <tr>
-              <th>Nome prodotto</th>
-              <th>Prezzo</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {prodQuery.data.map(prod => (
-              <TableRow
-                key={prod.id}
-                rowId={prod.id}
-                rowName={prod.nome}
-                rowPrice={prod.prezzo}
-                onClickDelete={deleteProdotto}
-                onClickEdit={updateProdotto}
-              />
-            ))}
-            {/* riga per inserire un nuovo prodotto */}
-            <ProdSubmitRow
-              listino={listino}
-              updateList={() => prodQuery.refetch()}
-              updateErrorMessage={(msg) => setErrorMsg(msg)}
-            />
-          </tbody>
-        </Table>
+        <ModalListino listinoId={listino} />
+      </div>
 
-        {/* alert per mostrare i messaggi di errore */}
-        <ErrorMessage message={errorMsg} />
-      </main>
+      {/*Tabella che mostra i prodotti del listino selezionato*/}
+      <Table bordered hover hidden={listino == -1} responsive className='bg-white'>
+        <thead>
+          <tr>
+            <th>Nome prodotto</th>
+            <th>Prezzo</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {prodQuery.data.map(prod => (
+            <TableRow
+              key={prod.id}
+              rowId={prod.id}
+              rowName={prod.nome}
+              rowPrice={prod.prezzo}
+              onClickDelete={deleteProdotto}
+              onClickEdit={updateProdotto}
+            />
+          ))}
+          {/* riga per inserire un nuovo prodotto */}
+          <ProdSubmitRow
+            listino={listino}
+            updateList={() => prodQuery.refetch()}
+            updateErrorMessage={(msg) => setErrorMsg(msg)}
+          />
+        </tbody>
+      </Table>
+
+      {/* alert per mostrare i messaggi di errore */}
+      <ErrorMessage message={errorMsg} />
     </div >
   )
 }
