@@ -23,8 +23,9 @@ export default function ModalOptions({
 
   return (
     <>
-      {/*<div className='d-flex justify-content-end'>*/}
-      <div /*className='position-absolute top-50 end-0 translate-middle-x'*/>
+      {/*className='d-flex justify-content-end'*/}
+      {/*className='position-absolute top-50 end-0 translate-middle-x'*/}
+      <div className='d-flex justify-content-end'>
         <Button variant="primary" size='lg' className="rounded-circle" onClick={() => setShow(true)}>
           <MdReceipt />
         </Button>
