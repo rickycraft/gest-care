@@ -24,6 +24,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         body {
           margin: 0;
+          --bs-bg-opacity: 1;
+          background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
           height: 100%;
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
             'Helvetica Neue', Arial, Noto Sans, sans-serif, 'Apple Color Emoji',
@@ -33,8 +35,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       `}</style>
       {pageLoaded && <Header />}
 
-      <main className='h-100 bg-light'>
-        <div className='p-4 h-100'>{children}</div>
+      <main>
+        <div className='p-4'>{children}</div>
       </main>
 
       {/* <div className="fixed-bottom">

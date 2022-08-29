@@ -117,7 +117,7 @@ export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof 
   if (props.idPreventivo === invalidId) return <div>Invalid id</div>
 
   return (
-    <div className='px-4 h-100 bg-white' style={{ fontSize: "12pt" }}>
+    <div className='px-4 bg-white' style={{ fontSize: "12pt" }}>
       <Script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
         integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
         crossOrigin="anonymous" referrerPolicy="no-referrer"
