@@ -24,7 +24,7 @@ const basicMenuLinks = [
   { title: 'Preventivi', path: '/preventivo/list', hidden: false },
 ]
 
-const emptyPages = ["/auth/login", "/preventivo/pdf"]
+const emptyPages = ["/auth/login", "auth/logout", "/preventivo/pdf"]
 const defaultRole = 'user'
 
 export default function Header() {
