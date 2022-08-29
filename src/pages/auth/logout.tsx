@@ -10,7 +10,7 @@ export default function Logout() {
   useEffect(() => {
     setUserAtom(defaultUserAtom)
     fetch('/api/auth/logout').then(() => {
-      window.location.replace(window.location.origin.concat('/login'))
+      window.location.replace(window.location.origin.concat('/auth/login'))
     })
   }, [])
 
