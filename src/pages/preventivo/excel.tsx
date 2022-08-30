@@ -79,7 +79,7 @@ export default function Excel(props: InferGetServerSidePropsType<typeof getServe
     if (props.idPreventivo === -1) return
     writeXlsxFile(props.rows, {
       schema: excelSchema,
-      fileName: `${props.preventivo.nome}_${props.preventivo.scuola.nome}.xlsx`
+      fileName: `${props.preventivo.nome}_${props.preventivo.scuola}.xlsx`
     }).then(() => router.push('/preventivo/' + props.idPreventivo))
   }, [])
 
