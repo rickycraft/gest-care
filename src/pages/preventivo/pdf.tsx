@@ -58,20 +58,21 @@ const getPreventivo = async (idPreventivo: number) => {
   return preventivo
 }
 
-const getOptions = async (idPreventivo: number) => {
-  const preventivo = await prisma.preventivo.findFirstOrThrow({
-    where: { id: idPreventivo },
+const getOptions = async (prevId: number) => {
+  const options = await prisma.preventivoOption.findMany({
+    where: {
+      prevId: prevId,
+      selected: true,
+    },
     select: {
-      options: {
+      option: {
         select: {
-          id: true,
           nome: true,
-          selected: true,
         }
       }
     }
   })
-  return preventivo.options
+  return options.map(opt => opt.option.nome)
 }
 
 const invalidProps = {
@@ -103,12 +104,6 @@ type Row = {
   prodotto: string
   perso: string
   totale: number
-}
-
-type Option = {
-  id: number
-  nome: string
-  selected: boolean
 }
 
 export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -154,12 +149,11 @@ export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof 
       <div>
         <span>Il prezzo include:</span>
         <ul>
-          {props.options.filter((option: Option) => option.selected)
-            .map((option: Option) => (
-              <li key={option.id}>
-                {option.nome}
-              </li>
-            ))}
+          {props.options.map((option: string) => (
+            <li key={option.substring(10)}>
+              {option}
+            </li>
+          ))}
         </ul>
       </div>
       <div className='text-center mt-5'>

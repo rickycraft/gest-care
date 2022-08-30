@@ -74,10 +74,10 @@ model Preventivo {
   locked    Boolean  @default(false)
 
   rows         PreventivoRow[]
-  options      PreventivoOption[]
   listino      Listino            @relation(fields: [listinoId], references: [id])
   lastEditedBy User               @relation(fields: [userId], references: [id])
   Ordine       Ordine[]
+  options      PreventivoOption[]
 }
 
 model PreventivoRow {
@@ -98,12 +98,22 @@ model PreventivoRow {
 }
 
 model PreventivoOption {
-  id       Int     @id @default(autoincrement())
-  short    String  @db.VarChar(50)
-  nome     String  @db.VarChar(255)
-  selected Boolean @default(false)
+  preventivo Preventivo           @relation(fields: [prevId], references: [id])
+  option     PreventivoDefaultOpt @relation(fields: [prevDefaultOptId], references: [id])
+  selected   Boolean
 
-  preventivi Preventivo[]
+  prevId           Int
+  prevDefaultOptId Int
+
+  @@id([prevId, prevDefaultOptId])
+}
+
+model PreventivoDefaultOpt {
+  id               Int                @id @default(autoincrement())
+  short            String             @db.VarChar(50)
+  nome             String             @db.VarChar(255)
+  selected         Boolean            @default(false)
+  PreventivoOption PreventivoOption[]
 }
 
 model Ordine {

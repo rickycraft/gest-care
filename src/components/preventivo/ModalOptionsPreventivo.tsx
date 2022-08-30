@@ -35,7 +35,7 @@ export default function ModalOptions({
           <Modal.Title>Modifica le opzioni</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {optionQuery.data.options.map((opt) => (
+          {optionQuery.data.map((opt) => (
             <Form.Check key={opt.id}>
               <Form.Check.Input type="checkbox" defaultChecked={opt.selected}
                 onChange={(e) => optionEdit.mutate({
