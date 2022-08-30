@@ -1,7 +1,6 @@
 import { Personalizzazione, Prodotto } from '@prisma/client'
 import { useEffect, useMemo, useState } from 'react'
 import { Button, ButtonGroup, Form, Spinner } from 'react-bootstrap'
-import { FcCancel } from 'react-icons/fc'
 import { MdCancel, MdSave } from 'react-icons/md'
 
 
@@ -53,10 +52,10 @@ export default function TableRow({
         <Form.Control type='number' value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
       </td>
       {totals}
-      
+
       <ButtonGroup hidden={_quantity == quantity}>
-      <style>
-        { `
+        <style>
+          {`
               .btn-outline-success{
                 border-top-left-radius: 5px !Important;
                 border-bottom-left-radius: 5px !Important;
@@ -66,8 +65,8 @@ export default function TableRow({
                 border-bottom-left-radius: 0px;
              }
         `} </style>
-        <Button variant="outline-success" onClick={() => onChange(id, quantity)}>SALVA<MdSave /></Button>
-        <Button variant="outline-secondary" onClick={() => setQuantity(_quantity)}>ANNULLA<MdCancel /></Button>
+        <Button variant="outline-success" onClick={() => onChange(id, quantity)}>SALVA<MdSave className='ms-1' /></Button>
+        <Button variant="outline-secondary" onClick={() => setQuantity(_quantity)}>UNDO<MdCancel className='ms-1' /></Button>
       </ButtonGroup>
     </tr>
   )
