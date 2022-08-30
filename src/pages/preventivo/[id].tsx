@@ -2,12 +2,13 @@ import Head from 'next/head'
 import { trpc } from 'utils/trpc'
 import Table from 'react-bootstrap/Table'
 import { useEffect, useMemo, useState } from 'react'
-import { Card, Spinner } from 'react-bootstrap'
+import { Button, Card, Spinner } from 'react-bootstrap'
 import TableRowPrev from 'components/preventivo/TableRowPrev'
 import { Prisma } from '@prisma/client'
 import { useRouter } from 'next/router'
 import ErrorMessage from 'components/utils/ErrorMessage'
 import ModalOptions from 'components/preventivo/ModalOptionsPreventivo'
+import { MdDownload, MdGridOn } from 'react-icons/md'
 
 
 const invalidId = -1
@@ -78,9 +79,25 @@ export default function Index() {
 
   return (
     <Card body>
-      <h1>
-        {preventivoQuery.data.nome.toUpperCase()}
-      </h1>
+      <div className='d-flex align-items-center justify-content-between'>
+        <h1>{preventivoQuery.data.nome.toUpperCase()}</h1>
+        <span className='d-flex'>
+          <Button variant='success' className='me-2 p-2 p-lg-3 rounded-circle'
+            onClick={
+              () => router.push({
+                pathname: '/preventivo/excel',
+                query: { id: preventivoQuery.data?.id },
+              })}
+          ><MdGridOn /></Button>
+          <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
+            onClick={
+              () => router.push({
+                pathname: '/preventivo/pdf',
+                query: { id: preventivoQuery.data?.id },
+              })}
+          ><MdDownload /></Button>
+        </span>
+      </div>
       <p>ultima modifica alle {preventivoQuery.data.editedAt.toLocaleString()}</p>
       {/*Tabella che mostra i prodotti del preventivo selezionato*/}
       <style type="text/css">
