@@ -29,7 +29,8 @@ export type insertPrevType = z.infer<typeof insertPrevSchema>
 
 const updatePrevSchema = z.object({
   id: z.number(),
-  ...prevSchema,
+  nome: z.string(),
+  scuola: z.string(),
 })
 export type updatePrevType = z.infer<typeof updatePrevSchema>
 
@@ -136,7 +137,6 @@ export const prevRouter = createProtectedRouter()
           data: {
             nome: input.nome,
             scuola: input.scuola,
-            listino: { connect: { id: input.listino } },
             lastEditedBy: { connect: { id: ctx.user.id } },
           },
           select: defaultPrevSelect,
