@@ -8,7 +8,7 @@ import { Prisma } from '@prisma/client'
 import { useRouter } from 'next/router'
 import ErrorMessage from 'components/utils/ErrorMessage'
 import ModalOptions from 'components/preventivo/ModalOptionsPreventivo'
-import { MdDownload, MdGridOn } from 'react-icons/md'
+import { MdContentCopy, MdDownload, MdGridOn } from 'react-icons/md'
 
 
 const invalidId = -1
@@ -35,26 +35,24 @@ export default function Index() {
     },
     onSuccess() {
       context.invalidateQueries(['preventivo.list'])
-      context.invalidateQueries(['preventivo.byId', { id: idPreventivo }])
-      context.invalidateQueries(['preventivo.row.list', { prevId: idPreventivo }])
+      preventivoQuery.refetch()
+      preventivoRowQuery.refetch()
     },
     enabled: idPreventivo != invalidId,
   }
-  const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }], {
-    enabled: idPreventivo != invalidId,
-  })
-  const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId: idPreventivo }], {
-    enabled: idPreventivo != invalidId,
-  })
+  const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }], { enabled: idPreventivo != invalidId })
+  const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId: idPreventivo }], { enabled: idPreventivo != invalidId })
   const preventivoRowInsert = trpc.useMutation('preventivo.row.insert', preventivoRowCallback)
   const preventivoRowUpdate = trpc.useMutation('preventivo.row.update', preventivoRowCallback)
   const preventivoRowDelete = trpc.useMutation('preventivo.row.delete', preventivoRowCallback)
-  const prodottiQuery = trpc.useQuery(['prodotto.list', { listino: listinoId }], {
-    enabled: listinoId !== invalidId,
+  const preventivoDuplicate = trpc.useMutation('preventivo.duplicate', {
+    onSuccess() {
+      context.invalidateQueries(['preventivo.list'])
+      router.push('/preventivo/list')
+    }
   })
-  const persQuery = trpc.useQuery(['pers.list', { listino: listinoId }], {
-    enabled: listinoId !== invalidId,
-  })
+  const prodottiQuery = trpc.useQuery(['prodotto.list', { listino: listinoId }], { enabled: listinoId !== invalidId })
+  const persQuery = trpc.useQuery(['pers.list', { listino: listinoId }], { enabled: listinoId !== invalidId })
 
   useEffect(() => {
     if (!preventivoQuery.isSuccess) return
@@ -75,8 +73,6 @@ export default function Index() {
     return <Spinner animation="border" />
   }
 
-  if (preventivoQuery.data === null) return <Spinner animation="border" />
-
   return (
     <Card body>
       <div className='d-flex align-items-center justify-content-between'>
@@ -86,16 +82,19 @@ export default function Index() {
             onClick={
               () => router.push({
                 pathname: '/preventivo/excel',
-                query: { id: preventivoQuery.data?.id },
+                query: { id: preventivoQuery.data.id },
               })}
           ><MdGridOn /></Button>
           <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
             onClick={
               () => router.push({
                 pathname: '/preventivo/pdf',
-                query: { id: preventivoQuery.data?.id },
+                query: { id: preventivoQuery.data.id },
               })}
           ><MdDownload /></Button>
+          <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
+            onClick={() => preventivoDuplicate.mutate({ id: preventivoQuery.data.id })}
+          ><MdContentCopy /></Button>
         </span>
       </div>
       <p>ultima modifica alle {preventivoQuery.data.editedAt.toLocaleString()}</p>

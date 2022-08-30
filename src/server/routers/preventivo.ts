@@ -61,13 +61,14 @@ export const prevRouter = createProtectedRouter()
       id: z.number(),
     }),
     resolve: async ({ input }) => {
-      return await prisma.preventivo.findFirst({
-        where: { id: input.id },
-        select: {
-          ...prevSelect,
-          rows: true,
-        }
-      })
+      try {
+        return await prisma.preventivo.findFirstOrThrow({
+          where: { id: input.id },
+          select: { ...prevSelect, rows: true }
+        })
+      } catch {
+        throw new TRPCError({ code: "BAD_REQUEST" })
+      }
     }
   })
   .query('list', {
@@ -182,6 +183,49 @@ export const prevRouter = createProtectedRouter()
           where: { id: input.id },
           data: { locked: false },
         })
+      } catch {
+        throw new TRPCError({ code: "BAD_REQUEST" })
+      }
+    }
+  })
+  .mutation('duplicate', {
+    input: z.object({ id: z.number() }),
+    resolve: async ({ input }) => {
+      try {
+        const preventivo = await prisma.preventivo.findFirstOrThrow({
+          where: { id: input.id },
+          include: { options: true, rows: true }
+        })
+        const newPreventivo = await prisma.preventivo.create({
+          data: {
+            nome: preventivo.nome + ' new',
+            userId: preventivo.userId,
+            scuola: preventivo.scuola,
+            listinoId: preventivo.listinoId,
+            rows: {
+              createMany: {
+                data: preventivo.rows.map(row => ({
+                  personalizzazioneId: row.personalizzazioneId,
+                  prodottoId: row.prodottoId,
+                  provvigioneSC: row.provvigioneSC,
+                  provvigioneComm: row.provvigioneComm,
+                  provvigioneRappre: row.provvigioneRappre,
+                }))
+              }
+            }
+          }
+        })
+        const options = await prisma.preventivoDefaultOpt.findMany()
+        await prisma.preventivoOption.createMany({
+          data: options.map(opt => ({
+            prevId: newPreventivo.id,
+            prevDefaultOptId: opt.id,
+            selected: opt.selected,
+          })),
+        })
+        return {
+          id: newPreventivo.id,
+        }
       } catch {
         throw new TRPCError({ code: "BAD_REQUEST" })
       }

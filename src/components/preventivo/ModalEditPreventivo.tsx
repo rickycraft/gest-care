@@ -18,7 +18,7 @@ export default function ModalEdit({
     const context = trpc.useContext()
     const trpcCallback = {
         onSuccess() {
-            context.invalidateQueries(['preventivo.byId', { id: preventivoId }])
+            preventivoQuery.refetch()
             context.invalidateQueries(['preventivo.list'])
             setShow(false)
         }
@@ -53,19 +53,11 @@ export default function ModalEdit({
 
     const insertPreventivo = async () => {
         if (preventivoInsert.isLoading) return
-        preventivoInsert.mutate({
-            listino: listinoId,
-            nome: nomePreventivo,
-            scuola: scuola,
-        })
+        preventivoInsert.mutate({ listino: listinoId, nome: nomePreventivo, scuola: scuola })
     }
     const updatePreventivo = () => {
         if (preventivoUpdate.isLoading) return
-        preventivoUpdate.mutate({
-            id: preventivoId,
-            nome: nomePreventivo,
-            scuola: scuola,
-        })
+        preventivoUpdate.mutate({ id: preventivoId, nome: nomePreventivo, scuola: scuola })
     }
 
     useEffect(() => {
@@ -84,7 +76,8 @@ export default function ModalEdit({
         preventivoQuery.refetch()
     }, [preventivoId])
 
-    if (!preventivoQuery.isSuccess || !listiniQuery.isSuccess) return <Spinner animation="border" />
+    if (!listiniQuery.isSuccess) return <Spinner animation="border" />
+    if (!preventivoQuery.isSuccess && preventivoId != invalidId) return <Spinner animation="border" />
 
     return (
         <>
