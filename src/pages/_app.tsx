@@ -9,10 +9,10 @@ import SSRProvider from 'react-bootstrap/SSRProvider'
 //import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { AppRouter } from 'server/routers/_app'
-import { SSRContext } from 'utils/trpc'
 import Head from 'next/head'
 import { useEffect } from 'react'
 import Layout from 'components/Layout'
+import { GoogleAnalytics } from 'nextjs-google-analytics'
 
 function getBaseUrl() {
   if (typeof window !== 'undefined') {
@@ -33,9 +33,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <>
+      <GoogleAnalytics trackPageViews strategy="lazyOnload" />
       <SSRProvider>
         <Layout>
           <Head>
+            <meta name="robots" content="noindex" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
           </Head>
           <Component {...pageProps} />
