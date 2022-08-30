@@ -53,7 +53,19 @@ export default function TableRow({
         <Form.Control type='number' value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
       </td>
       {totals}
+      
       <ButtonGroup hidden={_quantity == quantity}>
+      <style>
+        { `
+              .btn-outline-success{
+                border-top-left-radius: 5px !Important;
+                border-bottom-left-radius: 5px !Important;
+             }
+             .btn-outline-secondary {
+              border-top-left-radius: 0px !Important;
+                border-bottom-left-radius: 0px;
+             }
+        `} </style>
         <Button variant="outline-success" onClick={() => onChange(id, quantity)}>SALVA<MdSave /></Button>
         <Button variant="outline-secondary" onClick={() => setQuantity(_quantity)}>ANNULLA<MdCancel /></Button>
       </ButtonGroup>

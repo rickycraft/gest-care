@@ -38,17 +38,66 @@ export default function Index() {
   return (
     <Card body>
       <Card.Title>{ordineQuery.data.preventivo.nome}</Card.Title>
-      <Table bordered responsive>
+      <style type="text/css">
+        {`
+            .table:not(thead){
+              display: block;
+              max-height: 60vh;
+              overflow-y: auto;
+            }
+            .table thead tr{
+              position: sticky;
+              top: 0;
+              background-color: white;
+              border: solid; border-width: 1px 1px;
+              border-color: #dee2e6;
+             }
+             .table thead tr th{
+              border: solid; border-width: 0 1px;
+              border-color: #dee2e6;
+             }
+            tbody tr:last-child{
+              background-color: white;
+              position: sticky;
+              bottom: 0;
+            }
+          }
+          ` }
+      </style>
+      <Table bordered responsive className='w-100'>
+        <style type="text/css"> {`
+          .t-input-number {
+            width: 8%;
+            min-width: 5em;
+          }
+          .t-number {
+            width: 5%;
+            min-width: 4em;
+          }
+          .t-string {
+            min-width: 5em;
+          }
+          .btn {
+              display: flex;
+              align-items: center;
+              flex-wrap: nowrap;
+              margin-left: auto;
+              margin-right: auto;
+          }
+        `} </style>
         <thead>
-          <th>Prodotto</th>
-          <th>Pezzi</th>
-          <th>Costo</th>
-          <th>SC</th>
-          <th>Comm.</th>
-          <th>Rappr.</th>
-          <th>TOT</th>
-          <th></th>
+        <tr>
+          <th className='t-string'>Prodotto</th>
+          <th className='t-input-number'>Pezzi</th>
+          <th className='t-number'>Costo</th>
+          <th className='t-number'>SC</th>
+          <th className='t-number'>Comm.</th>
+          <th className='t-number'>Rappr.</th>
+          <th className='t-number'>TOT</th>
+          <th style={{ width: "16%" }}></th>
+          </tr>
         </thead>
+     
         <tbody>
           {
             ordineQuery.data.OrdineRow.map(row => (

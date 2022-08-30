@@ -94,6 +94,12 @@ export default function Index() {
               position: sticky;
               top: 0;
               background-color: white;
+              border: solid; border-width: 1px 1px;
+              border-color: #dee2e6;
+             }
+             .table thead tr th{
+              border: solid; border-width: 0 1px;
+              border-color: #dee2e6;
              }
             tbody tr:last-child{
               background-color: white;
