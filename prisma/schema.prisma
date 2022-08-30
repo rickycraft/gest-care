@@ -98,7 +98,7 @@ model PreventivoRow {
 }
 
 model PreventivoOption {
-  preventivo Preventivo           @relation(fields: [prevId], references: [id])
+  preventivo Preventivo           @relation(fields: [prevId], references: [id], onDelete: Cascade)
   option     PreventivoDefaultOpt @relation(fields: [prevDefaultOptId], references: [id])
   selected   Boolean
 
