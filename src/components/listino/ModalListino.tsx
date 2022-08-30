@@ -55,7 +55,6 @@ export default function ModalListino({
         listinoUpdate.mutate({
             id: listinoId,
             nome: nomeListino,
-            fornitore: fornitoreId,
         })
     }
     const deleteListino = () => {
