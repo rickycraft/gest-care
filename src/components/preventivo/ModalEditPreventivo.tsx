@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form, Spinner } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
@@ -14,10 +14,6 @@ export default function ModalEdit({
     showModal: boolean
 }) {
     const [show, setShow] = useState(false)
-    const [isEditing, setEditing] = useState(false)
-    const [listinoId, setListinoId] = useState(-1)
-    const [nomePreventivo, setNomePreventivo] = useState('')
-    const [scuola, setScuola] = useState('')
 
     const context = trpc.useContext()
     const trpcCallback = {
@@ -29,15 +25,13 @@ export default function ModalEdit({
     }
     const preventivoInsert = trpc.useMutation('preventivo.insert', trpcCallback)
     const preventivoUpdate = trpc.useMutation('preventivo.update', trpcCallback)
-    const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: preventivoId }], {
-        onSuccess(data) {
-            if (data == null) return
-            setListinoId(data.listinoId)
-        }
-    })
-    const listinoQuery = trpc.useQuery(['listino.byId', { id: listinoId }], {
-        enabled: listinoId != -1,
-    })
+    const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: preventivoId }])
+    const listiniQuery = trpc.useQuery(['listino.list'])
+
+    const [isEditing, setEditing] = useState(false)
+    const [nomePreventivo, setNomePreventivo] = useState('')
+    const [listinoId, setListinoId] = useState(invalidId)
+    const [scuola, setScuola] = useState('')
 
     const openModal = () => {
         setEditing(false)
@@ -47,21 +41,26 @@ export default function ModalEdit({
     const setFields = () => {
         if (!preventivoQuery.isSuccess || preventivoQuery.data === null) return
         setNomePreventivo(preventivoQuery.data.nome)
+        setListinoId(preventivoQuery.data.listinoId)
         setScuola(preventivoQuery.data.scuola)
     }
     const resetFields = () => {
         setNomePreventivo('')
+        setListinoId(invalidId)
         setScuola('')
     }
-    const isValid = () => (scuola !== '' && nomePreventivo.length > 4)
-    const insertPreventivo = async (listinoId: number) => {
+    const isValid = () => (scuola !== '' && listinoId !== invalidId && nomePreventivo.length > 4)
+
+    const insertPreventivo = async () => {
+        if (preventivoInsert.isLoading) return
         preventivoInsert.mutate({
             listino: listinoId,
             nome: nomePreventivo,
             scuola: scuola,
         })
     }
-    const updatePreventivo = (listinoId: number) => {
+    const updatePreventivo = () => {
+        if (preventivoUpdate.isLoading) return
         preventivoUpdate.mutate({
             id: preventivoId,
             nome: nomePreventivo,
@@ -86,8 +85,7 @@ export default function ModalEdit({
         preventivoQuery.refetch()
     }, [preventivoId])
 
-    if (!preventivoQuery.isSuccess || !listinoQuery.isSuccess) return <Spinner animation="border" />
-    if (preventivoQuery.data === null) return <Spinner animation="border" />
+    if (!preventivoQuery.isSuccess || !listiniQuery.isSuccess) return <Spinner animation="border" />
 
     return (
         <>
@@ -123,7 +121,22 @@ export default function ModalEdit({
                             />
                             <Form.Control.Feedback type="invalid">Scegli una scuola</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Control disabled={true} value={listinoQuery.data.nome} />
+                        <Form.Group className="mb-3" controlId="InputSelectListino">
+                            <Form.Label>Scegli il Listino</Form.Label>
+                            <Form.Select
+                                disabled={isEditing}
+                                isInvalid={listinoId == invalidId}
+                                value={listinoId}
+                                onChange={(event) => setListinoId(Number(event.currentTarget.value))}
+                            >
+                                <option value={invalidId}>Seleziona un listino</option>
+                                {listiniQuery.data.map(element => ( // TODO
+                                    <option key={element.id} value={element.id}>{element.nome}</option>
+                                ))}
+                            </Form.Select>
+                            <Form.Control.Feedback type="invalid">Scegli un listino</Form.Control.Feedback>
+                        </Form.Group>
+
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
@@ -131,8 +144,8 @@ export default function ModalEdit({
                         disabled={!isValid()}
                         onClick={() => {
                             if (!isValid()) return
-                            if (isEditing) updatePreventivo(listinoQuery.data.id)
-                            else insertPreventivo(listinoQuery.data.id)
+                            if (isEditing) updatePreventivo()
+                            else insertPreventivo()
                         }}
                     >
                         {isEditing ? 'Edit' : 'Save'}
