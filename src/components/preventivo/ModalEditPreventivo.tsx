@@ -64,7 +64,6 @@ export default function ModalEdit({
         preventivoUpdate.mutate({
             id: preventivoId,
             nome: nomePreventivo,
-            listino: listinoId,
             scuola: scuola,
         })
     }
