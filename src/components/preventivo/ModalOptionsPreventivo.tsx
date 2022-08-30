@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Form, Modal, Spinner } from 'react-bootstrap'
+import { Alert, Button, Form, Modal, Spinner } from 'react-bootstrap'
 import { trpc } from 'utils/trpc'
 import { MdReceipt } from 'react-icons/md'
 
@@ -10,11 +10,14 @@ export default function ModalOptions({
   prevId: number,
 }) {
   const [show, setShow] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
 
   const optionQuery = trpc.useQuery(['preventivo.opts.list', { prevId }])
   const optionEdit = trpc.useMutation('preventivo.opts.edit', {
     onSuccess() {
       optionQuery.refetch()
+      setShowSuccess(true)
+      setTimeout(() => setShowSuccess(false), 2000)
     }
   })
 
@@ -37,7 +40,7 @@ export default function ModalOptions({
         <Modal.Body>
           {optionQuery.data.map((opt) => (
             <Form.Check key={opt.id}>
-              <Form.Check.Input type="checkbox" defaultChecked={opt.selected}
+              <Form.Check.Input type="checkbox" defaultChecked={opt.selected} disabled={optionEdit.isLoading || optionQuery.isLoading}
                 onChange={(e) => optionEdit.mutate({
                   prevId: prevId,
                   optionId: opt.id,
@@ -47,6 +50,13 @@ export default function ModalOptions({
             </Form.Check>
           ))}
         </Modal.Body>
+        {showSuccess &&
+          <Modal.Footer className='d-block'>
+            <Alert variant='success' className="text-center p-1">
+              opzioni modificate con successo
+            </Alert>
+          </Modal.Footer>
+        }
       </Modal>
     </>
   )
