@@ -29,15 +29,19 @@ export const listinoRouter = createProtectedRouter()
       id: z.number()
     }),
     async resolve({ input }) {
-      return await prisma.listino.findFirst({
-        where: { id: input.id },
-        select: {
-          id: true,
-          nome: true,
-          createdAt: true,
-          fornitore: true,
-        },
-      })
+      try {
+        return await prisma.listino.findFirstOrThrow({
+          where: { id: input.id },
+          select: {
+            id: true,
+            nome: true,
+            createdAt: true,
+            fornitore: true,
+          },
+        })
+      } catch {
+        throw new TRPCError({ code: "BAD_REQUEST" })
+      }
     }
   })
   .mutation("insert", {
@@ -66,7 +70,6 @@ export const listinoRouter = createProtectedRouter()
     input: z.object({
       id: z.number(),
       nome: z.string(),
-      fornitore: z.number(),
     }),
     async resolve({ input }) {
       try {
@@ -74,11 +77,6 @@ export const listinoRouter = createProtectedRouter()
           where: { id: input.id },
           data: {
             nome: input.nome.trim(),
-            fornitore: {
-              connect: {
-                id: input.fornitore,
-              }
-            }
           }
         })
       } catch {
