@@ -2,7 +2,8 @@ import TableRow from 'components/ordine/TableRow'
 import TotReale from 'components/ordine/TotReale'
 import { useRouter } from 'next/router'
 import { useMemo } from 'react'
-import { Card, Spinner, Table } from 'react-bootstrap'
+import { Button, Card, Spinner, Table } from 'react-bootstrap'
+import { MdGridOn } from 'react-icons/md'
 import { trpc } from 'utils/trpc'
 
 const invalidId = -1
@@ -38,7 +39,18 @@ export default function Index() {
 
   return (
     <Card body>
-      <h2 className='mb-3'>{ordineQuery.data.preventivo.nome.toUpperCase()}</h2>
+      <div className='d-flex align-items-center justify-content-between mb-3'>
+        <h2>{ordineQuery.data.preventivo.nome.toUpperCase()}</h2>
+        <span className='d-flex'>
+          <Button variant='success' className='me-2 p-2 p-lg-3 rounded-circle'
+            onClick={
+              () => router.push({
+                pathname: '/ordine/excel',
+                query: { id: ordineQuery.data.id },
+              })}
+          ><MdGridOn /></Button>
+        </span>
+      </div>
       <style type="text/css">
         {`
             .table:not(thead){
