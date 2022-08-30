@@ -1,4 +1,3 @@
-import { Personalizzazione, Prodotto } from '@prisma/client'
 import { useEffect, useMemo, useState } from 'react'
 import { Button, ButtonGroup, Form, Spinner } from 'react-bootstrap'
 import { MdCancel, MdSave } from 'react-icons/md'
