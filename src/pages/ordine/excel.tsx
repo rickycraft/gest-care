@@ -1,3 +1,4 @@
+import TableRowPrev from 'components/preventivo/TableRowPrev'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
@@ -18,7 +19,6 @@ type Row = {
   sc: number,
   comm: number,
   rappre: number,
-  tot: number,
 }
 
 const excelSchema = [
@@ -28,11 +28,7 @@ const excelSchema = [
   { column: 'SC', type: Number, format: '0.00', value: (row: Row) => row.sc },
   { column: 'Comm', type: Number, format: '0.00', value: (row: Row) => row.comm },
   { column: 'Rappre', type: Number, format: '0.00', value: (row: Row) => row.rappre },
-  {
-    column: 'Tot', type: Number, format: '0.00', value: (row: Row) => (
-      row.quantity * (row.costo + row.sc + row.comm + row.rappre)
-    )
-  },
+  { column: 'Tot', type: Number, format: '0.00', value: (row: Row) => (row.costo + row.sc + row.comm + row.rappre) },
 ]
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -69,11 +65,39 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 export default function Excel(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter()
-  console.log(props.rows)
+  console.log(props.totals)
+  var rows = props.rows as Row[]
+  rows.push({
+    id: -1,
+    prod: 'Tot Calcolato',
+    quantity: props.totals.qt,
+    costo: props.totals.costo,
+    sc: props.totals.sc,
+    comm: props.totals.comm,
+    rappre: props.totals.rappre,
+  })
+  rows.push({
+    id: -1,
+    prod: 'Diff',
+    quantity: 0,
+    costo: 0,
+    sc: props.totSC - props.totals.sc,
+    comm: props.totComm - props.totals.comm,
+    rappre: props.totRappre - props.totals.rappre,
+  })
+  rows.push({
+    id: -1,
+    prod: 'Tot Reale',
+    quantity: props.totals.qt,
+    costo: props.totals.costo,
+    sc: props.totSC,
+    comm: props.totComm,
+    rappre: props.totRappre,
+  })
 
   useEffect(() => {
     if (props.idOrdine === -1) return
-    writeXlsxFile(props.rows, {
+    writeXlsxFile(rows, {
       schema: excelSchema,
       fileName: `ordine_${props.nome}.xlsx`
     })
