@@ -61,14 +61,10 @@ export const prevRouter = createProtectedRouter()
       id: z.number(),
     }),
     resolve: async ({ input }) => {
-      try {
-        return await prisma.preventivo.findFirstOrThrow({
-          where: { id: input.id },
-          select: { ...prevSelect, rows: true }
-        })
-      } catch {
-        throw new TRPCError({ code: "BAD_REQUEST" })
-      }
+      return await prisma.preventivo.findFirst({
+        where: { id: input.id },
+        select: { ...prevSelect, rows: true }
+      })
     }
   })
   .query('list', {
