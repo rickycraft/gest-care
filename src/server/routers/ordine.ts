@@ -175,3 +175,18 @@ export const ordineRouter = createProtectedRouter()
       }
     }
   })
+  .mutation("delete", {
+    input: z.object({
+      id: z.number(),
+    }),
+    async resolve({ input }) {
+      try {
+        return await prisma.ordine.delete({
+          where: { id: input.id }
+        })
+      }
+      catch {
+        throw new TRPCError({ code: "BAD_REQUEST" })
+      }
+    }
+  })
