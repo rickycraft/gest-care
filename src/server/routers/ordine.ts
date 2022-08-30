@@ -61,6 +61,7 @@ export const ordineTotal = async (id: number) => {
       tot: costo.add(sc).add(comm).add(rappre),
     }
   })
+  if (rows.length == 0) throw new TRPCError({ code: "BAD_REQUEST" })
   const totals = rows.reduce((acc, row) => {
     acc.qt += row.qt
     acc.costo = acc.costo.add(row.costo)
