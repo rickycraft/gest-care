@@ -12,7 +12,6 @@ export default function ModalCreate() {
   const ordineCreate = trpc.useMutation('ordine.create', {
     onSuccess() {
       context.invalidateQueries(['ordine.list'])
-      context.invalidateQueries(['ordine.byId', { id: preventivoId }])
       setShow(false)
     },
   })

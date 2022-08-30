@@ -33,7 +33,6 @@ export default function ModalDelete({
       <Modal show={show} onHide={() => setShow(false)} keyboard={false}>
         <Modal.Body>
           <Modal.Title>Sei sicuro di voler eliminare il preventivo?</Modal.Title>
-
         </Modal.Body>
         <Modal.Footer>
           <Button variant='danger'
