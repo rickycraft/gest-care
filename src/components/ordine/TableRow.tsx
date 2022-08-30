@@ -5,22 +5,15 @@ import { MdCancel, MdSave } from 'react-icons/md'
 
 
 export default function TableRow({
-  id,
-  _quantity,
-  prod,
-  pers,
-  provvSC,
-  provvComm,
-  provvRappre,
-  onChange,
+  id, prod, _quantity, costo, sc, comm, rappre, onChange,
 }: {
   id: number,
+  prod: string,
   _quantity: number,
-  prod: Prodotto,
-  pers: Personalizzazione,
-  provvSC: number,
-  provvComm: number,
-  provvRappre: number,
+  costo: number,
+  sc: number,
+  comm: number,
+  rappre: number,
   onChange: (id: number, quantity: number) => void,
 }) {
   const [quantity, setQuantity] = useState(_quantity)
@@ -28,13 +21,11 @@ export default function TableRow({
     setQuantity(_quantity)
   }, [_quantity])
 
-  const totSC = useMemo(() => quantity * provvSC, [quantity, provvSC])
-  const totComm = useMemo(() => quantity * provvComm, [quantity, provvComm])
-  const totRappre = useMemo(() => quantity * provvRappre, [quantity, provvRappre])
-  const totProd = useMemo(() => quantity * (Number(prod.prezzo) + Number(pers.prezzo)), [quantity, prod.prezzo, pers.prezzo])
-  const total = useMemo(() => quantity * (
-    totSC + totComm + totRappre + totProd
-  ), [totSC, totComm, totRappre, totProd])
+  const totSC = useMemo(() => quantity * sc, [quantity, sc])
+  const totComm = useMemo(() => quantity * comm, [quantity, comm])
+  const totRappre = useMemo(() => quantity * rappre, [quantity, rappre])
+  const totProd = useMemo(() => quantity * costo, [quantity, costo])
+  const total = useMemo(() => quantity * (totSC + totComm + totRappre + totProd), [totSC, totComm, totRappre, totProd])
   const totals = useMemo(() => (
     <>
       <td>{totProd.toFixed(2)}</td>
@@ -47,7 +38,7 @@ export default function TableRow({
 
   return (
     <tr>
-      <td>{prod.nome}</td>
+      <td>{prod}</td>
       <td>
         <Form.Control type='number' value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
       </td>

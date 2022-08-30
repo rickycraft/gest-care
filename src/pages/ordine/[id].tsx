@@ -99,12 +99,12 @@ export default function Index() {
             ordineQuery.data.OrdineRow.map(row => (
               <TableRow key={row.id}
                 id={row.id}
+                prod={row.prod}
                 _quantity={row.quantity}
-                prod={row.prevRow.prodotto}
-                pers={row.prevRow.personalizzazione}
-                provvSC={Number(row.prevRow.provvigioneSC)}
-                provvComm={Number(row.prevRow.provvigioneComm)}
-                provvRappre={Number(row.prevRow.provvigioneRappre)}
+                costo={row.costo}
+                sc={row.sc}
+                comm={row.comm}
+                rappre={row.rappre}
                 onChange={editRow}
               />
             ))
