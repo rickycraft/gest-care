@@ -101,7 +101,7 @@ export const prevRouter = createProtectedRouter()
     input: insertPrevSchema,
     resolve: async ({ input, ctx }) => {
       try {
-        const opts = await prisma.preventivoOption.findMany()
+        const opts = await prisma.preventivoDefaultOpt.findMany()
         const preventivo = await prisma.preventivo.create({
           data: {
             nome: input.nome,
@@ -109,11 +109,15 @@ export const prevRouter = createProtectedRouter()
             listino: { connect: { id: input.listino } },
             lastEditedBy: { connect: { id: ctx.user.id } },
             editedAt: new Date(),
-            options: {
-              connect: opts.map(opt => ({ id: opt.id })),
-            }
           },
           select: defaultPrevSelect
+        })
+        await prisma.preventivoOption.createMany({
+          data: opts.map(opt => ({
+            prevId: preventivo.id,
+            prevDefaultOptId: opt.id,
+            selected: opt.selected,
+          })),
         })
         return preventivo
       } catch (e) {

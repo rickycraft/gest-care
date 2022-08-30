@@ -10,12 +10,19 @@ export const optsRouter = createProtectedRouter()
       prevId: z.number(),
     }),
     resolve: async ({ input }) => {
-      return await prisma.preventivo.findFirst({
-        where: { id: input.prevId },
+      const options = await prisma.preventivoOption.findMany({
+        where: { prevId: input.prevId },
         select: {
-          options: true
+          option: true,
+          selected: true,
         }
       })
+      return options.map(opt => ({
+        id: opt.option.id,
+        selected: opt.selected,
+        short: opt.option.short,
+        nome: opt.option.nome,
+      }))
     }
   })
   .mutation('edit', {
@@ -26,22 +33,16 @@ export const optsRouter = createProtectedRouter()
     }),
     resolve: async ({ input, ctx }) => {
       try {
-        const preventivo = await prisma.preventivo.update({
+        await prisma.preventivoOption.update({
           where: {
-            id: input.prevId,
+            prevId_prevDefaultOptId: {
+              prevId: input.prevId,
+              prevDefaultOptId: input.optionId,
+            }
           },
-          data: {
-            options: {
-              update: {
-                where: { id: input.optionId },
-                data: { selected: input.selected },
-              },
-            },
-          },
-          select: { id: true },
+          data: { selected: input.selected },
         })
         await updateEditedAt(input.prevId, ctx.user.id)
-        return preventivo
       } catch {
         throw new TRPCError({ code: 'BAD_REQUEST' })
       }
