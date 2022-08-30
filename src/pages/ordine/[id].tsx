@@ -1,4 +1,5 @@
 import TableRow from 'components/ordine/TableRow'
+import TotReale from 'components/ordine/TotReale'
 import { useRouter } from 'next/router'
 import { useMemo } from 'react'
 import { Card, Spinner, Table } from 'react-bootstrap'
@@ -37,7 +38,7 @@ export default function Index() {
 
   return (
     <Card body>
-      <Card.Title>{ordineQuery.data.preventivo.nome}</Card.Title>
+      <h2 className='mb-3'>{ordineQuery.data.preventivo.nome.toUpperCase()}</h2>
       <style type="text/css">
         {`
             .table:not(thead){
@@ -56,7 +57,7 @@ export default function Index() {
               border: solid; border-width: 0 1px;
               border-color: #dee2e6;
              }
-            tbody tr:last-child{
+            tfoot {
               background-color: white;
               position: sticky;
               bottom: 0;
@@ -66,16 +67,12 @@ export default function Index() {
       </style>
       <Table bordered responsive className='w-100'>
         <style type="text/css"> {`
-          .t-input-number {
+          .t-number {
             width: 8%;
             min-width: 5em;
           }
-          .t-number {
-            width: 5%;
-            min-width: 4em;
-          }
           .t-string {
-            min-width: 5em;
+            min-width: 8em;
           }
           .btn {
               display: flex;
@@ -86,18 +83,17 @@ export default function Index() {
           }
         `} </style>
         <thead>
-        <tr>
-          <th className='t-string'>Prodotto</th>
-          <th className='t-input-number'>Pezzi</th>
-          <th className='t-number'>Costo</th>
-          <th className='t-number'>SC</th>
-          <th className='t-number'>Comm.</th>
-          <th className='t-number'>Rappr.</th>
-          <th className='t-number'>TOT</th>
-          <th style={{ width: "16%" }}></th>
+          <tr>
+            <th className='t-string'>Prodotto</th>
+            <th className='t-number'>Pezzi</th>
+            <th className='t-number'>Costo</th>
+            <th className='t-number'>SC</th>
+            <th className='t-number'>Comm.</th>
+            <th className='t-number'>Rappr.</th>
+            <th className='t-number'>TOT</th>
+            <th style={{ width: "16%" }}></th>
           </tr>
         </thead>
-     
         <tbody>
           {
             ordineQuery.data.OrdineRow.map(row => (
@@ -113,8 +109,10 @@ export default function Index() {
               />
             ))
           }
+        </tbody>
+        <tfoot>
           <tr>
-            <td></td>
+            <td>Tot Calcolato</td>
             <td>{totalsQuery.data.qt}</td>
             <td>{totalsQuery.data.costo}</td>
             <td>{totalsQuery.data.sc}</td>
@@ -123,7 +121,17 @@ export default function Index() {
             <td>{totalsQuery.data.tot}</td>
             <td></td>
           </tr>
-        </tbody>
+          <TotReale
+            ordineId={ordineQuery.data.id}
+            costo={totalsQuery.data.costo}
+            _sc={totalsQuery.data.sc}
+            _comm={totalsQuery.data.comm}
+            _rappre={totalsQuery.data.rappre}
+            sc={Number(ordineQuery.data.totSC)}
+            comm={Number(ordineQuery.data.totComm)}
+            rappre={Number(ordineQuery.data.totRappre)}
+          />
+        </tfoot>
       </Table>
     </Card>
   )
