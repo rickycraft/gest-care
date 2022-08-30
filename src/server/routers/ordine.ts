@@ -33,7 +33,7 @@ export const ordineById = async (id: number) => {
   })
   if (!ordine) return null
   const row = ordine.OrdineRow.map(row => ({
-    id,
+    id: row.id,
     prod: row.prevRow.prodotto.nome,
     quantity: row.quantity,
     costo: row.prevRow.prodotto.prezzo.add(row.prevRow.personalizzazione.prezzo),
@@ -61,7 +61,7 @@ export const ordineTotal = async (id: number) => {
       tot: costo.add(sc).add(comm).add(rappre),
     }
   })
-  return rows.reduce((acc, row) => {
+  const totals = rows.reduce((acc, row) => {
     acc.qt += row.qt
     acc.costo = acc.costo.add(row.costo)
     acc.sc = acc.sc.add(row.sc)
@@ -70,6 +70,14 @@ export const ordineTotal = async (id: number) => {
     acc.tot = acc.tot.add(row.tot)
     return acc
   })
+  return {
+    qt: totals.qt,
+    costo: totals.costo.toNumber(),
+    sc: totals.sc.toNumber(),
+    comm: totals.comm.toNumber(),
+    rappre: totals.rappre.toNumber(),
+    tot: totals.tot.toNumber(),
+  }
 }
 
 export const ordineRouter = createProtectedRouter()
@@ -97,15 +105,7 @@ export const ordineRouter = createProtectedRouter()
       id: z.number(),
     }),
     async resolve({ input }) {
-      const totals = await ordineTotal(input.id)
-      return {
-        qt: totals.qt,
-        costo: totals.costo.toNumber(),
-        sc: totals.sc.toNumber(),
-        comm: totals.comm.toNumber(),
-        rappre: totals.rappre.toNumber(),
-        tot: totals.tot.toNumber(),
-      }
+      return await ordineTotal(input.id)
     }
   })
   .query("list", {
