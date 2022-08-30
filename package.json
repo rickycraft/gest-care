@@ -29,6 +29,7 @@
     "react-icons": "^4.4.0",
     "react-query": "^3.39.2",
     "superjson": "^1.9.1",
+    "write-excel-file": "^1.4.12",
     "zod": "^3.17.10"
   },
   "devDependencies": {
