@@ -124,7 +124,7 @@ export default function TableRowPrev({
                         </Button>
                     </ButtonGroup>
                 ) : (
-                    <Button name="DeleteButton" variant="outline-danger"
+                    <Button name="DeleteButton" variant="outline-danger" hidden={isNew || locked}
                         onClick={() => onClickDelete(row.id)}>Delete<FcEmptyTrash />
                     </Button>
                 )}
