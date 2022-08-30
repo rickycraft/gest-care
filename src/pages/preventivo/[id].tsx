@@ -76,28 +76,31 @@ export default function Index() {
   return (
     <Card body>
       <div className='d-flex align-items-center justify-content-between'>
-        <h1>{preventivoQuery.data.nome.toUpperCase()}</h1>
+        <h1>{preventivoQuery.data?.nome.toUpperCase()}</h1>
         <span className='d-flex'>
           <Button variant='success' className='me-2 p-2 p-lg-3 rounded-circle'
             onClick={
               () => router.push({
                 pathname: '/preventivo/excel',
-                query: { id: preventivoQuery.data.id },
+                query: { id: preventivoQuery.data?.id },
               })}
           ><MdGridOn /></Button>
           <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
             onClick={
               () => router.push({
                 pathname: '/preventivo/pdf',
-                query: { id: preventivoQuery.data.id },
+                query: { id: preventivoQuery.data?.id },
               })}
           ><MdDownload /></Button>
           <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
-            onClick={() => preventivoDuplicate.mutate({ id: preventivoQuery.data.id })}
+            onClick={() => {
+              if (preventivoQuery.data == null) return
+              preventivoDuplicate.mutate({ id: preventivoQuery.data.id })
+            }}
           ><MdContentCopy /></Button>
         </span>
       </div>
-      <p>ultima modifica alle {preventivoQuery.data.editedAt.toLocaleString()}</p>
+      <p>ultima modifica alle {preventivoQuery.data?.editedAt.toLocaleString()}</p>
       {/*Tabella che mostra i prodotti del preventivo selezionato*/}
       <style type="text/css">
         {`

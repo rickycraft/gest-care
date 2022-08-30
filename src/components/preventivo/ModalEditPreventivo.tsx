@@ -105,10 +105,11 @@ export default function ModalEdit({
                             <Form.Control.Feedback type="invalid">Il nome deve essere di almeno 5 caratteri</Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="InputSelectScuola">
+                            <Form.Label>Scuola</Form.Label>
                             <Form.Control
                                 value={scuola}
                                 isInvalid={scuola.length < 5}
-                                placeholder="Scuola"
+                                placeholder="Nome scuola"
                                 onChange={(event) => setScuola(event.currentTarget.value)}
                             />
                             <Form.Control.Feedback type="invalid">Scegli una scuola</Form.Control.Feedback>
