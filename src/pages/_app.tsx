@@ -18,18 +18,6 @@ import Head from 'next/head'
 import { useEffect } from 'react'
 import Layout from 'components/Layout'
 
-
-function getBaseUrl() {
-  if (typeof window !== 'undefined') {
-    return ''
-  }
-  if (process.env.URL) {
-    return process.env.URL
-  }
-  return `http://localhost:${process.env.PORT ?? 3000}`
-
-}
-
 function MyApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
@@ -74,7 +62,8 @@ export default withTRPC<AppRouter>({
           enabled: (opts) => process.env.NODE_ENV === 'development'
         }),
         httpBatchLink({
-          url: `${getBaseUrl()}/api/trpc`,
+          url: 'getBaseUrl()}/api/trpc',
+          maxBatchSize: 10,
         }),
       ],
       transformer: superjson,
