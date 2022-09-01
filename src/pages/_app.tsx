@@ -33,7 +33,11 @@ function getBaseUrl() {
 function MyApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
-    H.init(process.env.NEXT_PUBLIC_H_KEY)
+    H.init(process.env.NEXT_PUBLIC_H_KEY, {
+      disableConsoleRecording: true,
+      networkRecording: false,
+      environment: process.env.NODE_ENV,
+    })
     typeof document !== undefined ? require('bootstrap/dist/js/bootstrap') : null
   }, [])
 
