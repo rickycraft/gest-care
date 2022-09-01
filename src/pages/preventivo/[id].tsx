@@ -1,15 +1,12 @@
-import Head from 'next/head'
 import { trpc } from 'utils/trpc'
 import Table from 'react-bootstrap/Table'
 import { useEffect, useMemo, useState } from 'react'
 import { Button, Card, Spinner } from 'react-bootstrap'
-import TableRowPrev from 'components/preventivo/TableRowPrev'
-import { Prisma } from '@prisma/client'
 import { useRouter } from 'next/router'
 import ErrorMessage from 'components/utils/ErrorMessage'
 import ModalOptions from 'components/preventivo/ModalOptionsPreventivo'
 import { MdContentCopy, MdDownload, MdGridOn } from 'react-icons/md'
-
+import TableRowPrev from 'components/preventivo/TableRowPrev'
 
 const invalidId = -1
 
@@ -180,12 +177,12 @@ export default function Index() {
             locked={false}
             row={{
               id: invalidId,
-              prodottoId: invalidId,
-              personalizzazioneId: invalidId,
-              preventivoId: idPreventivo,
-              provvigioneComm: new Prisma.Decimal(0),
-              provvigioneRappre: new Prisma.Decimal(0),
-              provvigioneSC: new Prisma.Decimal(0),
+              prevId: invalidId,
+              prodId: invalidId,
+              persId: invalidId,
+              provComm: 0,
+              provRappre: 0,
+              provSc: 0,
             }}
             prodList={prodottiQuery.data}
             persList={persQuery.data}
