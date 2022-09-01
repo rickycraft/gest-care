@@ -65,7 +65,7 @@ export default withTRPC<AppRouter>({
           enabled: (opts) => process.env.NODE_ENV === 'development'
         }),
         httpBatchLink({
-          url: 'getBaseUrl()}/api/trpc',
+          url: '/api/trpc',
           maxBatchSize: 10,
         }),
       ],
