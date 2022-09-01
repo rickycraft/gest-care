@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { FaUserCircle, FaKey } from "react-icons/fa"
 import ErrorMessage from 'components/utils/ErrorMessage'
+import { H } from 'highlight.run'
 
 const loginResponseSchema = z.object({
   id: z.number(),
@@ -31,6 +32,7 @@ export default function Login() {
           setErrorMsg('Login response malformed')
           return
         }
+        H.identify(result.data.username, result.data)
         setUserAtom(result.data)
         window.location.href = window.location.origin + '/preventivo/list'
       }).catch(() => setErrorMsg('Username o Passoword errati'))

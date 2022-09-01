@@ -1,18 +1,23 @@
+// trpc
 import { withTRPC } from '@trpc/next'
 import { loggerLink } from '@trpc/client/links/loggerLink'
 import { httpBatchLink } from '@trpc/client/links/httpBatchLink'
 import superjson from 'superjson'
-// add bootstrap css
+// bootstrap
 import 'bootstrap/dist/css/bootstrap.css'
 import SSRProvider from 'react-bootstrap/SSRProvider'
-// own css files here
-//import '../styles/globals.css'
+// highlight
+import { H } from 'highlight.run'
+import '@highlight-run/react/dist/highlight.css'
+// google analytics
+import { GoogleAnalytics } from 'nextjs-google-analytics'
+// next
 import type { AppProps } from 'next/app'
 import { AppRouter } from 'server/routers/_app'
 import Head from 'next/head'
 import { useEffect } from 'react'
 import Layout from 'components/Layout'
-import { GoogleAnalytics } from 'nextjs-google-analytics'
+
 
 function getBaseUrl() {
   if (typeof window !== 'undefined') {
@@ -28,6 +33,7 @@ function getBaseUrl() {
 function MyApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
+    H.init(process.env.NEXT_PUBLIC_H_KEY)
     typeof document !== undefined ? require('bootstrap/dist/js/bootstrap') : null
   }, [])
 
