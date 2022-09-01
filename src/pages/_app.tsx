@@ -21,11 +21,14 @@ import Layout from 'components/Layout'
 function MyApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
-    H.init(process.env.NEXT_PUBLIC_H_KEY, {
-      disableConsoleRecording: true,
-      networkRecording: false,
-      environment: process.env.NODE_ENV,
-    })
+    if (process.env.NEXT_PUBLIC_H_KEY != undefined) {
+      H.init(process.env.NEXT_PUBLIC_H_KEY, {
+        disableConsoleRecording: true,
+        networkRecording: false,
+        environment: process.env.NODE_ENV,
+      })
+    }
+
     typeof document !== undefined ? require('bootstrap/dist/js/bootstrap') : null
   }, [])
 
