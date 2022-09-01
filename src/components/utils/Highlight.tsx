@@ -10,3 +10,9 @@ export function setup() {
     })
   }
 }
+
+export function identify(username: string, data: any) {
+  if (process.env.NEXT_PUBLIC_H_KEY != undefined) {
+    H.identify(username, data)
+  }
+}

@@ -15,12 +15,12 @@ import Head from 'next/head'
 import { useEffect } from 'react'
 import Layout from 'components/Layout'
 
+// dynamic(() => require('bootstrap/dist/js/bootstrap'), { ssr: false })
+
 function MyApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     import('../components/utils/Highlight').then(h => h.setup())
-
-    typeof document !== undefined ? require('bootstrap/dist/js/bootstrap') : null
   }, [])
 
   return (
