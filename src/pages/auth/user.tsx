@@ -22,7 +22,7 @@ export default function User() {
   if (!userQuery.isSuccess) return <Spinner animation="border" />
 
   return (
-    <Card body className='col-6 m-auto'>
+    <Card body className='col-md-6 m-auto'>
       <Card.Title>Modifica parametri utente</Card.Title>
       <Form
         onSubmit={(e) => {

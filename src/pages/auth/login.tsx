@@ -46,7 +46,7 @@ export default function Login() {
         const username = elements.namedItem('username') as HTMLInputElement
         const password = elements.namedItem('password') as HTMLInputElement
         submit(username.value, password.value)
-      }} className='d-flex flex-column justify-content-center col-6'>
+      }} className='d-flex flex-column justify-content-center col-md-6'>
         <Card body>
           <Form.Group className="mb-3" controlId="username">
             <Form.Label>Username</Form.Label>
