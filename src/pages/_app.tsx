@@ -18,26 +18,17 @@ import Head from 'next/head'
 import { useEffect } from 'react'
 import Layout from 'components/Layout'
 
-
-function getBaseUrl() {
-  if (typeof window !== 'undefined') {
-    return ''
-  }
-  if (process.env.URL) {
-    return process.env.URL
-  }
-  return `http://localhost:${process.env.PORT ?? 3000}`
-
-}
-
 function MyApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
-    H.init(process.env.NEXT_PUBLIC_H_KEY, {
-      disableConsoleRecording: true,
-      networkRecording: false,
-      environment: process.env.NODE_ENV,
-    })
+    if (process.env.NEXT_PUBLIC_H_KEY != undefined) {
+      H.init(process.env.NEXT_PUBLIC_H_KEY, {
+        disableConsoleRecording: true,
+        networkRecording: false,
+        environment: process.env.NODE_ENV,
+      })
+    }
+
     typeof document !== undefined ? require('bootstrap/dist/js/bootstrap') : null
   }, [])
 
@@ -74,7 +65,8 @@ export default withTRPC<AppRouter>({
           enabled: (opts) => process.env.NODE_ENV === 'development'
         }),
         httpBatchLink({
-          url: `${getBaseUrl()}/api/trpc`,
+          url: '/api/trpc',
+          maxBatchSize: 10,
         }),
       ],
       transformer: superjson,
