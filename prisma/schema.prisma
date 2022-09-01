@@ -38,6 +38,8 @@ model Listino {
   Prodotto          Prodotto[]
   Personalizzazione Personalizzazione[]
   Preventivo        Preventivo[]
+
+  @@index([fornitoreId])
 }
 
 model Prodotto {
@@ -50,6 +52,7 @@ model Prodotto {
   quotazioni PreventivoRow[]
 
   @@unique([nome, listinoId])
+  @@index([listinoId])
 }
 
 model Personalizzazione {
@@ -62,6 +65,7 @@ model Personalizzazione {
   listino    Listino         @relation(fields: [listinoId], references: [id], onDelete: Cascade)
 
   @@unique([nome, listinoId])
+  @@index([listinoId])
 }
 
 model Preventivo {
@@ -79,6 +83,9 @@ model Preventivo {
   lastEditedBy User               @relation(fields: [userId], references: [id])
   Ordine       Ordine[]
   options      PreventivoOption[]
+
+  @@index([listinoId])
+  @@index([userId])
 }
 
 model PreventivoRow {
@@ -96,6 +103,9 @@ model PreventivoRow {
   OrdineRow         OrdineRow[]
 
   @@unique([preventivoId, prodottoId, personalizzazioneId])
+  @@index([preventivoId])
+  @@index([prodottoId])
+  @@index([personalizzazioneId])
 }
 
 model PreventivoOption {
@@ -140,4 +150,5 @@ model OrdineRow {
   prevRow PreventivoRow @relation(fields: [preventivoRowId], references: [id])
 
   @@unique([preventivoRowId])
+  @@index([ordineId])
 }
