@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Button, ButtonGroup } from 'react-bootstrap'
 import Form from 'react-bootstrap/Form'
 import { FcCancel, FcSupport } from 'react-icons/fc'
+import { MdDelete } from 'react-icons/md'
 
 export default function TableRow({
     rowId,
@@ -65,9 +66,8 @@ export default function TableRow({
                 </ButtonGroup>
                 <ButtonGroup hidden={isEditable}>
                     <Button name="DeleteButton" variant="outline-danger"
-                        onClick={() => onClickDelete(rowId)}
-                    >
-                        Delete<FcCancel />
+                        onClick={() => onClickDelete(rowId)} >
+                        <MdDelete />
                     </Button>
                 </ButtonGroup>
             </td>
