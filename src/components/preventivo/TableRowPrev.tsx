@@ -1,9 +1,7 @@
-import { PreventivoRow, Prisma } from '@prisma/client'
 import { useMemo, useState } from 'react'
 import { Button, ButtonGroup, Form, Spinner } from 'react-bootstrap'
 import { FcCancel, FcCheckmark, FcEmptyTrash, FcSafe, FcSupport } from 'react-icons/fc'
-import { insertPrevRow, updatePrevRow } from 'server/routers/preventivo_row'
-import { inferQueryOutput } from 'utils/trpc'
+import { inferMutationInput, inferQueryOutput } from 'utils/trpc'
 
 const invalidId = -1
 
@@ -16,29 +14,22 @@ export default function TableRowPrev({
     onClickDelete,
     onClickEdit,
 }: {
-    row: PreventivoRow,
+    row: inferQueryOutput<'preventivo.row.list'>[0],
     prodList: inferQueryOutput<'prodotto.list'>,
     persList: inferQueryOutput<'pers.list'>,
     locked: boolean,
-    onClickInsert: (new_row: insertPrevRow) => void,
-    onClickEdit: (row: updatePrevRow) => void,
+    onClickInsert: (new_row: inferMutationInput<'preventivo.row.insert'>) => void,
+    onClickEdit: (row: inferMutationInput<'preventivo.row.update'>) => void,
     onClickDelete: (row_id: number) => void,
 }) {
-    const rowMapper = (row: PreventivoRow) => ({
-        prevId: row.preventivoId,
-        prodId: row.prodottoId,
-        persId: row.personalizzazioneId,
-        provComm: Number(row.provvigioneComm),
-        provRappre: Number(row.provvigioneRappre),
-        provSc: Number(row.provvigioneSC),
-    })
+
     const [isEditable, setIsEditable] = useState((row.id == invalidId) ? true : false)
-    const [newRow, setNewRow] = useState(rowMapper(row))
-    const resetRow = () => setNewRow(rowMapper(row))
+    const [newRow, setNewRow] = useState(row)
+    const resetRow = () => setNewRow(row)
 
 
-    const prodotto = useMemo(() => prodList.find(p => p.id === newRow.prodId) ?? { id: invalidId, nome: '', prezzo: new Prisma.Decimal(0) }, [prodList, newRow.prodId])
-    const pers = useMemo(() => persList.find(p => p.id === newRow.persId) ?? { id: invalidId, nome: '', prezzo: new Prisma.Decimal(0) }, [persList, newRow.persId])
+    const prodotto = useMemo(() => prodList.find(p => p.id === newRow.prodId) ?? { id: invalidId, nome: '', prezzo: 0 }, [prodList, newRow.prodId])
+    const pers = useMemo(() => persList.find(p => p.id === newRow.persId) ?? { id: invalidId, nome: '', prezzo: 0 }, [persList, newRow.persId])
     const total = useMemo(() => (
         newRow.provComm + newRow.provRappre + newRow.provSc
         + Number(prodotto.prezzo) + Number(pers.prezzo)
@@ -111,7 +102,7 @@ export default function TableRowPrev({
                     <ButtonGroup hidden={isNew || locked}>
                         <Button name='EditButton' variant="outline-success" disabled={!isValid}
                             onClick={() => {
-                                onClickEdit({ id: row.id, ...newRow, })
+                                onClickEdit({ ...newRow, id: row.id })
                                 setIsEditable(false)
                             }}>
                             Salva<FcSupport />

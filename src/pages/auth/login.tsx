@@ -1,20 +1,14 @@
 import { useAtom } from 'jotai'
 import { userAtom } from 'utils/atom'
-import { z } from 'zod'
 import { useState } from 'react'
-import { Card, InputGroup } from 'react-bootstrap'
+import InputGroup from 'react-bootstrap/InputGroup'
+import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import { FaUserCircle, FaKey } from "react-icons/fa"
-import ErrorMessage from 'components/utils/ErrorMessage'
-import { H } from 'highlight.run'
+import dynamic from 'next/dynamic'
 
-const loginResponseSchema = z.object({
-  id: z.number(),
-  username: z.string(),
-  role: z.string(),
-  isLoggedIn: z.boolean(),
-})
+const ErrorMessage = dynamic(() => import('components/utils/ErrorMessage'), { ssr: false })
 
 export default function Login() {
   const [errorMsg, setErrorMsg] = useState('')
@@ -26,15 +20,11 @@ export default function Login() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     }).then(res => res.json())
-      .then(res => {
-        const result = loginResponseSchema.safeParse(res)
-        if (!result.success) {
-          setErrorMsg('Login response malformed')
-          return
-        }
-        H.identify(result.data.username, result.data)
-        setUserAtom(result.data)
+      .then(result => {
+        setUserAtom(result)
         window.location.href = window.location.origin + '/preventivo/list'
+        // for traking
+        import('components/utils/Highlight').then(({ identify }) => identify(username, result))
       }).catch(() => setErrorMsg('Username o Passoword errati'))
   }
 

@@ -6,9 +6,6 @@ import superjson from 'superjson'
 // bootstrap
 import 'bootstrap/dist/css/bootstrap.css'
 import SSRProvider from 'react-bootstrap/SSRProvider'
-// highlight
-import { H } from 'highlight.run'
-import '@highlight-run/react/dist/highlight.css'
 // google analytics
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 // next
@@ -18,18 +15,12 @@ import Head from 'next/head'
 import { useEffect } from 'react'
 import Layout from 'components/Layout'
 
+// dynamic(() => require('bootstrap/dist/js/bootstrap'), { ssr: false })
+
 function MyApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_H_KEY != undefined) {
-      H.init(process.env.NEXT_PUBLIC_H_KEY, {
-        disableConsoleRecording: true,
-        networkRecording: false,
-        environment: process.env.NODE_ENV,
-      })
-    }
-
-    typeof document !== undefined ? require('bootstrap/dist/js/bootstrap') : null
+    import('../components/utils/Highlight').then(h => h.setup())
   }, [])
 
   return (
@@ -38,6 +29,8 @@ function MyApp({ Component, pageProps }: AppProps) {
       <SSRProvider>
         <Layout>
           <Head>
+            <title>Gest Care</title>
+            <link rel="icon" href="/favicon.ico" />
             <meta name="robots" content="noindex" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
           </Head>

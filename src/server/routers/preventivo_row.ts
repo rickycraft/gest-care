@@ -14,13 +14,10 @@ const rowSchema = {
 }
 
 const insertRowSchema = z.object(rowSchema)
-export type insertPrevRow = z.infer<typeof insertRowSchema>
-
 const updateRowSchema = z.object({
   id: z.number(),
   ...rowSchema,
 })
-export type updatePrevRow = z.infer<typeof updateRowSchema>
 
 export const rowRouter = createProtectedRouter()
   .query('list', {
@@ -28,9 +25,18 @@ export const rowRouter = createProtectedRouter()
       prevId: z.number(),
     }),
     resolve: async ({ input }) => {
-      return await prisma.preventivoRow.findMany({
+      const rows = await prisma.preventivoRow.findMany({
         where: { preventivo: { id: input.prevId } },
       })
+      return rows.map(row => ({
+        id: row.id,
+        prevId: row.preventivoId,
+        prodId: row.prodottoId,
+        persId: row.personalizzazioneId,
+        provComm: row.provvigioneComm.toNumber(),
+        provRappre: row.provvigioneRappre.toNumber(),
+        provSc: row.provvigioneSC.toNumber(),
+      }))
     }
   })
   .mutation('insert', {
