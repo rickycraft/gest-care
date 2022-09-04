@@ -3,8 +3,8 @@ import { Button, ButtonGroup } from 'react-bootstrap'
 import Form from 'react-bootstrap/Form'
 import { FcCancel, FcSupport } from 'react-icons/fc'
 import { MdCreate, MdDeleteOutline, MdDownload, MdLock, MdLockOpen, MdDelete, MdOutlineCheck, MdOutlineClear } from 'react-icons/md'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
+import Tooltip from 'react-bootstrap/Tooltip'
 
 export default function TableRow({
     rowId,
@@ -51,35 +51,35 @@ export default function TableRow({
               */}
                 <ButtonGroup hidden={!isEditable}>
 
-                <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Salva Modifiche</Tooltip>}>
-                <Button name='EditButton'
-                        variant="outline-success"
-                        onClick={() => editRow(rowId, newPrice)}
-                    >
-                         <MdOutlineCheck />
-                    </Button>
-                </OverlayTrigger>
+                    <OverlayTrigger overlay={<Tooltip>Salva Modifiche</Tooltip>}>
+                        <Button name='EditButton'
+                            variant="outline-success"
+                            onClick={() => editRow(rowId, newPrice)}
+                        >
+                            <MdOutlineCheck />
+                        </Button>
+                    </OverlayTrigger>
 
 
-                <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Annulla Modifiche</Tooltip>}>
-                    <Button name='UndoButton' variant="outline-secondary"
-                        onClick={() => {
-                            setNewPrice(rowPrice)
-                            setIsEditable(false)
-                        }}
-                    ><MdOutlineClear />
-                    </Button>
-                </OverlayTrigger>
+                    <OverlayTrigger overlay={<Tooltip>Annulla Modifiche</Tooltip>}>
+                        <Button name='UndoButton' variant="outline-secondary"
+                            onClick={() => {
+                                setNewPrice(rowPrice)
+                                setIsEditable(false)
+                            }}
+                        ><MdOutlineClear />
+                        </Button>
+                    </OverlayTrigger>
 
                 </ButtonGroup>
                 <ButtonGroup hidden={isEditable}>
 
-                <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Elimina </Tooltip>}>
-                    <Button name="DeleteButton" variant="outline-danger"
-                        onClick={() => onClickDelete(rowId)} >
-                        <MdDelete />
-                    </Button>
-                </OverlayTrigger>
+                    <OverlayTrigger overlay={<Tooltip>Elimina </Tooltip>}>
+                        <Button name="DeleteButton" variant="outline-danger"
+                            onClick={() => onClickDelete(rowId)} >
+                            <MdDelete />
+                        </Button>
+                    </OverlayTrigger>
                 </ButtonGroup>
             </td>
         </tr >

@@ -88,7 +88,7 @@ export default function ModalEdit({
             </div>
             <Modal show={show} onHide={() => setShow(false)} keyboard={false}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Modifica preventivo</Modal.Title>
+                    <Modal.Title>{isEditing ? "Modifica" : "Aggiungi"} preventivo</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {/* Form per aggiungere un nuovo preventivo: servono nome preventivo, id scuola e id listino */}

@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Alert, Button, Form, Modal, Spinner } from 'react-bootstrap'
 import { trpc } from 'utils/trpc'
 import { MdReceipt } from 'react-icons/md'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
+import Tooltip from 'react-bootstrap/Tooltip'
 
 
 export default function ModalOptions({
@@ -31,13 +31,11 @@ export default function ModalOptions({
       {/*className='d-flex justify-content-end'*/}
       {/*className='position-absolute top-50 end-0 translate-middle-x'*/}
       <div className='d-flex justify-content-end'>
-
-      <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Modifica opzioni preventivo</Tooltip>}>
-        <Button variant="primary" size='lg' className="rounded-circle m-0" onClick={() => setShow(true)} style={{ display: "block" }}>
-          <MdReceipt />
-        </Button>        
-      </OverlayTrigger>
-      
+        <OverlayTrigger overlay={<Tooltip>Modifica opzioni preventivo</Tooltip>}>
+          <Button variant="primary" size='lg' className="rounded-circle m-0" onClick={() => setShow(true)} style={{ display: "block" }}>
+            <MdReceipt />
+          </Button>
+        </OverlayTrigger>
       </div>
       <Modal show={show} onHide={() => setShow(false)} keyboard={false}>
         <Modal.Header closeButton>

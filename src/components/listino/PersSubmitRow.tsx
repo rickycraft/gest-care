@@ -3,8 +3,8 @@ import Button from 'react-bootstrap/Button'
 import { useState } from 'react'
 import { ButtonGroup, Form } from 'react-bootstrap'
 import { MdCancel, MdSave } from 'react-icons/md'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
+import Tooltip from 'react-bootstrap/Tooltip'
 
 export default function PersSubmitRow({
   listino,
@@ -46,28 +46,28 @@ export default function PersSubmitRow({
                     clean: pulisce gli input text
                   */}
         <ButtonGroup>
-          
 
 
-          <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Salva </Tooltip>}>
-          <Button name="SaveButton"
-            variant="outline-success"
-            disabled={!isRowValid()}
-            onClick={() => doInsertPers()}
-          >
+
+          <OverlayTrigger overlay={<Tooltip>Salva </Tooltip>}>
+            <Button name="SaveButton"
+              variant="outline-success"
+              disabled={!isRowValid()}
+              onClick={() => doInsertPers()}
+            >
               <MdSave className='ms-1' />
-          </Button>
+            </Button>
           </OverlayTrigger>
-                   
-                   
-          <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Annulla</Tooltip>}>
-          <Button name="CleanButton"
-            variant="outline-secondary"
-            onClick={() => { setPrezzo(0); setNome('') }}
-          >
-            <MdCancel className='ms-1' />
-          </Button>
-         </OverlayTrigger>
+
+
+          <OverlayTrigger overlay={<Tooltip>Annulla</Tooltip>}>
+            <Button name="CleanButton"
+              variant="outline-secondary"
+              onClick={() => { setPrezzo(0); setNome('') }}
+            >
+              <MdCancel className='ms-1' />
+            </Button>
+          </OverlayTrigger>
 
 
 

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Button, ButtonGroup, Form, Spinner } from 'react-bootstrap'
 
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
+import Tooltip from 'react-bootstrap/Tooltip'
 import { MdCancel, MdSave, MdDelete, MdOutlineClear, MdOutlineCheck } from 'react-icons/md'
 
 
@@ -59,16 +59,16 @@ export default function TableRow({
              }
              `}
           </style>
-         
-          
 
 
-                <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Salva Modifiche</Tooltip>}>
-           <Button variant="outline-success" onClick={() => onChange(id, quantity)}>  <MdOutlineCheck /></Button>
+
+
+          <OverlayTrigger overlay={<Tooltip>Salva Modifiche</Tooltip>}>
+            <Button variant="outline-success" onClick={() => onChange(id, quantity)}>  <MdOutlineCheck /></Button>
           </OverlayTrigger>
-                   
-                   
-          <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Annulla Modifiche</Tooltip>}>
+
+
+          <OverlayTrigger overlay={<Tooltip>Annulla Modifiche</Tooltip>}>
             <Button variant="outline-secondary" onClick={() => setQuantity(_quantity)}><MdOutlineClear /></Button>
           </OverlayTrigger>
         </ButtonGroup>
