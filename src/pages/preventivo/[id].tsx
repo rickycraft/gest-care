@@ -7,8 +7,7 @@ import ErrorMessage from 'components/utils/ErrorMessage'
 import ModalOptions from 'components/preventivo/ModalOptionsPreventivo'
 import { MdContentCopy, MdDownload, MdGridOn } from 'react-icons/md'
 import TableRowPrev from 'components/preventivo/TableRowPrev'
-
-const invalidId = -1
+import { INVALID_ID } from 'utils/constants'
 
 const parseId = (id: any) => {
   if (id == undefined || Array.isArray(id)) return null
@@ -20,25 +19,35 @@ const parseId = (id: any) => {
 export default function Index() {
   // handle query
   const router = useRouter()
-  const idPreventivo = useMemo(() => parseId(router.query.id) ?? invalidId, [router.query])
+  const idPreventivo = useMemo(() => parseId(router.query.id) ?? INVALID_ID, [router.query])
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
-  const [listinoId, setListinoId] = useState(invalidId)
-  const context = trpc.useContext()
+  const [listinoId, setListinoId] = useState(INVALID_ID)
 
+  const context = trpc.useContext()
   const preventivoRowCallback = {
     onError() {
       setErrorMsg('Errore riga preventivo')
     },
     onSuccess() {
-      context.invalidateQueries(['preventivo.list'])
       preventivoQuery.refetch()
       preventivoRowQuery.refetch()
     },
-    enabled: idPreventivo != invalidId,
+    enabled: idPreventivo != INVALID_ID,
   }
-  const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }], { enabled: idPreventivo != invalidId })
-  const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId: idPreventivo }], { enabled: idPreventivo != invalidId })
+  const prodottiQuery = trpc.useQuery(['prodotto.list', { listino: listinoId }], { enabled: listinoId != INVALID_ID })
+  const persQuery = trpc.useQuery(['pers.list', { listino: listinoId }], { enabled: listinoId != INVALID_ID })
+  const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }], {
+    onSettled(data, error) {
+      if (error || !data) router.push('/preventivo/list')
+      else {
+        setListinoId(data.listinoId)
+        prodottiQuery.refetch()
+        persQuery.refetch()
+      }
+    },
+  })
+  const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId: idPreventivo }])
   const preventivoRowInsert = trpc.useMutation('preventivo.row.insert', preventivoRowCallback)
   const preventivoRowUpdate = trpc.useMutation('preventivo.row.update', preventivoRowCallback)
   const preventivoRowDelete = trpc.useMutation('preventivo.row.delete', preventivoRowCallback)
@@ -48,23 +57,8 @@ export default function Index() {
       router.push('/preventivo/list')
     }
   })
-  const prodottiQuery = trpc.useQuery(['prodotto.list', { listino: listinoId }], { enabled: listinoId !== invalidId })
-  const persQuery = trpc.useQuery(['pers.list', { listino: listinoId }], { enabled: listinoId !== invalidId })
 
-  useEffect(() => {
-    if (!preventivoQuery.isSuccess) return
-    if (!preventivoQuery.data) {
-      router.push('/preventivo/list')
-      return
-    }
-    setListinoId(preventivoQuery.data.listinoId)
-    prodottiQuery.refetch()
-    persQuery.refetch()
-  }, [preventivoQuery.status])
-  const locked = useMemo(() => {
-    if (!preventivoQuery.data) return true
-    return preventivoQuery.data.locked
-  }, [preventivoQuery.data])
+  const locked = useMemo(() => preventivoQuery.data?.locked ?? true, [preventivoQuery.data])
 
   if (!preventivoRowQuery.isSuccess || !preventivoQuery.isSuccess || !prodottiQuery.isSuccess || !persQuery.isSuccess) {
     return <Spinner animation="border" />
@@ -101,51 +95,48 @@ export default function Index() {
       {/*Tabella che mostra i prodotti del preventivo selezionato*/}
       <style type="text/css">
         {`
-            .table:not(thead){
-              display: block;
-              max-height: 60vh;
-              overflow-y: auto;
-            }
-            .table thead tr{
-              position: sticky;
-              top: 0;
-              background-color: white;
-              border: solid; border-width: 1px 1px;
-              border-color: #dee2e6;
-             }
-             .table thead tr th{
-              border: solid; border-width: 0 1px;
-              border-color: #dee2e6;
-             }
-            tbody tr:last-child{
-              background-color: white;
-              position: sticky;
-              bottom: 0;
-            }
-          }
-          ` }
+        .table:not(thead) {
+          display: block;
+          max-height: 60vh;
+          overflow-y: auto;
+        }
+        .table thead tr {
+          position: sticky;
+          top: 0;
+          background-color: white;
+          border: solid; border-width: 1px 1px;
+          border-color: #dee2e6;
+        }
+        .table thead tr th {
+          border: solid; border-width: 0 1px;
+          border-color: #dee2e6;
+        }
+        tbody tr:last-child {
+          background-color: white;
+          position: sticky;
+          bottom: 0;
+        }
+        .t-input-number {
+          width: 8%;
+          min-width: 5em;
+        }
+        .t-number {
+          width: 5%;
+          min-width: 4em;
+        }
+        .t-select {
+          min-width: 10em;
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        `}
       </style>
       <Table bordered responsive className='w-100'>
-        <style type="text/css"> {`
-          .t-input-number {
-            width: 8%;
-            min-width: 5em;
-          }
-          .t-number {
-            width: 5%;
-            min-width: 4em;
-          }
-          .t-select {
-            min-width: 10em;
-          }
-          .btn {
-              display: flex;
-              align-items: center;
-              flex-wrap: nowrap;
-              margin-left: auto;
-              margin-right: auto;
-          }
-        `} </style>
         <thead>
           <tr>
             <th className='t-select'>Prodotto</th>
@@ -173,13 +164,13 @@ export default function Index() {
           ))}
           {/* Empty row */}
           {!locked && <TableRowPrev
-            key={invalidId}
+            key={INVALID_ID}
             locked={false}
             row={{
-              id: invalidId,
-              prevId: invalidId,
-              prodId: invalidId,
-              persId: invalidId,
+              id: INVALID_ID,
+              prevId: idPreventivo,
+              prodId: INVALID_ID,
+              persId: INVALID_ID,
               provComm: 0,
               provRappre: 0,
               provSc: 0,

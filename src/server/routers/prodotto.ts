@@ -15,13 +15,11 @@ const insertProdSchema = z.object({
   nome: z.string(),
   prezzo: z.number(),
 })
-export type insertProdType = z.infer<typeof insertProdSchema>
 
 const updateProdSchema = z.object({
   id: z.number(),
   prezzo: z.number(),
 })
-export type updateProdType = z.infer<typeof updateProdSchema>
 
 export const prodRouter = createProtectedRouter()
   .query("byId", {
@@ -29,15 +27,15 @@ export const prodRouter = createProtectedRouter()
       id: z.number(),
     }),
     async resolve({ input }) {
-      const { id } = input
       const prodotto = await prisma.prodotto.findFirst({
-        where: {
-          id
-        },
+        where: { id: input.id },
         select: defaultProdSelect,
       })
       if (!prodotto) throw new TRPCError({ code: "NOT_FOUND" })
-      return prodotto
+      return {
+        ...prodotto,
+        prezzo: prodotto.prezzo.toNumber()
+      }
     }
   })
   .query("list", {
@@ -47,16 +45,17 @@ export const prodRouter = createProtectedRouter()
     async resolve({ input }) {
       const { listino } = input
       const prodotto = await prisma.prodotto.findMany({
-        where: {
-          listinoId: listino
-        },
+        where: { listinoId: listino },
         select: defaultProdSelect,
         orderBy: {
           nome: "asc",
         },
       })
       if (!prodotto) throw new TRPCError({ code: "NOT_FOUND" })
-      return prodotto
+      return prodotto.map(p => ({
+        ...p,
+        prezzo: p.prezzo.toNumber()
+      }))
     }
   })
   .mutation("insert", {

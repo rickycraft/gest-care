@@ -1,7 +1,6 @@
-import Head from 'next/head'
 import { trpc } from 'utils/trpc'
 import Table from 'react-bootstrap/Table'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Form, Spinner } from 'react-bootstrap'
 import TableRow from 'components/listino/TableRow'
 import ModalListino from 'components/listino/ModalListino'
@@ -18,30 +17,27 @@ export default function Pers() {
   // trpc
   const listinoQuery = trpc.useQuery(['listino.list'])
   const persQuery = trpc.useQuery(['pers.list', { listino }])
+  const persInsert = trpc.useMutation('pers.insert', {
+    onSuccess() { persQuery.refetch() },
+    onError() { setErrorMsg('Errore nell inserire la personalizzazione selezionato') }
+  })
   const persUpdate = trpc.useMutation('pers.update', {
-    onError() {
-      setErrorMsg('Errore nel aggiornare una personalizzazione')
-    }
+    onSuccess() { persQuery.refetch() },
+    onError() { setErrorMsg('Errore nel aggiornare una personalizzazione') }
   })
   const persDelete = trpc.useMutation('pers.delete', {
-    onError() {
-      setErrorMsg('Errore nell eliminare la personalizzazione selezionata')
-    }
+    onSuccess() { persQuery.refetch() },
+    onError() { setErrorMsg('Errore nell eliminare la personalizzazione selezionata') }
   })
 
-  useEffect(() => {
-    if (!persQuery.isSuccess) return
-    if (persDelete.isSuccess || persUpdate.isSuccess) persQuery.refetch()
-  }, [persDelete.isSuccess, persUpdate.isSuccess])
-
-  const updatePers = async (idPers: number, prezzo: number) => {
+  const updatePers = (idPers: number, prezzo: number) => {
     if (persUpdate.isLoading) return
     persUpdate.mutate({
       id: idPers,
       prezzo: prezzo,
     })
   }
-  const deletePers = async (idPers: number) => {
+  const deletePers = (idPers: number) => {
     if (persDelete.isLoading) return
     persDelete.mutate({ id: idPers })
   }
@@ -84,15 +80,9 @@ export default function Pers() {
             />
           ))}
           {/* riga per inserire un nuovo Pers */}
-          <PersSubmitRow
-            listino={listino}
-            updateList={() => persQuery.refetch()}
-            updateErrorMessage={(msg) => setErrorMsg(msg)}
-          />
+          <PersSubmitRow listino={listino} insertPers={persInsert.mutate} />
         </tbody>
       </Table>
-
-      {/* alert per mostrare i messaggi di errore */}
       <ErrorMessage message={errorMsg} />
     </div >
   )

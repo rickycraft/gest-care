@@ -15,13 +15,10 @@ const insertPersSchema = z.object({
   nome: z.string(),
   prezzo: z.number(),
 })
-export type insertPersType = z.infer<typeof insertPersSchema>
-
 const updatePersSchema = z.object({
   id: z.number(),
   prezzo: z.number(),
 })
-export type updatePersType = z.infer<typeof updatePersSchema>
 
 export const persRouter = createProtectedRouter()
   .query("byId", {
@@ -29,15 +26,15 @@ export const persRouter = createProtectedRouter()
       id: z.number(),
     }),
     async resolve({ input }) {
-      const { id } = input
       const pers = await prisma.personalizzazione.findFirst({
-        where: {
-          id
-        },
+        where: { id: input.id },
         select: defaultPersSelect,
       })
       if (!pers) throw new TRPCError({ code: "NOT_FOUND" })
-      return pers
+      return {
+        ...pers,
+        prezzo: pers.prezzo.toNumber()
+      }
     }
   })
   .query("list", {
@@ -56,7 +53,10 @@ export const persRouter = createProtectedRouter()
         },
       })
       if (!pers) throw new TRPCError({ code: "NOT_FOUND" })
-      return pers
+      return pers.map(p => ({
+        ...p,
+        prezzo: p.prezzo.toNumber()
+      }))
     }
   })
   .mutation("insert", {

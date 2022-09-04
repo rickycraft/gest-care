@@ -1,8 +1,8 @@
-import { Decimal } from '@prisma/client/runtime'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Button, ButtonGroup } from 'react-bootstrap'
 import Form from 'react-bootstrap/Form'
 import { FcCancel, FcSupport } from 'react-icons/fc'
+import { MdDelete } from 'react-icons/md'
 
 export default function TableRow({
     rowId,
@@ -13,12 +13,12 @@ export default function TableRow({
 }: {
     rowId: number,
     rowName: string,
-    rowPrice: Decimal,
+    rowPrice: number,
     onClickEdit: (row_id: number, row_prezzo: number) => void,
     onClickDelete: (row_id: number) => void,
 }) {
     const [isEditable, setIsEditable] = useState(false)
-    const [newPrice, setNewPrice] = useState(Number(rowPrice))
+    const [newPrice, setNewPrice] = useState(rowPrice)
 
     const editRow = (id: number, price: number) => {
         onClickEdit(id, price)
@@ -39,7 +39,7 @@ export default function TableRow({
                         event.preventDefault()
                         setNewPrice(Number(event.currentTarget.value))
                     }}
-                    onKeyPress={(event) => { if (event.key === 'Enter') editRow(rowId, newPrice) }}
+                    onKeyUp={(event) => { if (event.key === 'Enter') editRow(rowId, newPrice) }}
                 />
             </td>
             <td>
@@ -56,18 +56,16 @@ export default function TableRow({
                     </Button>
                     <Button name='UndoButton' variant="outline-primary"
                         onClick={() => {
-                            setNewPrice(Number(rowPrice))
+                            setNewPrice(rowPrice)
                             setIsEditable(false)
                         }}
-                    >
-                        Undo<FcCancel />
+                    >Undo<FcCancel />
                     </Button>
                 </ButtonGroup>
                 <ButtonGroup hidden={isEditable}>
                     <Button name="DeleteButton" variant="outline-danger"
-                        onClick={() => onClickDelete(rowId)}
-                    >
-                        Delete<FcCancel />
+                        onClick={() => onClickDelete(rowId)} >
+                        <MdDelete />
                     </Button>
                 </ButtonGroup>
             </td>
