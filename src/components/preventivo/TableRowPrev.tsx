@@ -3,8 +3,8 @@ import { Button, ButtonGroup, Form, Spinner } from 'react-bootstrap'
 import { inferMutationInput, inferQueryOutput } from 'utils/trpc'
 import { MdCancel, MdSave, MdDelete, MdOutlineClear, MdOutlineCheck } from 'react-icons/md'
 import { INVALID_ID } from 'utils/constants'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import Tooltip from 'react-bootstrap/Tooltip'
+import ButtonTooltip from 'components/utils/ButtonTooltip'
+
 
 export default function TableRowPrev({
     row,
@@ -95,7 +95,7 @@ export default function TableRowPrev({
             <td>
                 {isEditable ? (
                     <ButtonGroup hidden={isNew || locked}>
-                        <OverlayTrigger overlay={<Tooltip>Salva Modifiche</Tooltip>}>
+                        <ButtonTooltip tooltip="Salva le modifiche">
                             <Button name='EditButton' variant="outline-success" disabled={!isValid}
                                 onClick={() => {
                                     onClickEdit({ ...newRow, id: row.id })
@@ -103,40 +103,40 @@ export default function TableRowPrev({
                                 }}>
                                 <MdOutlineCheck />
                             </Button>
-                        </OverlayTrigger>
+                        </ButtonTooltip>
 
-                        <OverlayTrigger overlay={<Tooltip>Annulla Modifiche</Tooltip>}>
+                        <ButtonTooltip tooltip="Annulla Modifiche">
                             <Button name='UndoButton' variant="outline-secondary"
                                 onClick={() => {
                                     resetRow()
                                     setIsEditable(false)
                                 }}><MdOutlineClear />
                             </Button>
-                        </OverlayTrigger>
+                        </ButtonTooltip>
                     </ButtonGroup>
                 ) : (
                     <div className="d-inline-block">
-                        <OverlayTrigger overlay={<Tooltip>Elimina riga preventivo</Tooltip>}>
+                        <ButtonTooltip tooltip="Elimina riga preventivo">
                             <Button name="DeleteButton" variant="outline-danger" hidden={isNew || locked} onClick={() => onClickDelete(row.id)}>
                                 <MdDelete />
                             </Button>
-                        </OverlayTrigger>
+                        </ButtonTooltip>
                     </div>
                 )}
                 <ButtonGroup hidden={!isNew || locked}>
 
-                    <OverlayTrigger overlay={<Tooltip>Salva </Tooltip>}>
+                    <ButtonTooltip tooltip="Salva ">
                         <Button name="InsertButton" variant="outline-success" disabled={!isValid} onClick={() => { onClickInsert(newRow); resetRow() }}>
                             <MdSave className='ms-1' />
                         </Button>
-                    </OverlayTrigger>
+                    </ButtonTooltip>
 
 
-                    <OverlayTrigger overlay={<Tooltip>Annulla</Tooltip>}>
+                    <ButtonTooltip tooltip="Annulla">
                         <Button name='UndoButton' variant="outline-secondary" onClick={() => resetRow()}>
                             <MdCancel className='ms-1' />
                         </Button>
-                    </OverlayTrigger>
+                    </ButtonTooltip>
 
                 </ButtonGroup>
             </td>

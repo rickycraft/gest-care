@@ -1,6 +1,6 @@
 import { trpc } from 'utils/trpc'
 import Table from 'react-bootstrap/Table'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Button, Card, Spinner } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import ErrorMessage from 'components/utils/ErrorMessage'
@@ -8,9 +8,7 @@ import ModalOptions from 'components/preventivo/ModalOptionsPreventivo'
 import { MdContentCopy, MdDownload, MdGridOn } from 'react-icons/md'
 import TableRowPrev from 'components/preventivo/TableRowPrev'
 import { INVALID_ID } from 'utils/constants'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import Tooltip from 'react-bootstrap/Tooltip'
-
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 const parseId = (id: any) => {
   if (id == undefined || Array.isArray(id)) return null
@@ -73,7 +71,7 @@ export default function Index() {
         <h1>{preventivoQuery.data?.nome.toUpperCase()}</h1>
         <span className='d-flex'>
 
-          <OverlayTrigger overlay={<Tooltip>Esporta preventivo xls</Tooltip>}>
+          <ButtonTooltip tooltip="Esporta preventivo xls">
             <Button variant='success' className='me-2 p-2 p-lg-3 rounded-circle'
               onClick={
                 () => router.push({
@@ -82,9 +80,9 @@ export default function Index() {
                 })}
             ><MdGridOn />
             </Button>
-          </OverlayTrigger>
+          </ButtonTooltip>
 
-          <OverlayTrigger overlay={<Tooltip>Esporta preventivo pdf</Tooltip>}>
+          <ButtonTooltip tooltip="Esporta preventivo pdf">
             <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
               onClick={
                 () => router.push({
@@ -93,9 +91,9 @@ export default function Index() {
                 })}
             ><MdDownload />
             </Button>
-          </OverlayTrigger>
+          </ButtonTooltip>
 
-          <OverlayTrigger overlay={<Tooltip>Duplica preventivo</Tooltip>}>
+          <ButtonTooltip tooltip="Duplica preventivo">
             <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
               onClick={() => {
                 if (preventivoQuery.data == null) return
@@ -103,7 +101,7 @@ export default function Index() {
               }}
             ><MdContentCopy />
             </Button>
-          </OverlayTrigger>
+          </ButtonTooltip>
         </span>
       </div>
       <p>ultima modifica alle {preventivoQuery.data?.editedAt.toLocaleString()}</p>
