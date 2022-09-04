@@ -3,7 +3,8 @@ import { trpc } from 'utils/trpc'
 import Button from 'react-bootstrap/Button'
 import { useEffect, useState } from 'react'
 import { ButtonGroup, Form, Spinner } from 'react-bootstrap'
-import { FcDeleteRow, FcCheckmark } from "react-icons/fc"
+import { MdCancel, MdSave } from 'react-icons/md'
+
 
 export default function ProdSubmitRow({
   listino,
@@ -67,13 +68,14 @@ export default function ProdSubmitRow({
             disabled={!isRowValid()}
             onClick={() => insertProdotto()}
           >
-            Save<FcCheckmark />
+            SALVA<MdSave className='ms-1' />
+          
           </Button>
           <Button name="CleanButton"
-            variant="outline-primary"
+            variant="outline-secondary" 
             onClick={() => { setPrezzo(0); setNome('') }}
           >
-            Clean<FcDeleteRow />
+            UNDO<MdCancel className='ms-1' />
           </Button>
         </ButtonGroup>
       </td>

@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 import { Button, ButtonGroup, Form, Spinner } from 'react-bootstrap'
 import { FcCancel, FcCheckmark, FcEmptyTrash, FcSafe, FcSupport } from 'react-icons/fc'
 import { inferMutationInput, inferQueryOutput } from 'utils/trpc'
+import { MdCancel, MdSave, MdDelete, MdOutlineClear, MdOutlineCheck } from 'react-icons/md'
+
 
 const invalidId = -1
 
@@ -105,30 +107,32 @@ export default function TableRowPrev({
                                 onClickEdit({ ...newRow, id: row.id })
                                 setIsEditable(false)
                             }}>
-                            Salva<FcSupport />
+                            <MdOutlineCheck />
                         </Button>
-                        <Button name='UndoButton' variant="outline-secondary"
+                        <Button name='UndoButton' variant="outline-secondary" 
                             onClick={() => {
                                 resetRow()
                                 setIsEditable(false)
-                            }}>Undo<FcCancel />
+                            }}><MdOutlineClear />
                         </Button>
                     </ButtonGroup>
                 ) : (
-                    <Button name="DeleteButton" variant="outline-danger" hidden={isNew || locked}
-                        onClick={() => onClickDelete(row.id)}>Delete<FcEmptyTrash />
+                    <div className="d-inline-block">
+                    <Button name="DeleteButton" variant="outline-danger"  hidden={isNew || locked}
+                        onClick={() => onClickDelete(row.id)}> <MdDelete />
                     </Button>
+                    </div>
                 )}
                 <ButtonGroup hidden={!isNew || locked}>
-                    <Button name="InsertButton" variant="outline-primary" disabled={!isValid}
+                    <Button name="InsertButton" variant="outline-success" disabled={!isValid}
                         onClick={() => {
                             onClickInsert(newRow)
                             resetRow()
                         }}>
-                        Salva<FcCheckmark />
+                        SALVA<MdSave className='ms-1' />
                     </Button>
-                    <Button name='UndoButton' variant="outline-secondary" onClick={() => resetRow()}>
-                        Clear<FcCancel />
+                    <Button name='UndoButton' variant="outline-secondary"  onClick={() => resetRow()}>
+                        UNDO<MdCancel className='ms-1' />
                     </Button>
                 </ButtonGroup>
             </td>
