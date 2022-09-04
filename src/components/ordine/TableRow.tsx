@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Button, ButtonGroup, Form, Spinner } from 'react-bootstrap'
-import { MdCancel, MdSave } from 'react-icons/md'
+
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { MdCancel, MdSave, MdDelete, MdOutlineClear, MdOutlineCheck } from 'react-icons/md'
 
 
 export default function TableRow({
@@ -56,8 +59,18 @@ export default function TableRow({
              }
              `}
           </style>
-          <Button variant="outline-success" onClick={() => onChange(id, quantity)}>SALVA<MdSave className='ms-1' /></Button>
-          <Button variant="outline-secondary" onClick={() => setQuantity(_quantity)}>UNDO<MdCancel className='ms-1' /></Button>
+         
+          
+
+
+                <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Salva Modifiche</Tooltip>}>
+           <Button variant="outline-success" onClick={() => onChange(id, quantity)}>  <MdOutlineCheck /></Button>
+          </OverlayTrigger>
+                   
+                   
+          <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Annulla Modifiche</Tooltip>}>
+            <Button variant="outline-secondary" onClick={() => setQuantity(_quantity)}><MdOutlineClear /></Button>
+          </OverlayTrigger>
         </ButtonGroup>
       </td>
     </tr>

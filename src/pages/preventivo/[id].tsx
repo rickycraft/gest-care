@@ -8,6 +8,9 @@ import ModalOptions from 'components/preventivo/ModalOptionsPreventivo'
 import { MdContentCopy, MdDownload, MdGridOn } from 'react-icons/md'
 import TableRowPrev from 'components/preventivo/TableRowPrev'
 import { INVALID_ID } from 'utils/constants'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+
 
 const parseId = (id: any) => {
   if (id == undefined || Array.isArray(id)) return null
@@ -69,26 +72,38 @@ export default function Index() {
       <div className='d-flex align-items-center justify-content-between'>
         <h1>{preventivoQuery.data?.nome.toUpperCase()}</h1>
         <span className='d-flex'>
-          <Button variant='success' className='me-2 p-2 p-lg-3 rounded-circle'
-            onClick={
-              () => router.push({
-                pathname: '/preventivo/excel',
-                query: { id: preventivoQuery.data?.id },
-              })}
-          ><MdGridOn /></Button>
+
+        <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Esporta preventivo xls</Tooltip>}>
+            <Button variant='success' className='me-2 p-2 p-lg-3 rounded-circle'
+              onClick={
+                () => router.push({
+                  pathname: '/preventivo/excel',
+                  query: { id: preventivoQuery.data?.id },
+                })}
+               ><MdGridOn />
+          </Button>
+       </OverlayTrigger>
+
+       <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Esporta preventivo pdf</Tooltip>}>
           <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
             onClick={
               () => router.push({
                 pathname: '/preventivo/pdf',
                 query: { id: preventivoQuery.data?.id },
               })}
-          ><MdDownload /></Button>
+              ><MdDownload />
+          </Button>
+        </OverlayTrigger>
+
+        <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Duplica preventivo</Tooltip>}>
           <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
             onClick={() => {
               if (preventivoQuery.data == null) return
               preventivoDuplicate.mutate({ id: preventivoQuery.data.id })
             }}
-          ><MdContentCopy /></Button>
+            ><MdContentCopy />
+          </Button>
+         </OverlayTrigger>
         </span>
       </div>
       <p>ultima modifica alle {preventivoQuery.data?.editedAt.toLocaleString()}</p>

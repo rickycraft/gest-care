@@ -9,6 +9,8 @@ import ModalLock from 'components/preventivo/ModalLockPreventivo'
 import { useAtom } from 'jotai'
 import { userAtom } from 'utils/atom'
 import { canUnlockPreventivo } from 'utils/role'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 const invalidId = -1
 
@@ -49,15 +51,23 @@ export default function List() {
                   )}
                   {prev.locked ? (null) : (
                     <>
-                      <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}>
-                        <MdLock />
-                      </Button>
-                      <Button variant='info' className='me-2' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
-                        <MdCreate />
-                      </Button>
-                      <Button variant='danger' onClick={() => openModal(prev.id, prev.locked, openDelete)}>
-                        <MdDeleteOutline />
-                      </Button>
+                     <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Blocca preventivo</Tooltip>}>
+                          <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}>
+                            <MdLock />
+                          </Button>
+                      </OverlayTrigger>
+
+                      <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Modifica preventivo</Tooltip>}>
+                          <Button variant='info' className='me-2' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
+                            <MdCreate />
+                          </Button>
+                      </OverlayTrigger>
+
+                      <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Elimina preventivo</Tooltip>}>
+                          <Button variant='danger' onClick={() => openModal(prev.id, prev.locked, openDelete)}>
+                            <MdDeleteOutline />
+                          </Button>
+                      </OverlayTrigger>
                     </>
                   )}
                 </span>

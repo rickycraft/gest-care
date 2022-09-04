@@ -5,6 +5,9 @@ import { useState } from 'react'
 import { Button, Card, Spinner } from 'react-bootstrap'
 import { MdDelete } from 'react-icons/md'
 import { trpc } from 'utils/trpc'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+
 
 export default function List() {
   const router = useRouter()
@@ -29,9 +32,12 @@ export default function List() {
                 Totale: {
                   (Number(ordine.totSC) + Number(ordine.totComm) + Number(ordine.totRappre)).toFixed(2)
                 }
-                <Button variant='danger' className='ms-3' onClick={() => showDelete(ordine.id)}>
-                  <MdDelete />
-                </Button>
+                <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Elimina preventivo</Tooltip>}>
+                    <Button variant='danger' className='ms-3' onClick={() => showDelete(ordine.id)}>
+                      <MdDelete />
+                    </Button>
+                </OverlayTrigger>
+                
               </span>
             </Card.Body>
           </Card>

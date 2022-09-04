@@ -2,6 +2,9 @@ import { useMemo, useState } from 'react'
 import { Button, ButtonGroup, Form } from 'react-bootstrap'
 import { MdCancel, MdSave } from 'react-icons/md'
 import { trpc } from 'utils/trpc'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+
 
 export default function TotReale(
   {
@@ -55,16 +58,28 @@ export default function TotReale(
         <td>{tot.toFixed(2)}</td>
         <td>
           <ButtonGroup>
-            <Button variant="outline-success" disabled={!isEdited}
-              onClick={() => ordineEdit.mutate({ ordineId, totSC: newSc, totComm: newComm, totRappre: newRappre })}
-            >SALVA<MdSave className='ms-1' /></Button>
-            <Button variant="outline-secondary" disabled={!isEdited}
-              onClick={() => {
-                setSc(sc)
-                setComm(comm)
-                setRappre(rappre)
-              }}
-            >UNDO<MdCancel className='ms-1' /></Button>
+        
+
+
+                <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Salva </Tooltip>}>
+                   <Button variant="outline-success" disabled={!isEdited}  onClick={() => 
+                            ordineEdit.mutate({ ordineId, totSC: newSc, totComm: newComm, totRappre: newRappre })} >
+                       <MdSave className='ms-1' />
+                    </Button>
+                </OverlayTrigger>
+                   
+                   
+                 <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Annulla</Tooltip>}>
+                     <Button variant="outline-secondary" disabled={!isEdited} onClick={() => {
+                            setSc(sc)
+                            setComm(comm)
+                            setRappre(rappre)
+                        }}>
+                        <MdCancel className='ms-1' />
+                    </Button>
+                </OverlayTrigger>
+
+
           </ButtonGroup>
         </td>
       </tr>

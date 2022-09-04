@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Button, Form, Modal, Spinner } from 'react-bootstrap'
 import { trpc } from 'utils/trpc'
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 const invalidId = -1
 
@@ -23,9 +25,11 @@ export default function ModalCreate() {
   return (
     <>
       <div className='d-flex justify-content-end'>
-        <Button variant="primary" size='lg' className="rounded-circle" onClick={() => setShow(true)}>
-          +
-        </Button>
+      <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Aggiungi ordine</Tooltip>}>
+            <Button variant="primary" size='lg' className="rounded-circle" onClick={() => setShow(true)}>
+              +
+            </Button>
+       </OverlayTrigger>
         <Modal show={show} onHide={() => setShow(false)} keyboard={false}>
           <Modal.Header closeButton>
             <Modal.Title>Aggiungi un nuovo ordine</Modal.Title>
@@ -48,9 +52,12 @@ export default function ModalCreate() {
             </Form>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="primary" onClick={() => ordineCreate.mutate({ preventivoId })} disabled={preventivoId == invalidId}>
-              Conferma
-            </Button>
+            
+                <Button variant="primary" onClick={() => ordineCreate.mutate({ preventivoId })} disabled={preventivoId == invalidId}>
+                 Conferma
+              </Button>
+           
+            
           </Modal.Footer>
         </Modal>
       </div>

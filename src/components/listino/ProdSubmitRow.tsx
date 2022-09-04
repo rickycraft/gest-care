@@ -4,7 +4,8 @@ import Button from 'react-bootstrap/Button'
 import { useEffect, useState } from 'react'
 import { ButtonGroup, Form, Spinner } from 'react-bootstrap'
 import { MdCancel, MdSave } from 'react-icons/md'
-
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 export default function ProdSubmitRow({
   listino,
@@ -46,19 +47,29 @@ export default function ProdSubmitRow({
                     clean: pulisce gli input text
                   */}
         <ButtonGroup>
-          <Button name="SaveButton"
-            variant="outline-success"
-            disabled={!isRowValid()}
-            onClick={() => doInsertProd()}
-          >
-            SALVA<MdSave className='ms-1' />
-          </Button>
-          <Button name="CleanButton"
-            variant="outline-secondary"
-            onClick={() => { setPrezzo(0); setNome('') }}
-          >
-            UNDO<MdCancel className='ms-1' />
-          </Button>
+
+          <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Salva </Tooltip>}>
+            <Button name="SaveButton"
+                  variant="outline-success"
+                  disabled={!isRowValid()}
+                  onClick={() => doInsertProd()}
+                >
+                <MdSave className='ms-1' />
+             </Button>
+          </OverlayTrigger>
+                   
+                   
+          <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">Annulla</Tooltip>}>
+              <Button name="CleanButton"
+                variant="outline-secondary"
+                onClick={() => { setPrezzo(0); setNome('') }}
+              >
+                <MdCancel className='ms-1' />
+             </Button>
+          </OverlayTrigger>
+        
+
+
         </ButtonGroup>
       </td>
     </tr>
