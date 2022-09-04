@@ -3,7 +3,6 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { Spinner } from 'react-bootstrap'
 import { prisma } from 'server/prisma'
-import writeXlsxFile from 'write-excel-file'
 
 const invalidProps = {
   props: { idPreventivo: -1 }
@@ -77,10 +76,12 @@ export default function Excel(props: InferGetServerSidePropsType<typeof getServe
 
   useEffect(() => {
     if (props.idPreventivo === -1) return
-    writeXlsxFile(props.rows, {
-      schema: excelSchema,
-      fileName: `${props.preventivo.nome}_${props.preventivo.scuola}.xlsx`
-    }).then(() => router.push('/preventivo/' + props.idPreventivo))
+    import('write-excel-file').then(xls => {
+      xls.default(props.rows, {
+        schema: excelSchema,
+        fileName: `${props.preventivo.nome}_${props.preventivo.scuola}.xlsx`
+      }).then(() => router.push('/preventivo/' + props.idPreventivo))
+    })
   }, [])
 
   if (props.idPreventivo === -1) return <div>Invalid id</div>

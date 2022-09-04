@@ -1,11 +1,8 @@
-import TableRowPrev from 'components/preventivo/TableRowPrev'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { Spinner } from 'react-bootstrap'
-import { prisma } from 'server/prisma'
 import { ordineById, ordineTotal } from 'server/routers/ordine'
-import writeXlsxFile from 'write-excel-file'
 
 const invalidProps = {
   props: { idOrdine: -1 }
@@ -97,11 +94,12 @@ export default function Excel(props: InferGetServerSidePropsType<typeof getServe
 
   useEffect(() => {
     if (props.idOrdine === -1) return
-    writeXlsxFile(rows, {
-      schema: excelSchema,
-      fileName: `ordine_${props.nome}.xlsx`
+    import('write-excel-file').then(xls => {
+      xls.default(rows, {
+        schema: excelSchema,
+        fileName: `ordine_${props.nome}.xlsx`
+      }).then(() => router.push('/ordine/' + props.idOrdine))
     })
-      .then(() => router.push('/ordine/' + props.idOrdine))
   }, [])
 
   if (props.idOrdine === -1) return <div>Invalid id</div>
