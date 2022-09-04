@@ -1,7 +1,6 @@
-import Head from 'next/head'
 import { trpc } from 'utils/trpc'
 import Table from 'react-bootstrap/Table'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Form, Spinner } from 'react-bootstrap'
 import TableRow from 'components/listino/TableRow'
 import ModalListino from 'components/listino/ModalListino'
@@ -13,35 +12,32 @@ const invalidListino = -1
 export default function Prodotto() {
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
-  const [listino, setListino] = useState(-1)
+  const [listino, setListino] = useState(invalidListino)
 
   // trpc
   const prodQuery = trpc.useQuery(['prodotto.list', { listino }])
   const listinoQuery = trpc.useQuery(['listino.list'])
+  const prodottoInsert = trpc.useMutation('prodotto.insert', {
+    onSuccess() { prodQuery.refetch() },
+    onError() { setErrorMsg('Errore nell inserire il prodotto selezionato') }
+  })
   const prodottoUpdate = trpc.useMutation('prodotto.update', {
-    onError() {
-      setErrorMsg('Errore nel aggiornare un prodotto')
-    }
+    onSuccess() { prodQuery.refetch() },
+    onError() { setErrorMsg('Errore nel aggiornare un prodotto') }
   })
   const prodottoDelete = trpc.useMutation('prodotto.delete', {
-    onError() {
-      setErrorMsg('Errore nell eliminare il prodotto selezionato')
-    }
+    onSuccess() { prodQuery.refetch() },
+    onError() { setErrorMsg('Errore nell eliminare il prodotto selezionato') }
   })
 
-  useEffect(() => {
-    if (!prodQuery.isSuccess) return
-    if (prodottoDelete.isSuccess || prodottoUpdate.isSuccess) prodQuery.refetch()
-  }, [prodottoDelete.isSuccess, prodottoUpdate.isSuccess])
-
-  const updateProdotto = async (idProdotto: number, prezzo: number) => {
+  const updateProdotto = (idProdotto: number, prezzo: number) => {
     if (prodottoUpdate.isLoading) return
     prodottoUpdate.mutate({
       id: idProdotto,
       prezzo: prezzo,
     })
   }
-  const deleteProdotto = async (idProdotto: number) => {
+  const deleteProdotto = (idProdotto: number) => {
     if (prodottoDelete.isLoading) return
     prodottoDelete.mutate({ id: idProdotto })
   }
@@ -86,15 +82,9 @@ export default function Prodotto() {
             />
           ))}
           {/* riga per inserire un nuovo prodotto */}
-          <ProdSubmitRow
-            listino={listino}
-            updateList={() => prodQuery.refetch()}
-            updateErrorMessage={(msg) => setErrorMsg(msg)}
-          />
+          <ProdSubmitRow listino={listino} insertProdotto={prodottoInsert.mutate} />
         </tbody>
       </Table>
-
-      {/* alert per mostrare i messaggi di errore */}
       <ErrorMessage message={errorMsg} />
     </div >
   )

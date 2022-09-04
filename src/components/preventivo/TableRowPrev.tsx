@@ -1,11 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Button, ButtonGroup, Form, Spinner } from 'react-bootstrap'
-import { FcCancel, FcCheckmark, FcEmptyTrash, FcSafe, FcSupport } from 'react-icons/fc'
 import { inferMutationInput, inferQueryOutput } from 'utils/trpc'
 import { MdCancel, MdSave, MdDelete, MdOutlineClear, MdOutlineCheck } from 'react-icons/md'
-
-
-const invalidId = -1
+import { INVALID_ID } from 'utils/constants'
 
 export default function TableRowPrev({
     row,
@@ -25,25 +22,19 @@ export default function TableRowPrev({
     onClickDelete: (row_id: number) => void,
 }) {
 
-    const [isEditable, setIsEditable] = useState((row.id == invalidId) ? true : false)
+    const [isEditable, setIsEditable] = useState((row.id == INVALID_ID) ? true : false)
     const [newRow, setNewRow] = useState(row)
     const resetRow = () => setNewRow(row)
 
-
-    const prodotto = useMemo(() => prodList.find(p => p.id === newRow.prodId) ?? { id: invalidId, nome: '', prezzo: 0 }, [prodList, newRow.prodId])
-    const pers = useMemo(() => persList.find(p => p.id === newRow.persId) ?? { id: invalidId, nome: '', prezzo: 0 }, [persList, newRow.persId])
+    const prodotto = useMemo(() => prodList.find(p => p.id === newRow.prodId)?.prezzo ?? 0, [prodList, newRow.prodId])
+    const pers = useMemo(() => persList.find(p => p.id === newRow.persId)?.prezzo ?? 0, [persList, newRow.persId])
     const total = useMemo(() => (
-        newRow.provComm + newRow.provRappre + newRow.provSc
-        + Number(prodotto.prezzo) + Number(pers.prezzo)
+        newRow.provComm + newRow.provRappre + newRow.provSc + prodotto + pers
     ).toFixed(2), [newRow])
-    const isValid = useMemo(() => (Number(prodotto.prezzo) > 0 && Number(pers.prezzo) > 0
-        && newRow.provComm > 0 && newRow.provRappre > 0 && newRow.provSc > 0)
-        , [newRow])
-    const isNew = useMemo(() => row.id == invalidId, [row])
-
-    if (!prodotto || !pers) {
-        return <Spinner animation="border" />
-    }
+    const isValid = useMemo(() => (prodotto > 0 && pers > 0
+        && newRow.provComm > 0 && newRow.provRappre > 0 && newRow.provSc > 0
+    ), [newRow])
+    const isNew = useMemo(() => row.id == INVALID_ID, [row])
 
     return (
         <tr className="tr" key={row.id} onDoubleClick={() => {
@@ -52,31 +43,31 @@ export default function TableRowPrev({
             <td>
                 <Form.Select
                     disabled={!isEditable}
-                    isInvalid={newRow.prodId == invalidId && !isNew}
+                    isInvalid={newRow.prodId == INVALID_ID && !isNew}
                     value={newRow.prodId}
                     onChange={(e) => setNewRow({ ...newRow, prodId: Number(e.target.value) })}
                 >
-                    <option value={invalidId} >-</option>
+                    <option value={INVALID_ID} >-</option>
                     {prodList.map(p => (
                         <option key={p.id} value={p.id}>{p.nome}</option>
                     ))}
                 </Form.Select>
             </td>
-            <td>{Number(prodotto.prezzo)}</td>
+            <td>{prodotto}</td>
             <td>
                 <Form.Select
                     disabled={!isEditable}
-                    isInvalid={newRow.persId == invalidId && !isNew}
+                    isInvalid={newRow.persId == INVALID_ID && !isNew}
                     value={newRow.persId}
                     onChange={(e) => setNewRow({ ...newRow, persId: Number(e.target.value) })}
                 >
-                    <option value={invalidId} >-</option>
+                    <option value={INVALID_ID} >-</option>
                     {persList.map(p => (
                         <option key={p.id} value={p.id}>{p.nome}</option>
                     ))}
                 </Form.Select>
             </td>
-            <td>{Number(pers.prezzo)}</td>
+            <td>{pers}</td>
             <td><Form.Control value={newRow.provSc} type="number" disabled={!isEditable} className="p-1"
                 onInput={(e) => setNewRow({
                     ...newRow,
@@ -109,7 +100,7 @@ export default function TableRowPrev({
                             }}>
                             <MdOutlineCheck />
                         </Button>
-                        <Button name='UndoButton' variant="outline-secondary" 
+                        <Button name='UndoButton' variant="outline-secondary"
                             onClick={() => {
                                 resetRow()
                                 setIsEditable(false)
@@ -118,9 +109,9 @@ export default function TableRowPrev({
                     </ButtonGroup>
                 ) : (
                     <div className="d-inline-block">
-                    <Button name="DeleteButton" variant="outline-danger"  hidden={isNew || locked}
-                        onClick={() => onClickDelete(row.id)}> <MdDelete />
-                    </Button>
+                        <Button name="DeleteButton" variant="outline-danger" hidden={isNew || locked}
+                            onClick={() => onClickDelete(row.id)}> <MdDelete />
+                        </Button>
                     </div>
                 )}
                 <ButtonGroup hidden={!isNew || locked}>
@@ -131,7 +122,7 @@ export default function TableRowPrev({
                         }}>
                         SALVA<MdSave className='ms-1' />
                     </Button>
-                    <Button name='UndoButton' variant="outline-secondary"  onClick={() => resetRow()}>
+                    <Button name='UndoButton' variant="outline-secondary" onClick={() => resetRow()}>
                         UNDO<MdCancel className='ms-1' />
                     </Button>
                 </ButtonGroup>
