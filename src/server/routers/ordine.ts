@@ -96,7 +96,7 @@ export const ordineRouter = createProtectedRouter()
           costo: row.costo.toNumber(),
           sc: row.sc.toNumber(),
           comm: row.comm.toNumber(),
-          rappre: row.comm.toNumber(),
+          rappre: row.rappre.toNumber(),
         })),
       }
     }
