@@ -1,10 +1,7 @@
 import { useState } from 'react'
 import { Button, ButtonGroup } from 'react-bootstrap'
 import Form from 'react-bootstrap/Form'
-import { FcCancel, FcSupport } from 'react-icons/fc'
-import { MdCreate, MdDeleteOutline, MdDownload, MdLock, MdLockOpen, MdDelete, MdOutlineCheck, MdOutlineClear } from 'react-icons/md'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import Tooltip from 'react-bootstrap/Tooltip'
+import { MdDelete, MdOutlineCheck, MdOutlineClear } from 'react-icons/md'
 import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 export default function TableRow({

@@ -3,8 +3,6 @@ import Button from 'react-bootstrap/Button'
 import { useState } from 'react'
 import { ButtonGroup, Form } from 'react-bootstrap'
 import { MdCancel, MdSave } from 'react-icons/md'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import Tooltip from 'react-bootstrap/Tooltip'
 import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 export default function PersSubmitRow({

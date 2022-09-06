@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { Button, Form, Modal, Spinner } from 'react-bootstrap'
 import { trpc } from 'utils/trpc'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import Tooltip from 'react-bootstrap/Tooltip'
 import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 const invalidId = -1
