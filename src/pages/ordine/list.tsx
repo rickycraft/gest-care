@@ -28,7 +28,7 @@ export default function List() {
           <Card key={ordine.id} className='mb-3'>
             <Card.Body className='d-flex justify-content-between align-items-center'>
               <h2 onClick={() => router.push(`/ordine/${ordine.id}`)} >{ordine.preventivo.nome.toUpperCase()}</h2>
-              <span>
+              <span className='d-flex flex-nowrap align-items-center'>
                 Totale: {
                   (Number(ordine.totSC) + Number(ordine.totComm) + Number(ordine.totRappre)).toFixed(2)
                 }
