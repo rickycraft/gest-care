@@ -134,7 +134,7 @@ export default function ModalEdit({
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant={isEditing ? 'warning' : 'primary'}
+                    <Button variant={isEditing ? 'success' : 'primary'}
                         disabled={!isValid()}
                         onClick={() => {
                             if (!isValid()) return
@@ -142,7 +142,7 @@ export default function ModalEdit({
                             else insertPreventivo()
                         }}
                     >
-                        {isEditing ? 'Edit' : 'Save'}
+                        {isEditing ? 'Salva Modifiche' : 'Salva'}
                     </Button>
                 </Modal.Footer>
             </Modal>

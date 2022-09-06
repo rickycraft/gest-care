@@ -75,14 +75,14 @@ export default function TableRow({
                     </ButtonTooltip>
                 </span>
               
-
+                <span className='d-flex flex-nowrap' >
                     <ButtonTooltip tooltip="Elimina">
                         <Button hidden={isEditable} name="DeleteButton" variant="outline-danger"
                             onClick={() => onClickDelete(rowId)} >
                             <MdDelete />
                         </Button>
                     </ButtonTooltip>
-             
+                </span>
             </td>
         </tr >
     )

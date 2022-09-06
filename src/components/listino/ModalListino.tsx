@@ -119,9 +119,9 @@ export default function ModalListino({
                     <Button variant='danger' hidden={!isEditing()}
                         onClick={() => deleteListino()}
                     >
-                        Delete
+                        Elimina Listino
                     </Button>
-                    <Button variant={isEditing() ? 'warning' : 'primary'}
+                    <Button variant={isEditing() ? 'success' : 'primary'}
                         disabled={!isValid()}
                         onClick={() => {
                             if (!isValid()) return
@@ -130,7 +130,7 @@ export default function ModalListino({
                             handleClose()
                         }}
                     >
-                        {isEditing() ? 'Edit' : 'Save'}
+                        {isEditing() ? 'Salva Modifiche' : 'Salva'}
                     </Button>
                 </Modal.Footer>
             </Modal>

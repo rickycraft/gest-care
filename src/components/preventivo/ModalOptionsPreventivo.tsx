@@ -56,7 +56,7 @@ export default function ModalOptions({
         {showSuccess &&
           <Modal.Footer className='d-block'>
             <Alert variant='success' className="text-center p-1">
-              opzioni modificate con successo
+              Opzioni modificate con successo
             </Alert>
           </Modal.Footer>
         }
