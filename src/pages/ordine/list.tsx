@@ -7,8 +7,6 @@ import { Button, Card, Spinner } from 'react-bootstrap'
 import { MdDelete } from 'react-icons/md'
 import { trpc } from 'utils/trpc'
 
-
-
 export default function List() {
   const router = useRouter()
   const ordineList = trpc.useQuery(['ordine.list'])
@@ -29,15 +27,12 @@ export default function List() {
             <Card.Body className='d-flex justify-content-between align-items-center'>
               <h2 onClick={() => router.push(`/ordine/${ordine.id}`)} >{ordine.preventivo.nome.toUpperCase()}</h2>
               <span className='d-flex flex-nowrap align-items-center'>
-                Totale: {
-                  (Number(ordine.totSC) + Number(ordine.totComm) + Number(ordine.totRappre)).toFixed(2)
-                }
+                Totale SC: {ordine.sc.toFixed(2)}
                 <ButtonTooltip tooltip="Elimina preventivo">
                   <Button variant='outline-danger' className='ms-3' onClick={() => showDelete(ordine.id)}>
                     <MdDelete />
                   </Button>
                 </ButtonTooltip>
-
               </span>
             </Card.Body>
           </Card>

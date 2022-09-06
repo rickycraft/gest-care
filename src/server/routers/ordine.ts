@@ -112,12 +112,10 @@ export const ordineRouter = createProtectedRouter()
   .query("list", {
     input: z.any(),
     async resolve() {
-      return await prisma.ordine.findMany({
+      const ordineList = await prisma.ordine.findMany({
         select: {
           id: true,
           totSC: true,
-          totRappre: true,
-          totComm: true,
           preventivo: {
             select: { id: true, nome: true }
           }
@@ -127,6 +125,10 @@ export const ordineRouter = createProtectedRouter()
           id: "desc"
         }
       })
+      return ordineList.map(o => ({
+        ...o,
+        sc: o.totSC.toNumber(),
+      }))
     }
   })
   .mutation("create", {
