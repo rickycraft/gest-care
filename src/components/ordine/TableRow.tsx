@@ -45,10 +45,10 @@ export default function TableRow({
       <td>
         <span className='d-flex flex-nowrap'>
           <ButtonTooltip tooltip="Salva Modifiche">
-            <Button variant="outline-success me-1 me-lg-2" hidden={!isEdited} onClick={() => onChange(id, quantity)}>  <MdOutlineCheck /></Button>
+            <Button variant="outline-success me-1 me-lg-2" onClick={() => onChange(id, quantity)}>  <MdOutlineCheck /></Button>
           </ButtonTooltip>
           <ButtonTooltip tooltip="Annulla Modifiche">
-            <Button variant="outline-secondary" hidden={!isEdited} onClick={() => setQuantity(_quantity)}><MdOutlineClear /></Button>
+            <Button variant="outline-secondary" onClick={() => setQuantity(_quantity)}><MdOutlineClear /></Button>
           </ButtonTooltip>
         </span>
       </td>
