@@ -1,9 +1,10 @@
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 import { useEffect, useMemo, useState } from 'react'
 import { Button, ButtonGroup, Form, Spinner } from 'react-bootstrap'
 
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
-import { MdCancel, MdSave, MdDelete, MdOutlineClear, MdOutlineCheck } from 'react-icons/md'
+import { MdOutlineClear, MdOutlineCheck } from 'react-icons/md'
 
 
 export default function TableRow({
@@ -46,32 +47,17 @@ export default function TableRow({
       </td>
       {totals}
       <td>
-        <ButtonGroup hidden={_quantity == quantity}>
-          <style>
-            {`
-              .btn-outline-success{
-                border-top-left-radius: 5px !Important;
-                border-bottom-left-radius: 5px !Important;
-             }
-             .btn-outline-secondary {
-              border-top-left-radius: 0px !Important;
-                border-bottom-left-radius: 0px;
-             }
-             `}
-          </style>
+      <span className='d-flex flex-nowrap'>
+          <ButtonTooltip tooltip="Salva Modifiche">
+            <Button variant="outline-success me-1 me-lg-2" onClick={() => onChange(id, quantity)}>  <MdOutlineCheck /></Button>
+          </ButtonTooltip>
 
 
-
-
-          <OverlayTrigger overlay={<Tooltip>Salva Modifiche</Tooltip>}>
-            <Button variant="outline-success" onClick={() => onChange(id, quantity)}>  <MdOutlineCheck /></Button>
-          </OverlayTrigger>
-
-
-          <OverlayTrigger overlay={<Tooltip>Annulla Modifiche</Tooltip>}>
+          <ButtonTooltip tooltip="Annulla Modifiche">
             <Button variant="outline-secondary" onClick={() => setQuantity(_quantity)}><MdOutlineClear /></Button>
-          </OverlayTrigger>
-        </ButtonGroup>
+          </ButtonTooltip>
+
+      </span>
       </td>
     </tr>
   )
