@@ -4,11 +4,13 @@ import { Button, Card, Spinner } from 'react-bootstrap'
 import ModalEdit from 'components/preventivo/ModalEditPreventivo'
 import { useRouter } from 'next/router'
 import ModalDelete from 'components/preventivo/ModalDeletePreventivo'
-import { MdCreate, MdDeleteOutline, MdDownload, MdLock, MdLockOpen } from 'react-icons/md'
+import { MdCreate, MdDelete, MdLock, MdLockOpen } from 'react-icons/md'
 import ModalLock from 'components/preventivo/ModalLockPreventivo'
 import { useAtom } from 'jotai'
 import { userAtom } from 'utils/atom'
 import { canUnlockPreventivo } from 'utils/role'
+
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 const invalidId = -1
 
@@ -43,21 +45,31 @@ export default function List() {
               <Card.Title onClick={() => router.push(`/preventivo/${prev.id}`)}>{prev.nome}</Card.Title>
               <Card.Text className='mb-0 d-flex justify-content-between flex-wrap'>
                 <span className='d-flex flex-nowrap'>{prev.scuola} - {prev.listino.nome}</span>
+               
+               
                 <span className='d-flex flex-nowrap'>
                   {prev.locked && canUnlockPreventivo(user.role) && (
                     <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}><MdLockOpen /></Button>
                   )}
                   {prev.locked ? (null) : (
                     <>
-                      <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}>
-                        <MdLock />
-                      </Button>
-                      <Button variant='info' className='me-2' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
-                        <MdCreate />
-                      </Button>
-                      <Button variant='danger' onClick={() => openModal(prev.id, prev.locked, openDelete)}>
-                        <MdDeleteOutline />
-                      </Button>
+                      <ButtonTooltip tooltip="Blocca preventivo">
+                        <Button variant='outline-secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}>
+                          <MdLock />
+                        </Button>
+                      </ButtonTooltip>
+
+                      <ButtonTooltip tooltip="Modifica preventivo">
+                        <Button variant='outline-info' className='me-2' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
+                          <MdCreate />
+                        </Button>
+                      </ButtonTooltip>
+
+                      <ButtonTooltip tooltip="Elimina preventivo">
+                        <Button variant='outline-danger' onClick={() => openModal(prev.id, prev.locked, openDelete)}>
+                          <MdDelete />
+                        </Button>
+                      </ButtonTooltip>
                     </>
                   )}
                 </span>

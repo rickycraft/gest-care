@@ -3,6 +3,7 @@ import Button from 'react-bootstrap/Button'
 import { useState } from 'react'
 import { ButtonGroup, Form } from 'react-bootstrap'
 import { MdCancel, MdSave } from 'react-icons/md'
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 export default function PersSubmitRow({
   listino,
@@ -43,21 +44,29 @@ export default function PersSubmitRow({
                     save: salva un nuovo pers
                     clean: pulisce gli input text
                   */}
-        <ButtonGroup>
-          <Button name="SaveButton"
-            variant="outline-success"
-            disabled={!isRowValid()}
-            onClick={() => doInsertPers()}
-          >
-            SALVA<MdSave className='ms-1' />
-          </Button>
-          <Button name="CleanButton"
-            variant="outline-secondary"
-            onClick={() => { setPrezzo(0); setNome('') }}
-          >
-            UNDO<MdCancel className='ms-1' />
-          </Button>
-        </ButtonGroup>
+        <span className='d-flex flex-nowrap' > 
+
+          <ButtonTooltip  tooltip="Salva">
+            <Button name="SaveButton"
+              variant="outline-success me-1 me-lg-2"
+              disabled={!isRowValid()}
+              onClick={() => doInsertPers()}
+            >
+              <MdSave className='ms-1' />
+            </Button>
+          </ButtonTooltip>
+
+
+          <ButtonTooltip  tooltip="Annulla">
+            <Button name="CleanButton"
+              variant="outline-secondary"
+              onClick={() => { setPrezzo(0); setNome('') }}
+            >
+              <MdCancel className='ms-1' />
+            </Button>
+          </ButtonTooltip>
+          
+        </span>
       </td>
     </tr>
   )

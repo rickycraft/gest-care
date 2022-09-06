@@ -1,3 +1,4 @@
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 import React, { useEffect, useState } from 'react'
 import { Form, Spinner } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button'
@@ -82,13 +83,13 @@ export default function ModalEdit({
     return (
         <>
             <div className='d-flex justify-content-end'>
-                <Button variant="primary" size='lg' className="rounded-circle" onClick={openModal}>
-                    +
-                </Button>
+            <ButtonTooltip tooltip="Aggiungi preventivo">
+                <Button variant="primary" size='lg' className="rounded-circle" onClick={openModal}> +</Button>
+            </ButtonTooltip>
             </div>
             <Modal show={show} onHide={() => setShow(false)} keyboard={false}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Aggiungi un nuovo preventivo</Modal.Title>
+                    <Modal.Title>{isEditing ? "Modifica" : "Aggiungi"} preventivo</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {/* Form per aggiungere un nuovo preventivo: servono nome preventivo, id scuola e id listino */}
@@ -133,7 +134,7 @@ export default function ModalEdit({
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant={isEditing ? 'warning' : 'primary'}
+                    <Button variant={isEditing ? 'success' : 'primary'}
                         disabled={!isValid()}
                         onClick={() => {
                             if (!isValid()) return
@@ -141,7 +142,7 @@ export default function ModalEdit({
                             else insertPreventivo()
                         }}
                     >
-                        {isEditing ? 'Edit' : 'Save'}
+                        {isEditing ? 'Salva Modifiche' : 'Salva'}
                     </Button>
                 </Modal.Footer>
             </Modal>

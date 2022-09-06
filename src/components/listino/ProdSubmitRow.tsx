@@ -1,10 +1,9 @@
-import { Decimal } from '@prisma/client/runtime'
 import { inferMutationInput, trpc } from 'utils/trpc'
 import Button from 'react-bootstrap/Button'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ButtonGroup, Form, Spinner } from 'react-bootstrap'
 import { MdCancel, MdSave } from 'react-icons/md'
-
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 export default function ProdSubmitRow({
   listino,
@@ -45,21 +44,30 @@ export default function ProdSubmitRow({
                     save: salva un nuovo prodotto
                     clean: pulisce gli input text
                   */}
-        <ButtonGroup>
-          <Button name="SaveButton"
-            variant="outline-success"
-            disabled={!isRowValid()}
-            onClick={() => doInsertProd()}
-          >
-            SALVA<MdSave className='ms-1' />
-          </Button>
-          <Button name="CleanButton"
-            variant="outline-secondary"
-            onClick={() => { setPrezzo(0); setNome('') }}
-          >
-            UNDO<MdCancel className='ms-1' />
-          </Button>
-        </ButtonGroup>
+        <span className='d-flex flex-nowrap' > 
+
+          <ButtonTooltip  tooltip="Salva">
+            <Button name="SaveButton"
+              variant="outline-success me-1 me-lg-2"
+              disabled={!isRowValid()}
+              onClick={() => doInsertProd()}
+            >
+              <MdSave className='ms-1' />
+            </Button>
+          </ButtonTooltip>
+
+
+          <ButtonTooltip tooltip="Annulla">
+            <Button name="CleanButton"
+              variant="outline-secondary"
+              onClick={() => { setPrezzo(0); setNome('') }}
+            >
+              <MdCancel className='ms-1' />
+            </Button>
+          </ButtonTooltip>
+
+
+        </span>
       </td>
     </tr>
   )

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Button, ButtonGroup } from 'react-bootstrap'
 import Form from 'react-bootstrap/Form'
-import { FcCancel, FcSupport } from 'react-icons/fc'
-import { MdDelete } from 'react-icons/md'
+import { MdDelete, MdOutlineCheck, MdOutlineClear } from 'react-icons/md'
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 export default function TableRow({
     rowId,
@@ -47,27 +47,39 @@ export default function TableRow({
                 edit: modifica il prodotto della riga  (TODO)
                 delete: elimina il prodotto della riga
               */}
-                <ButtonGroup hidden={!isEditable}>
-                    <Button name='EditButton'
-                        variant="outline-warning"
-                        onClick={() => editRow(rowId, newPrice)}
-                    >
-                        Edit<FcSupport />
-                    </Button>
-                    <Button name='UndoButton' variant="outline-primary"
-                        onClick={() => {
-                            setNewPrice(rowPrice)
-                            setIsEditable(false)
-                        }}
-                    >Undo<FcCancel />
-                    </Button>
-                </ButtonGroup>
-                <ButtonGroup hidden={isEditable}>
-                    <Button name="DeleteButton" variant="outline-danger"
-                        onClick={() => onClickDelete(rowId)} >
-                        <MdDelete />
-                    </Button>
-                </ButtonGroup>
+                
+                <span className='d-flex flex-nowrap' >
+                    <ButtonTooltip tooltip="Salva Modifiche">
+                        <Button name='EditButton'
+                            variant="outline-success me-1 me-lg-2"
+                            hidden={!isEditable}
+                            onClick={() => editRow(rowId, newPrice)}
+                        >
+                            <MdOutlineCheck />
+                        </Button>
+                    </ButtonTooltip>
+
+
+                    <ButtonTooltip tooltip="Annulla Modifiche">
+                        <Button name='UndoButton' variant="outline-secondary"
+                            onClick={() => {
+                                setNewPrice(rowPrice)
+                                setIsEditable(false)
+                            }}
+                            hidden={!isEditable}
+                        ><MdOutlineClear />
+                        </Button>
+                    </ButtonTooltip>
+                </span>
+              
+                <span className='d-flex flex-nowrap' >
+                    <ButtonTooltip tooltip="Elimina">
+                        <Button hidden={isEditable} name="DeleteButton" variant="outline-danger"
+                            onClick={() => onClickDelete(rowId)} >
+                            <MdDelete />
+                        </Button>
+                    </ButtonTooltip>
+                </span>
             </td>
         </tr >
     )

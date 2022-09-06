@@ -1,3 +1,4 @@
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 import React, { useEffect, useState } from 'react'
 import { Form, Spinner } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button'
@@ -70,9 +71,11 @@ export default function ModalListino({
 
     return (
         <>
+         <ButtonTooltip tooltip={isEditing() ? 'Modifica listino' : 'Aggiungi listino'} >
             <Button variant="primary" className="rounded-circle" onClick={handleShow}>
                 {isEditing() ? <MdEdit /> : '+'}
             </Button>
+        </ButtonTooltip>
             <Modal
                 show={show}
                 onHide={handleClose}
@@ -116,9 +119,9 @@ export default function ModalListino({
                     <Button variant='danger' hidden={!isEditing()}
                         onClick={() => deleteListino()}
                     >
-                        Delete
+                        Elimina Listino
                     </Button>
-                    <Button variant={isEditing() ? 'warning' : 'primary'}
+                    <Button variant={isEditing() ? 'success' : 'primary'}
                         disabled={!isValid()}
                         onClick={() => {
                             if (!isValid()) return
@@ -127,7 +130,7 @@ export default function ModalListino({
                             handleClose()
                         }}
                     >
-                        {isEditing() ? 'Edit' : 'Save'}
+                        {isEditing() ? 'Salva Modifiche' : 'Salva'}
                     </Button>
                 </Modal.Footer>
             </Modal>

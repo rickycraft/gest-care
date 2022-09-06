@@ -3,7 +3,6 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import Script from 'next/script'
 import { Image, Table } from 'react-bootstrap'
 import { prisma } from 'server/prisma'
-import { z } from 'zod'
 
 const invalidId = -1
 
