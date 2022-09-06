@@ -1,6 +1,6 @@
 import { trpc } from 'utils/trpc'
 import Table from 'react-bootstrap/Table'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button, Card, Spinner } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import ErrorMessage from 'components/utils/ErrorMessage'
