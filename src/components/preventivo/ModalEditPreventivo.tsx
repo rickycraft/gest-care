@@ -1,3 +1,4 @@
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 import React, { useEffect, useState } from 'react'
 import { Form, Spinner } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button'
@@ -82,9 +83,9 @@ export default function ModalEdit({
     return (
         <>
             <div className='d-flex justify-content-end'>
-                <Button variant="primary" size='lg' className="rounded-circle" onClick={openModal}>
-                    +
-                </Button>
+            <ButtonTooltip tooltip="Aggiungi preventivo">
+                <Button variant="primary" size='lg' className="rounded-circle" onClick={openModal}> +</Button>
+            </ButtonTooltip>
             </div>
             <Modal show={show} onHide={() => setShow(false)} keyboard={false}>
                 <Modal.Header closeButton>

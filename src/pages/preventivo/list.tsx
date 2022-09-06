@@ -11,6 +11,7 @@ import { userAtom } from 'utils/atom'
 import { canUnlockPreventivo } from 'utils/role'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 const invalidId = -1
 
@@ -45,29 +46,31 @@ export default function List() {
               <Card.Title onClick={() => router.push(`/preventivo/${prev.id}`)}>{prev.nome}</Card.Title>
               <Card.Text className='mb-0 d-flex justify-content-between flex-wrap'>
                 <span className='d-flex flex-nowrap'>{prev.scuola} - {prev.listino.nome}</span>
+               
+               
                 <span className='d-flex flex-nowrap'>
                   {prev.locked && canUnlockPreventivo(user.role) && (
                     <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}><MdLockOpen /></Button>
                   )}
                   {prev.locked ? (null) : (
                     <>
-                      <OverlayTrigger overlay={<Tooltip>Blocca preventivo</Tooltip>}>
+                      <ButtonTooltip tooltip="Blocca preventivo">
                         <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}>
                           <MdLock />
                         </Button>
-                      </OverlayTrigger>
+                      </ButtonTooltip>
 
-                      <OverlayTrigger overlay={<Tooltip>Modifica preventivo</Tooltip>}>
+                      <ButtonTooltip tooltip="Modifica preventivo">
                         <Button variant='info' className='me-2' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
                           <MdCreate />
                         </Button>
-                      </OverlayTrigger>
+                      </ButtonTooltip>
 
-                      <OverlayTrigger overlay={<Tooltip>Elimina preventivo</Tooltip>}>
+                      <ButtonTooltip tooltip="Elimina preventivo">
                         <Button variant='danger' onClick={() => openModal(prev.id, prev.locked, openDelete)}>
                           <MdDeleteOutline />
                         </Button>
-                      </OverlayTrigger>
+                      </ButtonTooltip>
                     </>
                   )}
                 </span>

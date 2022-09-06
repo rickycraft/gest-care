@@ -94,9 +94,9 @@ export default function TableRowPrev({
                 delete: elimina il prodotto della riga*/}
             <td>
                 {isEditable ? (
-                    <ButtonGroup hidden={isNew || locked}>
+                 <div className='d-flex flex-nowrap'>
                         <ButtonTooltip tooltip="Salva le modifiche">
-                            <Button name='EditButton' variant="outline-success" disabled={!isValid}
+                            <Button name='EditButton' variant="outline-success  me-1 me-lg-2" disabled={!isValid} hidden={isNew || locked}
                                 onClick={() => {
                                     onClickEdit({ ...newRow, id: row.id })
                                     setIsEditable(false)
@@ -106,14 +106,15 @@ export default function TableRowPrev({
                         </ButtonTooltip>
 
                         <ButtonTooltip tooltip="Annulla Modifiche">
-                            <Button name='UndoButton' variant="outline-secondary"
+                            <Button name='UndoButton' variant="outline-secondary" hidden={isNew || locked}
                                 onClick={() => {
                                     resetRow()
                                     setIsEditable(false)
                                 }}><MdOutlineClear />
                             </Button>
                         </ButtonTooltip>
-                    </ButtonGroup>
+                         </div>
+               
                 ) : (
                     <div className="d-inline-block">
                         <ButtonTooltip tooltip="Elimina riga preventivo">
@@ -126,7 +127,7 @@ export default function TableRowPrev({
                 <ButtonGroup hidden={!isNew || locked}>
 
                     <ButtonTooltip tooltip="Salva ">
-                        <Button name="InsertButton" variant="outline-success" disabled={!isValid} onClick={() => { onClickInsert(newRow); resetRow() }}>
+                        <Button name="InsertButton" variant="outline-success  me-1 me-lg-2" disabled={!isValid} onClick={() => { onClickInsert(newRow); resetRow() }}>
                             <MdSave className='ms-1' />
                         </Button>
                     </ButtonTooltip>
