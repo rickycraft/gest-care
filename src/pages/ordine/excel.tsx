@@ -47,10 +47,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         totRappre: ordine.totRappre.toNumber(),
         rows: ordine.OrdineRow.map(row => ({
           ...row,
-          costo: row.costo.toNumber(),
-          sc: row.sc.toNumber(),
-          comm: row.comm.toNumber(),
-          rappre: row.comm.toNumber(),
+          costo: row.costo.mul(row.quantity).toNumber(),
+          sc: row.sc.mul(row.quantity).toNumber(),
+          comm: row.comm.mul(row.quantity).toNumber(),
+          rappre: row.rappre.mul(row.quantity).toNumber(),
         })),
         totals
       }
