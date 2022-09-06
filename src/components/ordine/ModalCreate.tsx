@@ -55,7 +55,7 @@ export default function ModalCreate() {
           <Modal.Footer>
 
             <Button variant="primary" onClick={() => ordineCreate.mutate({ preventivoId })} disabled={preventivoId == invalidId}>
-              Conferma
+              Salva
             </Button>
 
 
