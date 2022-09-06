@@ -43,10 +43,8 @@ export default function List() {
           <Card key={prev.id} className='my-3'>
             <Card.Body>
               <Card.Title onClick={() => router.push(`/preventivo/${prev.id}`)}>{prev.nome}</Card.Title>
-              <Card.Text className='mb-0 d-flex justify-content-between flex-wrap'>
+              <div className='mb-0 d-flex justify-content-between flex-wrap'>
                 <span className='d-flex flex-nowrap'>{prev.scuola} - {prev.listino.nome}</span>
-               
-               
                 <span className='d-flex flex-nowrap'>
                   {prev.locked && canUnlockPreventivo(user.role) && (
                     <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}><MdLockOpen /></Button>
@@ -58,13 +56,11 @@ export default function List() {
                           <MdLock />
                         </Button>
                       </ButtonTooltip>
-
                       <ButtonTooltip tooltip="Modifica preventivo">
                         <Button variant='outline-info' className='me-2' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
                           <MdCreate />
                         </Button>
                       </ButtonTooltip>
-
                       <ButtonTooltip tooltip="Elimina preventivo">
                         <Button variant='outline-danger' onClick={() => openModal(prev.id, prev.locked, openDelete)}>
                           <MdDelete />
@@ -73,7 +69,7 @@ export default function List() {
                     </>
                   )}
                 </span>
-              </Card.Text>
+              </div>
             </Card.Body>
             <Card.Footer>
               <>modificato l&apos;ultima volta da: {prev.lastEditedBy.username}, alle {prev.editedAt.toLocaleString()}</>
