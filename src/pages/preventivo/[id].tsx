@@ -36,8 +36,8 @@ export default function Index() {
     },
     enabled: idPreventivo != INVALID_ID,
   }
-  const prodottiQuery = trpc.useQuery(['prodotto.list', { listino: listinoId }], { enabled: listinoId != INVALID_ID })
-  const persQuery = trpc.useQuery(['pers.list', { listino: listinoId }], { enabled: listinoId != INVALID_ID })
+  const prodottiQuery = trpc.useQuery(['prodotto.list', { listino: listinoId }])
+  const persQuery = trpc.useQuery(['pers.list', { listino: listinoId }])
   const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }], {
     onSettled(data, error) {
       if (error || !data) router.push('/preventivo/list')
@@ -69,8 +69,7 @@ export default function Index() {
     <Card body>
       <div className='d-flex align-items-center justify-content-between'>
         <h1>{preventivoQuery.data?.nome.toUpperCase()}</h1>
-        <span className='d-flex'>
-
+        <div className='d-flex'>
           <ButtonTooltip tooltip="Esporta preventivo xls">
             <Button variant='success' className='me-2 p-2 p-lg-3 rounded-circle'
               onClick={
@@ -81,7 +80,6 @@ export default function Index() {
             ><MdGridOn />
             </Button>
           </ButtonTooltip>
-
           <ButtonTooltip tooltip="Esporta preventivo pdf">
             <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
               onClick={
@@ -92,7 +90,6 @@ export default function Index() {
             ><MdDownload />
             </Button>
           </ButtonTooltip>
-
           <ButtonTooltip tooltip="Duplica preventivo">
             <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
               onClick={() => {
@@ -102,7 +99,7 @@ export default function Index() {
             ><MdContentCopy />
             </Button>
           </ButtonTooltip>
-        </span>
+        </div>
       </div>
       <p>ultima modifica alle {preventivoQuery.data?.editedAt.toLocaleString()}</p>
       {/*Tabella che mostra i prodotti del preventivo selezionato*/}
