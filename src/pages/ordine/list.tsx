@@ -33,7 +33,7 @@ export default function List() {
                   (Number(ordine.totSC) + Number(ordine.totComm) + Number(ordine.totRappre)).toFixed(2)
                 }
                 <ButtonTooltip tooltip="Elimina preventivo">
-                  <Button variant='danger' className='ms-3' onClick={() => showDelete(ordine.id)}>
+                  <Button variant='outline-danger' className='ms-3' onClick={() => showDelete(ordine.id)}>
                     <MdDelete />
                   </Button>
                 </ButtonTooltip>

@@ -4,13 +4,12 @@ import { Button, Card, Spinner } from 'react-bootstrap'
 import ModalEdit from 'components/preventivo/ModalEditPreventivo'
 import { useRouter } from 'next/router'
 import ModalDelete from 'components/preventivo/ModalDeletePreventivo'
-import { MdCreate, MdDelete, MdDownload, MdLock, MdLockOpen } from 'react-icons/md'
+import { MdCreate, MdDelete, MdLock, MdLockOpen } from 'react-icons/md'
 import ModalLock from 'components/preventivo/ModalLockPreventivo'
 import { useAtom } from 'jotai'
 import { userAtom } from 'utils/atom'
 import { canUnlockPreventivo } from 'utils/role'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import Tooltip from 'react-bootstrap/Tooltip'
+
 import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 const invalidId = -1
