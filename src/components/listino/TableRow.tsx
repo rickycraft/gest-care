@@ -5,6 +5,7 @@ import { FcCancel, FcSupport } from 'react-icons/fc'
 import { MdCreate, MdDeleteOutline, MdDownload, MdLock, MdLockOpen, MdDelete, MdOutlineCheck, MdOutlineClear } from 'react-icons/md'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 export default function TableRow({
     rowId,
@@ -49,38 +50,39 @@ export default function TableRow({
                 edit: modifica il prodotto della riga  (TODO)
                 delete: elimina il prodotto della riga
               */}
-                <ButtonGroup hidden={!isEditable}>
-
-                    <OverlayTrigger overlay={<Tooltip>Salva Modifiche</Tooltip>}>
+                
+                <span className='d-flex flex-nowrap' >
+                    <ButtonTooltip tooltip="Salva Modifiche">
                         <Button name='EditButton'
-                            variant="outline-success"
+                            variant="outline-success me-1 me-lg-2"
+                            hidden={!isEditable}
                             onClick={() => editRow(rowId, newPrice)}
                         >
                             <MdOutlineCheck />
                         </Button>
-                    </OverlayTrigger>
+                    </ButtonTooltip>
 
 
-                    <OverlayTrigger overlay={<Tooltip>Annulla Modifiche</Tooltip>}>
+                    <ButtonTooltip tooltip="Annulla Modifiche">
                         <Button name='UndoButton' variant="outline-secondary"
                             onClick={() => {
                                 setNewPrice(rowPrice)
                                 setIsEditable(false)
                             }}
+                            hidden={!isEditable}
                         ><MdOutlineClear />
                         </Button>
-                    </OverlayTrigger>
+                    </ButtonTooltip>
+                </span>
+              
 
-                </ButtonGroup>
-                <ButtonGroup hidden={isEditable}>
-
-                    <OverlayTrigger overlay={<Tooltip>Elimina </Tooltip>}>
-                        <Button name="DeleteButton" variant="outline-danger"
+                    <ButtonTooltip tooltip="Elimina">
+                        <Button hidden={isEditable} name="DeleteButton" variant="outline-danger"
                             onClick={() => onClickDelete(rowId)} >
                             <MdDelete />
                         </Button>
-                    </OverlayTrigger>
-                </ButtonGroup>
+                    </ButtonTooltip>
+             
             </td>
         </tr >
     )

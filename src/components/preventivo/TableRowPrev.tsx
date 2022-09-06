@@ -124,22 +124,23 @@ export default function TableRowPrev({
                         </ButtonTooltip>
                     </div>
                 )}
-                <ButtonGroup hidden={!isNew || locked}>
+               
+                <div className='d-flex flex-nowrap'>
 
                     <ButtonTooltip tooltip="Salva ">
-                        <Button name="InsertButton" variant="outline-success  me-1 me-lg-2" disabled={!isValid} onClick={() => { onClickInsert(newRow); resetRow() }}>
+                        <Button name="InsertButton" variant="outline-success  me-1 me-lg-2" disabled={!isValid} hidden={!isNew || locked} onClick={() => { onClickInsert(newRow); resetRow() }}>
                             <MdSave className='ms-1' />
                         </Button>
                     </ButtonTooltip>
 
 
                     <ButtonTooltip tooltip="Annulla">
-                        <Button name='UndoButton' variant="outline-secondary" onClick={() => resetRow()}>
+                        <Button name='UndoButton' variant="outline-secondary" hidden={!isNew || locked} onClick={() => resetRow()}>
                             <MdCancel className='ms-1' />
                         </Button>
                     </ButtonTooltip>
 
-                </ButtonGroup>
+                </div>
             </td>
         </tr >
     )

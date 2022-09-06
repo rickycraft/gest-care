@@ -4,7 +4,7 @@ import { Button, Card, Spinner } from 'react-bootstrap'
 import ModalEdit from 'components/preventivo/ModalEditPreventivo'
 import { useRouter } from 'next/router'
 import ModalDelete from 'components/preventivo/ModalDeletePreventivo'
-import { MdCreate, MdDeleteOutline, MdDownload, MdLock, MdLockOpen } from 'react-icons/md'
+import { MdCreate, MdDelete, MdDownload, MdLock, MdLockOpen } from 'react-icons/md'
 import ModalLock from 'components/preventivo/ModalLockPreventivo'
 import { useAtom } from 'jotai'
 import { userAtom } from 'utils/atom'
@@ -55,20 +55,20 @@ export default function List() {
                   {prev.locked ? (null) : (
                     <>
                       <ButtonTooltip tooltip="Blocca preventivo">
-                        <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}>
+                        <Button variant='outline-secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}>
                           <MdLock />
                         </Button>
                       </ButtonTooltip>
 
                       <ButtonTooltip tooltip="Modifica preventivo">
-                        <Button variant='info' className='me-2' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
+                        <Button variant='outline-info' className='me-2' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
                           <MdCreate />
                         </Button>
                       </ButtonTooltip>
 
                       <ButtonTooltip tooltip="Elimina preventivo">
-                        <Button variant='danger' onClick={() => openModal(prev.id, prev.locked, openDelete)}>
-                          <MdDeleteOutline />
+                        <Button variant='outline-danger' onClick={() => openModal(prev.id, prev.locked, openDelete)}>
+                          <MdDelete />
                         </Button>
                       </ButtonTooltip>
                     </>

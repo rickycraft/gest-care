@@ -5,6 +5,7 @@ import { ButtonGroup, Form } from 'react-bootstrap'
 import { MdCancel, MdSave } from 'react-icons/md'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 export default function PersSubmitRow({
   listino,
@@ -45,35 +46,29 @@ export default function PersSubmitRow({
                     save: salva un nuovo pers
                     clean: pulisce gli input text
                   */}
-        <ButtonGroup>
+        <span className='d-flex flex-nowrap' > 
 
-
-
-          <OverlayTrigger overlay={<Tooltip>Salva </Tooltip>}>
+          <ButtonTooltip  tooltip="Salva">
             <Button name="SaveButton"
-              variant="outline-success"
+              variant="outline-success me-1 me-lg-2"
               disabled={!isRowValid()}
               onClick={() => doInsertPers()}
             >
               <MdSave className='ms-1' />
             </Button>
-          </OverlayTrigger>
+          </ButtonTooltip>
 
 
-          <OverlayTrigger overlay={<Tooltip>Annulla</Tooltip>}>
+          <ButtonTooltip  tooltip="Annulla">
             <Button name="CleanButton"
               variant="outline-secondary"
               onClick={() => { setPrezzo(0); setNome('') }}
             >
               <MdCancel className='ms-1' />
             </Button>
-          </OverlayTrigger>
-
-
-
-
-
-        </ButtonGroup>
+          </ButtonTooltip>
+          
+        </span>
       </td>
     </tr>
   )
