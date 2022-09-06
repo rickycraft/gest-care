@@ -1,10 +1,9 @@
 import { useMemo, useState } from 'react'
-import { Button,Form } from 'react-bootstrap'
+import { Button, Form } from 'react-bootstrap'
 import { inferMutationInput, inferQueryOutput } from 'utils/trpc'
-import { MdCancel, MdSave, MdDelete, MdOutlineClear, MdOutlineCheck } from 'react-icons/md'
+import { MdCancel, MdOutlineUndo, MdSave, MdDelete, MdOutlineCheck } from 'react-icons/md'
 import { INVALID_ID } from 'utils/constants'
 import ButtonTooltip from 'components/utils/ButtonTooltip'
-
 
 export default function TableRowPrev({
     row,
@@ -94,7 +93,7 @@ export default function TableRowPrev({
                 delete: elimina il prodotto della riga*/}
             <td>
                 {isEditable ? (
-                 <div className='d-flex flex-nowrap'>
+                    <div className='d-flex flex-nowrap'>
                         <ButtonTooltip tooltip="Salva le modifiche">
                             <Button name='EditButton' variant="outline-success  me-1 me-lg-2" disabled={!isValid} hidden={isNew || locked}
                                 onClick={() => {
@@ -104,17 +103,15 @@ export default function TableRowPrev({
                                 <MdOutlineCheck />
                             </Button>
                         </ButtonTooltip>
-
                         <ButtonTooltip tooltip="Annulla Modifiche">
                             <Button name='UndoButton' variant="outline-secondary" hidden={isNew || locked}
                                 onClick={() => {
                                     resetRow()
                                     setIsEditable(false)
-                                }}><MdOutlineClear />
+                                }}><MdOutlineUndo />
                             </Button>
                         </ButtonTooltip>
-                         </div>
-               
+                    </div>
                 ) : (
                     <div className="d-inline-block">
                         <ButtonTooltip tooltip="Elimina riga preventivo">
@@ -124,24 +121,19 @@ export default function TableRowPrev({
                         </ButtonTooltip>
                     </div>
                 )}
-               
                 <div className='d-flex flex-nowrap'>
-
                     <ButtonTooltip tooltip="Salva ">
                         <Button name="InsertButton" variant="outline-success  me-1 me-lg-2" disabled={!isValid} hidden={!isNew || locked} onClick={() => { onClickInsert(newRow); resetRow() }}>
                             <MdSave className='ms-1' />
                         </Button>
                     </ButtonTooltip>
-
-
                     <ButtonTooltip tooltip="Annulla">
                         <Button name='UndoButton' variant="outline-secondary" hidden={!isNew || locked} onClick={() => resetRow()}>
                             <MdCancel className='ms-1' />
                         </Button>
                     </ButtonTooltip>
-
                 </div>
             </td>
-        </tr >
+        </tr>
     )
 }

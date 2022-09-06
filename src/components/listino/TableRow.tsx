@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Button, ButtonGroup } from 'react-bootstrap'
 import Form from 'react-bootstrap/Form'
-import { MdDelete, MdOutlineCheck, MdOutlineClear } from 'react-icons/md'
+import { MdDelete, MdOutlineCheck, MdOutlineUndo } from 'react-icons/md'
 import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 export default function TableRow({
@@ -47,7 +47,7 @@ export default function TableRow({
                 edit: modifica il prodotto della riga  (TODO)
                 delete: elimina il prodotto della riga
               */}
-                
+
                 <span className='d-flex flex-nowrap' >
                     <ButtonTooltip tooltip="Salva Modifiche">
                         <Button name='EditButton'
@@ -67,11 +67,11 @@ export default function TableRow({
                                 setIsEditable(false)
                             }}
                             hidden={!isEditable}
-                        ><MdOutlineClear />
+                        ><MdOutlineUndo />
                         </Button>
                     </ButtonTooltip>
                 </span>
-              
+
                 <span className='d-flex flex-nowrap' >
                     <ButtonTooltip tooltip="Elimina">
                         <Button hidden={isEditable} name="DeleteButton" variant="outline-danger"

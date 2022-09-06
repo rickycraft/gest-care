@@ -1,8 +1,7 @@
 import ButtonTooltip from 'components/utils/ButtonTooltip'
 import { useEffect, useMemo, useState } from 'react'
 import { Button, Form } from 'react-bootstrap'
-import { MdOutlineClear, MdOutlineCheck } from 'react-icons/md'
-
+import { MdOutlineUndo, MdOutlineCheck } from 'react-icons/md'
 
 export default function TableRow({
   id, prod, _quantity, costo, sc, comm, rappre, onChange,
@@ -35,7 +34,7 @@ export default function TableRow({
       <td>{total.toFixed(2)}</td>
     </>
   ), [total])
-  const isEdited = useMemo(() => _quantity !== quantity , [_quantity, quantity])
+  const isEdited = useMemo(() => _quantity !== quantity, [_quantity, quantity])
   return (
     <tr>
       <td>{prod}</td>
@@ -44,17 +43,14 @@ export default function TableRow({
       </td>
       {totals}
       <td>
-      <span className='d-flex flex-nowrap'>
+        <span className='d-flex flex-nowrap'>
           <ButtonTooltip tooltip="Salva Modifiche">
             <Button variant="outline-success me-1 me-lg-2" disabled={!isEdited} onClick={() => onChange(id, quantity)}>  <MdOutlineCheck /></Button>
           </ButtonTooltip>
-
-
           <ButtonTooltip tooltip="Annulla Modifiche">
-            <Button variant="outline-secondary" disabled={!isEdited} onClick={() => setQuantity(_quantity)}><MdOutlineClear /></Button>
+            <Button variant="outline-secondary" disabled={!isEdited} onClick={() => setQuantity(_quantity)}><MdOutlineUndo /></Button>
           </ButtonTooltip>
-
-      </span>
+        </span>
       </td>
     </tr>
   )
