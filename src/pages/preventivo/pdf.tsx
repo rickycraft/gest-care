@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import router from 'next/router'
 import Script from 'next/script'
 import { Image, Table } from 'react-bootstrap'
 import { prisma } from 'server/prisma'
@@ -117,6 +118,7 @@ export default function PreventivoPdf(props: InferGetServerSidePropsType<typeof 
         crossOrigin="anonymous" referrerPolicy="no-referrer"
         onReady={() => {
           (window as any).html2pdf().from(document.body).set(opt).save('preventivo_' + props.preventivo.scuola + '.pdf')
+          router.push('/preventivo/' + props.idPreventivo)
         }}
       />
       <div className='d-flex justify-content-between mb-3'>
