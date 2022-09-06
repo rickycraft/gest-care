@@ -37,6 +37,14 @@ export default function TableRowPrev({
     ), [newRow])
     const isNew = useMemo(() => row.id == INVALID_ID, [row])
 
+    //TO-DO
+    const isEdited = useMemo(() => prodotto!==row.prodId || pers !== row.persId || newRow.provSc!== row.provSc || newRow.provRappre !== row.provRappre
+    || newRow.provComm!==row.provComm  , [prodotto, pers, newRow, row])
+
+   
+
+
+
     return (
         <tr className="tr" key={row.id} onDoubleClick={() => {
             if (!locked) setIsEditable(true)
@@ -95,7 +103,7 @@ export default function TableRowPrev({
                 {isEditable ? (
                     <div className='d-flex flex-nowrap'>
                         <ButtonTooltip tooltip="Salva le modifiche">
-                            <Button name='EditButton' variant="outline-success  me-1 me-lg-2" disabled={!isValid} hidden={isNew || locked}
+                            <Button name='EditButton' variant="outline-success  me-1 me-lg-2" disabled={!isValid} hidden={isNew || locked || !isEdited}
                                 onClick={() => {
                                     onClickEdit({ ...newRow, id: row.id })
                                     setIsEditable(false)
@@ -104,7 +112,7 @@ export default function TableRowPrev({
                             </Button>
                         </ButtonTooltip>
                         <ButtonTooltip tooltip="Annulla Modifiche">
-                            <Button name='UndoButton' variant="outline-secondary" hidden={isNew || locked}
+                            <Button name='UndoButton' variant="outline-secondary" hidden={isNew || locked || !isEdited}
                                 onClick={() => {
                                     resetRow()
                                     setIsEditable(false)

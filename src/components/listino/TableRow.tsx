@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Button, ButtonGroup } from 'react-bootstrap'
+import { useMemo, useState } from 'react'
+import { Button } from 'react-bootstrap'
 import Form from 'react-bootstrap/Form'
 import { MdDelete, MdOutlineCheck, MdOutlineUndo } from 'react-icons/md'
 import ButtonTooltip from 'components/utils/ButtonTooltip'
@@ -24,6 +24,7 @@ export default function TableRow({
         onClickEdit(id, price)
         setIsEditable(false)
     }
+    const isEdited = useMemo(() => rowPrice !== newPrice , [rowPrice, newPrice])
 
     return (
         <tr key={rowId}>
@@ -50,9 +51,9 @@ export default function TableRow({
 
                 <span className='d-flex flex-nowrap' >
                     <ButtonTooltip tooltip="Salva Modifiche">
-                        <Button name='EditButton'
+                        <Button name='EditButton' 
                             variant="outline-success me-1 me-lg-2"
-                            hidden={!isEditable}
+                            hidden={!isEdited}
                             onClick={() => editRow(rowId, newPrice)}
                         >
                             <MdOutlineCheck />
@@ -62,11 +63,12 @@ export default function TableRow({
 
                     <ButtonTooltip tooltip="Annulla Modifiche">
                         <Button name='UndoButton' variant="outline-secondary"
+                         hidden={!isEdited  || !isEditable }
                             onClick={() => {
                                 setNewPrice(rowPrice)
                                 setIsEditable(false)
                             }}
-                            hidden={!isEditable}
+                           
                         ><MdOutlineUndo />
                         </Button>
                     </ButtonTooltip>
