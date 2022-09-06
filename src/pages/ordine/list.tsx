@@ -1,12 +1,12 @@
 import ModalCreate from 'components/ordine/ModalCreate'
 import ModalDelete from 'components/ordine/ModalDelete'
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { Button, Card, Spinner } from 'react-bootstrap'
 import { MdDelete } from 'react-icons/md'
 import { trpc } from 'utils/trpc'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import Tooltip from 'react-bootstrap/Tooltip'
+
 
 
 export default function List() {
@@ -32,11 +32,11 @@ export default function List() {
                 Totale: {
                   (Number(ordine.totSC) + Number(ordine.totComm) + Number(ordine.totRappre)).toFixed(2)
                 }
-                <OverlayTrigger overlay={<Tooltip>Elimina preventivo</Tooltip>}>
+                <ButtonTooltip tooltip="Elimina preventivo">
                   <Button variant='danger' className='ms-3' onClick={() => showDelete(ordine.id)}>
                     <MdDelete />
                   </Button>
-                </OverlayTrigger>
+                </ButtonTooltip>
 
               </span>
             </Card.Body>

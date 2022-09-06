@@ -3,6 +3,7 @@ import { Button, Form, Modal, Spinner } from 'react-bootstrap'
 import { trpc } from 'utils/trpc'
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
 import Tooltip from 'react-bootstrap/Tooltip'
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 const invalidId = -1
 
@@ -25,11 +26,11 @@ export default function ModalCreate() {
   return (
     <>
       <div className='d-flex justify-content-end'>
-        <OverlayTrigger overlay={<Tooltip>Aggiungi ordine</Tooltip>}>
+      <ButtonTooltip tooltip="Aggiungi ordine">
           <Button variant="primary" size='lg' className="rounded-circle" onClick={() => setShow(true)}>
             +
           </Button>
-        </OverlayTrigger>
+      </ButtonTooltip>
         <Modal show={show} onHide={() => setShow(false)} keyboard={false}>
           <Modal.Header closeButton>
             <Modal.Title>Aggiungi un nuovo ordine</Modal.Title>

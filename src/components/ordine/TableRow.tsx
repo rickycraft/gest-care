@@ -38,7 +38,7 @@ export default function TableRow({
       <td>{total.toFixed(2)}</td>
     </>
   ), [total])
-
+  const isEdited = useMemo(() => _quantity !== quantity , [_quantity, quantity])
   return (
     <tr>
       <td>{prod}</td>
@@ -49,12 +49,12 @@ export default function TableRow({
       <td>
       <span className='d-flex flex-nowrap'>
           <ButtonTooltip tooltip="Salva Modifiche">
-            <Button variant="outline-success me-1 me-lg-2" onClick={() => onChange(id, quantity)}>  <MdOutlineCheck /></Button>
+            <Button variant="outline-success me-1 me-lg-2" disabled={!isEdited} onClick={() => onChange(id, quantity)}>  <MdOutlineCheck /></Button>
           </ButtonTooltip>
 
 
           <ButtonTooltip tooltip="Annulla Modifiche">
-            <Button variant="outline-secondary" onClick={() => setQuantity(_quantity)}><MdOutlineClear /></Button>
+            <Button variant="outline-secondary" disabled={!isEdited} onClick={() => setQuantity(_quantity)}><MdOutlineClear /></Button>
           </ButtonTooltip>
 
       </span>
