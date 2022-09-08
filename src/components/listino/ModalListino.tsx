@@ -1,5 +1,5 @@
 import ButtonTooltip from 'components/utils/ButtonTooltip'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Form, Spinner } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
@@ -43,7 +43,7 @@ export default function ModalListino({
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true)
-    const isEditing = () => listinoId !== invalidId
+    const isEditing = useMemo(() => listinoId !== invalidId, [listinoId])
     const insertListino = async () => {
         if (listinoInsert.isLoading) return
         listinoInsert.mutate({
@@ -71,18 +71,18 @@ export default function ModalListino({
 
     return (
         <>
-         <ButtonTooltip tooltip={isEditing() ? 'Modifica listino' : 'Aggiungi listino'} >
-            <Button variant="primary" className="rounded-circle" onClick={handleShow}>
-                {isEditing() ? <MdEdit /> : '+'}
-            </Button>
-        </ButtonTooltip>
+            <ButtonTooltip tooltip={isEditing ? 'Modifica listino' : 'Aggiungi listino'} >
+                <Button variant="primary" className="rounded-circle" onClick={handleShow}>
+                    {isEditing ? <MdEdit /> : '+'}
+                </Button>
+            </ButtonTooltip>
             <Modal
                 show={show}
                 onHide={handleClose}
                 keyboard={false}
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>{isEditing() ? 'Modifica un' : 'Aggiungi un nuovo'} listino</Modal.Title>
+                    <Modal.Title>{isEditing ? 'Modifica un' : 'Aggiungi un nuovo'} listino</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {/* Form per aggiungere un nuovo listino: nome listino + id fornitore */}
@@ -116,21 +116,21 @@ export default function ModalListino({
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant='danger' hidden={!isEditing()}
+                    <Button variant='danger' hidden={!isEditing}
                         onClick={() => deleteListino()}
                     >
-                        Elimina Listino
+                        Elimina
                     </Button>
-                    <Button variant={isEditing() ? 'success' : 'primary'}
+                    <Button variant={isEditing ? 'success' : 'primary'}
                         disabled={!isValid()}
                         onClick={() => {
                             if (!isValid()) return
-                            if (isEditing()) updateListino()
+                            if (isEditing) updateListino()
                             else insertListino()
                             handleClose()
                         }}
                     >
-                        {isEditing() ? 'Salva Modifiche' : 'Salva'}
+                        {isEditing ? 'Salva Modifiche' : 'Aggiungi'}
                     </Button>
                 </Modal.Footer>
             </Modal>

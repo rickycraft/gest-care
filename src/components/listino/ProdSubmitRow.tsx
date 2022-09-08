@@ -1,8 +1,8 @@
 import { inferMutationInput, trpc } from 'utils/trpc'
 import Button from 'react-bootstrap/Button'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ButtonGroup, Form, Spinner } from 'react-bootstrap'
-import { MdCancel, MdSave } from 'react-icons/md'
+import { MdOutlineBlock, MdSave } from 'react-icons/md'
 import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 export default function ProdSubmitRow({
@@ -14,6 +14,7 @@ export default function ProdSubmitRow({
 }) {
   const [nome, setNome] = useState('')
   const [prezzo, setPrezzo] = useState(0)
+  const isEdited = useMemo(() => nome !== '' || prezzo !== 0, [nome, prezzo])
 
   const isRowValid = () => nome.length > 0 && prezzo > 0
   const doInsertProd = () => {
@@ -39,35 +40,29 @@ export default function ProdSubmitRow({
           placeholder="Prezzo"
         />
       </td>
-      <td>
+      <td className='d-flex flex-nowrap' >
         {/*Gruppo di bottoni "save" e "clean" per nuovo prodotto
                     save: salva un nuovo prodotto
                     clean: pulisce gli input text
                   */}
-        <span className='d-flex flex-nowrap' > 
-
-          <ButtonTooltip  tooltip="Salva">
-            <Button name="SaveButton"
-              variant="outline-success me-1 me-lg-2"
-              disabled={!isRowValid()}
-              onClick={() => doInsertProd()}
-            >
-              <MdSave className='ms-1' />
-            </Button>
-          </ButtonTooltip>
-
-
-          <ButtonTooltip tooltip="Annulla">
-            <Button name="CleanButton"
-              variant="outline-secondary"
-              onClick={() => { setPrezzo(0); setNome('') }}
-            >
-              <MdCancel className='ms-1' />
-            </Button>
-          </ButtonTooltip>
-
-
-        </span>
+        <ButtonTooltip tooltip="Salva">
+          <Button name="SaveButton"
+            variant="outline-success me-1 me-lg-2"
+            disabled={!isRowValid()}
+            onClick={() => doInsertProd()}
+          >
+            <MdSave />
+          </Button>
+        </ButtonTooltip>
+        <ButtonTooltip tooltip="Pulisci">
+          <Button name="CleanButton"
+            variant="outline-secondary"
+            disabled={!isEdited}
+            onClick={() => { setPrezzo(0); setNome('') }}
+          >
+            <MdOutlineBlock />
+          </Button>
+        </ButtonTooltip>
       </td>
     </tr>
   )

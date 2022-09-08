@@ -19,12 +19,12 @@ export default function TableRow({
 }) {
     const [isEditable, setIsEditable] = useState(false)
     const [newPrice, setNewPrice] = useState(rowPrice)
+    const isEdited = useMemo(() => rowPrice !== newPrice, [rowPrice, newPrice])
 
     const editRow = (id: number, price: number) => {
         onClickEdit(id, price)
         setIsEditable(false)
     }
-    const isEdited = useMemo(() => rowPrice !== newPrice , [rowPrice, newPrice])
 
     return (
         <tr key={rowId}>
@@ -43,45 +43,35 @@ export default function TableRow({
                     onKeyUp={(event) => { if (event.key === 'Enter') editRow(rowId, newPrice) }}
                 />
             </td>
-            <td>
+            <td className='d-flex flex-nowrap'>
                 {/*Gruppo di bottoni "edit" e "delete" per ogni riga prodotto
                 edit: modifica il prodotto della riga  (TODO)
                 delete: elimina il prodotto della riga
               */}
-
-                <span className='d-flex flex-nowrap' >
-                    <ButtonTooltip tooltip="Salva Modifiche">
-                        <Button name='EditButton' 
-                            variant="outline-success me-1 me-lg-2"
-                            hidden={!isEdited}
-                            onClick={() => editRow(rowId, newPrice)}
-                        >
-                            <MdOutlineCheck />
-                        </Button>
-                    </ButtonTooltip>
-
-
-                    <ButtonTooltip tooltip="Annulla Modifiche">
-                        <Button name='UndoButton' variant="outline-secondary"
-                         hidden={!isEdited  || !isEditable }
-                            onClick={() => {
-                                setNewPrice(rowPrice)
-                                setIsEditable(false)
-                            }}
-                           
-                        ><MdOutlineUndo />
-                        </Button>
-                    </ButtonTooltip>
-                </span>
-
-                <span className='d-flex flex-nowrap' >
+                {isEditable ? (
+                    <>
+                        <ButtonTooltip tooltip="Salva Modifiche">
+                            <Button name='EditButton' variant="outline-success me-1 me-lg-2" disabled={!isEdited}
+                                onClick={() => editRow(rowId, newPrice)}
+                            ><MdOutlineCheck /></Button>
+                        </ButtonTooltip>
+                        <ButtonTooltip tooltip="Annulla Modifiche">
+                            <Button name='UndoButton' variant="outline-secondary"
+                                onClick={() => {
+                                    setNewPrice(rowPrice)
+                                    setIsEditable(false)
+                                }}
+                            ><MdOutlineUndo /></Button>
+                        </ButtonTooltip>
+                    </>
+                ) : (
                     <ButtonTooltip tooltip="Elimina">
                         <Button hidden={isEditable} name="DeleteButton" variant="outline-danger"
                             onClick={() => onClickDelete(rowId)} >
                             <MdDelete />
                         </Button>
                     </ButtonTooltip>
-                </span>
+                )}
             </td>
         </tr >
     )
