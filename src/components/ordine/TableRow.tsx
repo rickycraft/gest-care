@@ -24,7 +24,7 @@ export default function TableRow({
   const totComm = useMemo(() => quantity * comm, [quantity, comm])
   const totRappre = useMemo(() => quantity * rappre, [quantity, rappre])
   const totProd = useMemo(() => quantity * costo, [quantity, costo])
-  const total = useMemo(() => quantity * (totSC + totComm + totRappre + totProd), [totSC, totComm, totRappre, totProd])
+  const total = useMemo(() => totSC + totComm + totRappre + totProd, [totSC, totComm, totRappre, totProd])
   const totals = useMemo(() => (
     <>
       <td>{totProd.toFixed(2)}</td>

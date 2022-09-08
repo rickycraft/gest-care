@@ -1,6 +1,6 @@
 import { trpc } from 'utils/trpc'
 import Table from 'react-bootstrap/Table'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button, Card, Spinner } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import ErrorMessage from 'components/utils/ErrorMessage'
@@ -11,16 +11,17 @@ import { INVALID_ID } from 'utils/constants'
 import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 const parseId = (id: any) => {
-  if (id == undefined || Array.isArray(id)) return null
+  if (id == undefined || Array.isArray(id)) return INVALID_ID
   const numId = Number(id)
-  if (isNaN(numId)) return null
+  if (isNaN(numId)) return INVALID_ID
   return numId
 }
 
 export default function Index() {
   // handle query
   const router = useRouter()
-  const idPreventivo = useMemo(() => parseId(router.query.id) ?? INVALID_ID, [router.query])
+  const idPreventivo = parseId(router.query["id"])
+
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
   const [listinoId, setListinoId] = useState(INVALID_ID)
@@ -38,16 +39,7 @@ export default function Index() {
   }
   const prodottiQuery = trpc.useQuery(['prodotto.list', { listino: listinoId }])
   const persQuery = trpc.useQuery(['pers.list', { listino: listinoId }])
-  const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }], {
-    onSettled(data, error) {
-      if (error || !data) router.push('/preventivo/list')
-      else {
-        setListinoId(data.listinoId)
-        prodottiQuery.refetch()
-        persQuery.refetch()
-      }
-    },
-  })
+  const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }])
   const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId: idPreventivo }])
   const preventivoRowInsert = trpc.useMutation('preventivo.row.insert', preventivoRowCallback)
   const preventivoRowUpdate = trpc.useMutation('preventivo.row.update', preventivoRowCallback)
@@ -59,9 +51,23 @@ export default function Index() {
     }
   })
 
+  useEffect(() => {
+    if (!preventivoQuery.isSuccess) return
+    if (!preventivoQuery.data) router.push('/preventivo/list')
+    else {
+      setListinoId(preventivoQuery.data.listinoId)
+      prodottiQuery.refetch()
+      persQuery.refetch()
+    }
+  }, [preventivoQuery.status])
+
   const locked = useMemo(() => preventivoQuery.data?.locked ?? true, [preventivoQuery.data])
 
   if (!preventivoRowQuery.isSuccess || !preventivoQuery.isSuccess || !prodottiQuery.isSuccess || !persQuery.isSuccess) {
+    return <Spinner animation="border" />
+  }
+
+  if (prodottiQuery.data.length == 0 || persQuery.data.length == 0) {
     return <Spinner animation="border" />
   }
 
