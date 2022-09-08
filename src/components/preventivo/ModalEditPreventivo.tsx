@@ -83,9 +83,9 @@ export default function ModalEdit({
     return (
         <>
             <div className='d-flex justify-content-end'>
-            <ButtonTooltip tooltip="Aggiungi preventivo">
-                <Button variant="primary" size='lg' className="rounded-circle" onClick={openModal}> +</Button>
-            </ButtonTooltip>
+                <ButtonTooltip tooltip="Aggiungi preventivo">
+                    <Button variant="primary" size='lg' className="rounded-circle" onClick={openModal}> +</Button>
+                </ButtonTooltip>
             </div>
             <Modal show={show} onHide={() => setShow(false)} keyboard={false}>
                 <Modal.Header closeButton>
@@ -142,7 +142,7 @@ export default function ModalEdit({
                             else insertPreventivo()
                         }}
                     >
-                        {isEditing ? 'Salva Modifiche' : 'Salva'}
+                        {isEditing ? 'Salva Modifiche' : 'Aggiungi'}
                     </Button>
                 </Modal.Footer>
             </Modal>

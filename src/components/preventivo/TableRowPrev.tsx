@@ -38,12 +38,7 @@ export default function TableRowPrev({
     const isNew = useMemo(() => row.id == INVALID_ID, [row])
 
     //TO-DO
-    const isEdited = useMemo(() => prodotto!==row.prodId || pers !== row.persId || newRow.provSc!== row.provSc || newRow.provRappre !== row.provRappre
-    || newRow.provComm!==row.provComm  , [prodotto, pers, newRow, row])
-
-   
-
-
+    const isEdited = useMemo(() => row != newRow, [newRow, row])
 
     return (
         <tr className="tr" key={row.id} onDoubleClick={() => {

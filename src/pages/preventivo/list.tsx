@@ -47,21 +47,25 @@ export default function List() {
                 <span className='d-flex flex-nowrap'>{prev.scuola} - {prev.listino.nome}</span>
                 <span className='d-flex flex-nowrap'>
                   {prev.locked && canUnlockPreventivo(user.role) && (
-                    <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}><MdLockOpen /></Button>
+                    <ButtonTooltip tooltip="Sblocca">
+                      <Button variant='outline-secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}>
+                        <MdLockOpen />
+                      </Button>
+                    </ButtonTooltip>
                   )}
                   {prev.locked ? (null) : (
                     <>
-                      <ButtonTooltip tooltip="Blocca preventivo">
+                      <ButtonTooltip tooltip="Blocca">
                         <Button variant='outline-secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}>
                           <MdLock />
                         </Button>
                       </ButtonTooltip>
-                      <ButtonTooltip tooltip="Modifica preventivo">
+                      <ButtonTooltip tooltip="Modifica">
                         <Button variant='outline-info' className='me-2' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
                           <MdCreate />
                         </Button>
                       </ButtonTooltip>
-                      <ButtonTooltip tooltip="Elimina preventivo">
+                      <ButtonTooltip tooltip="Elimina">
                         <Button variant='outline-danger' onClick={() => openModal(prev.id, prev.locked, openDelete)}>
                           <MdDelete />
                         </Button>
