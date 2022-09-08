@@ -43,7 +43,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       <main>
         <TooltipContext.Provider value={tooltipContainer.current}>
-          <div className='p-4'>{children}</div>
+          <div className='p-2 p-md-4'>{children}</div>
         </TooltipContext.Provider>
       </main>
     </div>

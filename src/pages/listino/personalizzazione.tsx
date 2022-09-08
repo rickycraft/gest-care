@@ -64,7 +64,7 @@ export default function Pers() {
         <thead>
           <tr>
             <th>Nome Personalizzazione</th>
-            <th>Prezzo</th>
+            <th style={{ minWidth: "6rem" }}>Prezzo</th>
             <th></th>
           </tr>
         </thead>

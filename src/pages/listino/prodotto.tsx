@@ -66,7 +66,7 @@ export default function Prodotto() {
         <thead>
           <tr>
             <th>Nome prodotto</th>
-            <th>Prezzo</th>
+            <th style={{ minWidth: "6rem" }}>Prezzo</th>
             <th></th>
           </tr>
         </thead>
