@@ -1,14 +1,14 @@
-import { trpc } from 'utils/trpc'
-import React, { useState } from 'react'
-import { Button, Card, Spinner } from 'react-bootstrap'
-import ModalEdit from 'components/preventivo/ModalEditPreventivo'
-import { useRouter } from 'next/router'
 import ModalDelete from 'components/preventivo/ModalDeletePreventivo'
-import { MdCreate, MdDelete, MdLock, MdLockOpen } from 'react-icons/md'
+import ModalEdit from 'components/preventivo/ModalEditPreventivo'
 import ModalLock from 'components/preventivo/ModalLockPreventivo'
 import { useAtom } from 'jotai'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import { Button, Card, Spinner } from 'react-bootstrap'
+import { MdCreate, MdDelete, MdLock, MdLockOpen } from 'react-icons/md'
 import { userAtom } from 'utils/atom'
 import { canUnlockPreventivo } from 'utils/role'
+import { trpc } from 'utils/trpc'
 
 import ButtonTooltip from 'components/utils/ButtonTooltip'
 
@@ -34,6 +34,12 @@ export default function List() {
     openFn()
   }
 
+  const [isLoading, setLoading] = useState(false)
+  useEffect(() => {
+    router.events.on('routeChangeStart', () => setLoading(true))
+    router.events.on('routeChangeComplete', () => setLoading(false))
+  }, [])
+
   if (!preventiviQuery.isSuccess) return <Spinner animation="border" />
 
   return (
@@ -42,7 +48,9 @@ export default function List() {
         {preventiviQuery.data.map((prev) => (
           <Card key={prev.id} className='my-3'>
             <Card.Body>
-              <Card.Title onClick={() => router.push(`/preventivo/${prev.id}`)}>{prev.nome}</Card.Title>
+              <Card.Title onClick={() => router.push(`/preventivo/${prev.id}`)}>
+                {isLoading ? <Spinner animation="border" /> : prev.nome}
+              </Card.Title>
               <div className='mb-0 d-flex justify-content-between flex-wrap'>
                 <span className='d-flex flex-nowrap'>{prev.scuola} - {prev.listino.nome}</span>
                 <span className='d-flex flex-nowrap'>
