@@ -1,12 +1,18 @@
 import Header from './Header'
 import { useState, useEffect } from 'react'
+import React from 'react'
+import { useRef } from 'react'
+
+export const TooltipContext = React.createContext(null)
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [pageLoaded, setPageLoaded] = useState(false)
   useEffect(() => setPageLoaded(true), [])
 
+  const tooltipContainer = useRef(null)
+
   return (
-    <>
+    <div ref={tooltipContainer}>
       <style jsx global>{`
         *,
         *::before,
@@ -36,13 +42,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {pageLoaded && <Header />}
 
       <main>
-        <div className='p-4'>{children}</div>
+        <TooltipContext.Provider value={tooltipContainer.current}>
+          <div className='p-4'>{children}</div>
+        </TooltipContext.Provider>
       </main>
-
-      {/* <div className="fixed-bottom">
-        <Footer></Footer>
-      </div> */}
-
-    </>
+    </div>
   )
 }
