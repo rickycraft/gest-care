@@ -2,29 +2,55 @@ import TableRow from 'components/ordine/TableRow'
 import TotReale from 'components/ordine/TotReale'
 import ButtonTooltip from 'components/utils/ButtonTooltip'
 import { useRouter } from 'next/router'
-import { useMemo } from 'react'
 import { Button, Card, Spinner, Table } from 'react-bootstrap'
-import { MdArrowForward, MdGridOn, MdReplyAll } from 'react-icons/md'
+import { MdGridOn, MdReplyAll } from 'react-icons/md'
 import { trpc } from 'utils/trpc'
+// server side
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import { createSSG } from 'server/context'
 
 const invalidId = -1
 const parseId = (id: any) => {
   if (id == undefined || Array.isArray(id)) return null
   const numId = Number(id)
-  if (isNaN(numId)) return null
-  return numId
+  return (isNaN(numId)) ? null : numId
 }
 
-export default function Index() {
+const redirect = {
+  redirect: {
+    destination: '/ordine/list', permanent: false,
+  }
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const id = parseId(context.query.id)
+  if (id == null) return redirect
+
+  const ssg = await createSSG(context.req.cookies)
+  try {
+    await ssg.fetchQuery('ordine.byId', { id })
+    return {
+      props: {
+        idOrdine: id,
+        trpcState: ssg.dehydrate(),
+      }
+    }
+  } catch {
+    return redirect
+  }
+}
+
+export default function Index(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>,
+) {
   // handle query
   const router = useRouter()
-  const idOrdine = useMemo(() => parseId(router.query.id) ?? invalidId, [router.query])
+  const idOrdine = props.idOrdine as number
+
   const ordineQuery = trpc.useQuery(['ordine.byId', { id: idOrdine }], {
     enabled: idOrdine !== invalidId,
   })
-  const totalsQuery = trpc.useQuery(['ordine.totals', { id: idOrdine }], {
-    enabled: idOrdine !== invalidId,
-  })
+  const totalsQuery = trpc.useQuery(['ordine.totals', { id: idOrdine }])
   const ordineEdit = trpc.useMutation(['ordine.editRow'], {
     onSuccess: () => {
       ordineQuery.refetch()
@@ -57,8 +83,7 @@ export default function Index() {
             <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
               onClick={
                 () => router.push({
-                  pathname: '/preventivo',
-                  query: { id: ordineQuery.data.id },
+                  pathname: `/preventivo/${ordineQuery.data.id}`,
                 })}
             ><MdReplyAll style={{ transform: "scaleX(-1)" }} />
             </Button>

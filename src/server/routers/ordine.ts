@@ -91,6 +91,9 @@ export const ordineRouter = createProtectedRouter()
       if (!ordine) throw new TRPCError({ code: "BAD_REQUEST" })
       return {
         ...ordine,
+        totSC: ordine.totSC.toNumber(),
+        totRappre: ordine.totRappre.toNumber(),
+        totComm: ordine.totComm.toNumber(),
         OrdineRow: ordine.OrdineRow.map(row => ({
           ...row,
           costo: row.costo.toNumber(),
