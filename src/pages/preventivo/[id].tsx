@@ -1,6 +1,6 @@
 import { trpc } from 'utils/trpc'
 import Table from 'react-bootstrap/Table'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Button, Card, Spinner } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import ErrorMessage from 'components/utils/ErrorMessage'
@@ -17,8 +17,7 @@ import { createSSG } from 'server/context'
 const parseId = (id: any) => {
   if (id == undefined || Array.isArray(id)) return INVALID_ID
   const numId = Number(id)
-  if (isNaN(numId)) return INVALID_ID
-  return numId
+  return (isNaN(numId)) ? null : numId
 }
 
 const redirect = {
