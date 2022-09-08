@@ -76,7 +76,7 @@ export default function Index() {
       <div className='d-flex align-items-center justify-content-between'>
         <h1>{preventivoQuery.data?.nome.toUpperCase()}</h1>
         <div className='d-flex'>
-          <ButtonTooltip tooltip="Esporta preventivo xls">
+          <ButtonTooltip tooltip="exporta in excel">
             <Button variant='success' className='me-2 p-2 p-lg-3 rounded-circle'
               onClick={
                 () => router.push({
@@ -86,7 +86,7 @@ export default function Index() {
             ><MdGridOn />
             </Button>
           </ButtonTooltip>
-          <ButtonTooltip tooltip="Esporta preventivo pdf">
+          <ButtonTooltip tooltip="esporta in pdf">
             <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
               onClick={
                 () => router.push({
@@ -96,7 +96,7 @@ export default function Index() {
             ><MdDownload />
             </Button>
           </ButtonTooltip>
-          <ButtonTooltip tooltip="Duplica preventivo">
+          <ButtonTooltip tooltip="duplica">
             <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
               onClick={() => {
                 if (preventivoQuery.data == null) return

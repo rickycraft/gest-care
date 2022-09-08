@@ -4,7 +4,7 @@ import ButtonTooltip from 'components/utils/ButtonTooltip'
 import { useRouter } from 'next/router'
 import { useMemo } from 'react'
 import { Button, Card, Spinner, Table } from 'react-bootstrap'
-import { MdGridOn } from 'react-icons/md'
+import { MdArrowForward, MdGridOn, MdReplyAll } from 'react-icons/md'
 import { trpc } from 'utils/trpc'
 
 const invalidId = -1
@@ -43,16 +43,26 @@ export default function Index() {
       <div className='d-flex align-items-center justify-content-between mb-3'>
         <h2>{ordineQuery.data.preventivo.nome.toUpperCase()}</h2>
         <span className='d-flex'>
-        <ButtonTooltip tooltip="Esporta ordine xls">
-          <Button variant='success' className='me-2 p-2 p-lg-3 rounded-circle'
-            onClick={
-              () => router.push({
-                pathname: '/ordine/excel',
-                query: { id: ordineQuery.data.id },
-              })}
+          <ButtonTooltip tooltip="exporta in excel">
+            <Button variant='success' className='me-2 p-2 p-lg-3 rounded-circle'
+              onClick={
+                () => router.push({
+                  pathname: '/ordine/excel',
+                  query: { id: ordineQuery.data.id },
+                })}
             ><MdGridOn />
-          </Button>
-        </ButtonTooltip>
+            </Button>
+          </ButtonTooltip>
+          <ButtonTooltip tooltip="apri preventivo">
+            <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
+              onClick={
+                () => router.push({
+                  pathname: '/preventivo',
+                  query: { id: ordineQuery.data.id },
+                })}
+            ><MdReplyAll style={{ transform: "scaleX(-1)" }} />
+            </Button>
+          </ButtonTooltip>
         </span>
       </div>
       <style type="text/css">

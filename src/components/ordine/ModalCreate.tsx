@@ -24,11 +24,11 @@ export default function ModalCreate() {
   return (
     <>
       <div className='d-flex justify-content-end'>
-      <ButtonTooltip tooltip="Aggiungi ordine">
+        <ButtonTooltip tooltip="aggiungi ordine">
           <Button variant="primary" size='lg' className="rounded-circle" onClick={() => setShow(true)}>
             +
           </Button>
-      </ButtonTooltip>
+        </ButtonTooltip>
         <Modal show={show} onHide={() => setShow(false)} keyboard={false}>
           <Modal.Header closeButton>
             <Modal.Title>Aggiungi un nuovo ordine</Modal.Title>
@@ -51,12 +51,9 @@ export default function ModalCreate() {
             </Form>
           </Modal.Body>
           <Modal.Footer>
-
             <Button variant="primary" onClick={() => ordineCreate.mutate({ preventivoId })} disabled={preventivoId == invalidId}>
               Salva
             </Button>
-
-
           </Modal.Footer>
         </Modal>
       </div>

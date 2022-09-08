@@ -28,7 +28,7 @@ export default function List() {
               <h2 onClick={() => router.push(`/ordine/${ordine.id}`)} >{ordine.preventivo.nome.toUpperCase()}</h2>
               <span className='d-flex flex-nowrap align-items-center'>
                 Totale SC: {ordine.sc.toFixed(2)}
-                <ButtonTooltip tooltip="Elimina preventivo">
+                <ButtonTooltip tooltip="elimina ordine">
                   <Button variant='outline-danger' className='ms-3' onClick={() => showDelete(ordine.id)}>
                     <MdDelete />
                   </Button>

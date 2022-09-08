@@ -37,9 +37,6 @@ export default function TableRowPrev({
     ), [newRow])
     const isNew = useMemo(() => row.id == INVALID_ID, [row])
 
-    //TO-DO
-    const isEdited = useMemo(() => row != newRow, [newRow, row])
-
     return (
         <tr className="tr" key={row.id} onDoubleClick={() => {
             if (!locked) setIsEditable(true)
@@ -94,11 +91,11 @@ export default function TableRowPrev({
             {/*Gruppo di bottoni "edit" e "delete" per ogni riga prodotto
                 edit: modifica il prodotto della riga  (TODO)
                 delete: elimina il prodotto della riga*/}
-            <td>
+            <td hidden={locked}>
                 {isEditable ? (
                     <div className='d-flex flex-nowrap'>
-                        <ButtonTooltip tooltip="Salva le modifiche">
-                            <Button name='EditButton' variant="outline-success  me-1 me-lg-2" disabled={!isValid} hidden={isNew || locked || !isEdited}
+                        <ButtonTooltip tooltip="salva modifiche">
+                            <Button name='EditButton' variant="outline-success  me-1 me-lg-2" disabled={!isValid} hidden={isNew}
                                 onClick={() => {
                                     onClickEdit({ ...newRow, id: row.id })
                                     setIsEditable(false)
@@ -106,33 +103,35 @@ export default function TableRowPrev({
                                 <MdOutlineCheck />
                             </Button>
                         </ButtonTooltip>
-                        <ButtonTooltip tooltip="Annulla Modifiche">
-                            <Button name='UndoButton' variant="outline-secondary" hidden={isNew || locked || !isEdited}
-                                onClick={() => {
-                                    resetRow()
-                                    setIsEditable(false)
-                                }}><MdOutlineUndo />
+                        <ButtonTooltip tooltip="annulla modifiche">
+                            <Button name='UndoButton' variant="outline-secondary" hidden={isNew}
+                                onClick={() => { resetRow(); setIsEditable(false) }}>
+                                <MdOutlineUndo />
                             </Button>
                         </ButtonTooltip>
                     </div>
                 ) : (
                     <div className="d-inline-block">
-                        <ButtonTooltip tooltip="Elimina riga preventivo">
-                            <Button name="DeleteButton" variant="outline-danger" hidden={isNew || locked} onClick={() => onClickDelete(row.id)}>
+                        <ButtonTooltip tooltip="rimuovi prodotto">
+                            <Button name="DeleteButton" variant="outline-danger" hidden={isNew} onClick={() => onClickDelete(row.id)}>
                                 <MdDelete />
                             </Button>
                         </ButtonTooltip>
                     </div>
                 )}
                 <div className='d-flex flex-nowrap'>
-                    <ButtonTooltip tooltip="Salva ">
-                        <Button name="InsertButton" variant="outline-success  me-1 me-lg-2" disabled={!isValid} hidden={!isNew || locked} onClick={() => { onClickInsert(newRow); resetRow() }}>
-                            <MdSave className='ms-1' />
+                    <ButtonTooltip tooltip="salva">
+                        <Button name="InsertButton" variant="outline-success  me-1 me-lg-2"
+                            disabled={!isValid} hidden={!isNew}
+                            onClick={() => { onClickInsert(newRow); resetRow() }}>
+                            <MdSave />
                         </Button>
                     </ButtonTooltip>
-                    <ButtonTooltip tooltip="Annulla">
-                        <Button name='UndoButton' variant="outline-secondary" hidden={!isNew || locked} onClick={() => resetRow()}>
-                            <MdCancel className='ms-1' />
+                    <ButtonTooltip tooltip="pulisci">
+                        <Button name='UndoButton' variant="outline-secondary"
+                            hidden={!isNew}
+                            onClick={() => resetRow()}>
+                            <MdCancel />
                         </Button>
                     </ButtonTooltip>
                 </div>

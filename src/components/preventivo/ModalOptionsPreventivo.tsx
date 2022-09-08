@@ -30,7 +30,7 @@ export default function ModalOptions({
       {/*className='d-flex justify-content-end'*/}
       {/*className='position-absolute top-50 end-0 translate-middle-x'*/}
       <div className='d-flex justify-content-end'>
-        <ButtonTooltip tooltip="Modifica opzioni preventivo">
+        <ButtonTooltip tooltip="opzioni preventivo">
           <Button variant="primary" size='lg' className="rounded-circle m-0" onClick={() => setShow(true)} style={{ display: "block" }}>
             <MdReceipt />
           </Button>
@@ -56,7 +56,7 @@ export default function ModalOptions({
         {showSuccess &&
           <Modal.Footer className='d-block'>
             <Alert variant='success' className="text-center p-1">
-              Opzioni modificate con successo
+              opzioni modificate con successo
             </Alert>
           </Modal.Footer>
         }
