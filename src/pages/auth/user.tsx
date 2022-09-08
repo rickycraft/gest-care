@@ -1,14 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Alert, Button, Card, Form, Spinner } from 'react-bootstrap'
+import { INVALID_ID } from 'utils/constants'
 import { trpc } from 'utils/trpc'
-const invalidId = -1
 
 export default function User() {
 
   const [role, setRole] = useState('user')
   const [showSuccess, setShowSuccess] = useState(false)
   const [username, setUsername] = useState('')
-  const [userId, setUserId] = useState(invalidId)
+  const [userId, setUserId] = useState(INVALID_ID)
   const [isUserManual, setUserManual] = useState(false)
   const userQuery = trpc.useQuery(['auth.listUser'])
   const userMutate = trpc.useMutation('auth.editUser', {
@@ -18,6 +18,13 @@ export default function User() {
       setTimeout(() => setShowSuccess(false), 3000)
     },
   })
+
+  useEffect(() => {
+    if (!userQuery.data) return
+    const user = userQuery.data.find((user) => user.id === userId)
+    if (!user) return
+    setRole(user.role)
+  }, [userId])
 
   if (!userQuery.isSuccess) return <Spinner animation="border" />
 
@@ -33,7 +40,7 @@ export default function User() {
           if (_username === undefined) return
           userMutate.mutate({ username: _username, password, role })
           target.reset()
-          setUserId(invalidId)
+          setUserId(INVALID_ID)
           setUsername('')
         }}>
         <Form.Group onDoubleClick={() => setUserManual(!isUserManual)}>
@@ -42,7 +49,7 @@ export default function User() {
             <Form.Control type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
           ) : (
             <Form.Select value={userId} onChange={(e) => setUserId(Number(e.target.value))}>
-              <option value={invalidId}>Seleziona un utente</option>
+              <option value={INVALID_ID}>Seleziona un utente</option>
               {userQuery.data.map(({ id, username }) => (
                 <option key={id} value={id}>{username}</option>
               ))}
