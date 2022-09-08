@@ -23,8 +23,6 @@ export default function Login() {
       .then(result => {
         setUserAtom(result)
         window.location.href = window.location.origin + '/preventivo/list'
-        // for traking
-        import('components/utils/Highlight').then(({ identify }) => identify(username, result))
       }).catch(() => setErrorMsg('Username o Passoword errati'))
   }
 

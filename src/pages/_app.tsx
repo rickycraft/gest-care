@@ -12,16 +12,11 @@ import { GoogleAnalytics } from 'nextjs-google-analytics'
 import type { AppProps } from 'next/app'
 import { AppRouter } from 'server/routers/_app'
 import Head from 'next/head'
-import { useEffect } from 'react'
 import Layout from 'components/Layout'
 
 // dynamic(() => require('bootstrap/dist/js/bootstrap'), { ssr: false })
 
 function MyApp({ Component, pageProps }: AppProps) {
-
-  useEffect(() => {
-    import('../components/utils/Highlight').then(h => h.setup())
-  }, [])
 
   return (
     <>

@@ -13,7 +13,6 @@
     "prisma-migrate": "npx prisma migrate dev"
   },
   "dependencies": {
-    "@highlight-run/react": "^1.1.11",
     "@prisma/client": "^4.3.0",
     "@trpc/client": "^9.26.2",
     "@trpc/next": "^9.26.2",
@@ -21,7 +20,6 @@
     "@trpc/server": "^9.26.2",
     "bcrypt": "^5.0.1",
     "bootstrap": "^5.2.0",
-    "highlight.run": "^4.3.8",
     "iron-session": "^6.2.0",
     "jotai": "^1.8.0",
     "next": "~12.2.5",
