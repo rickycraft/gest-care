@@ -10,6 +10,10 @@ import TableRowPrev from 'components/preventivo/TableRowPrev'
 import { INVALID_ID } from 'utils/constants'
 import ButtonTooltip from 'components/utils/ButtonTooltip'
 
+// server side
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import { createSSG } from 'server/context'
+
 const parseId = (id: any) => {
   if (id == undefined || Array.isArray(id)) return INVALID_ID
   const numId = Number(id)
@@ -17,14 +21,45 @@ const parseId = (id: any) => {
   return numId
 }
 
-export default function Index() {
+const redirect = {
+  redirect: {
+    destination: '/preventivo/list', permanent: false,
+  }
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const id = parseId(context.query.id)
+  if (id == null) return redirect
+
+  const ssg = await createSSG(context.req.cookies)
+  const prev = await ssg.fetchQuery('preventivo.byId', { id })
+  if (prev == null) return redirect
+
+  await Promise.allSettled([
+    ssg.prefetchQuery('preventivo.row.list', { prevId: prev.id }),
+    ssg.prefetchQuery('prodotto.list', { listino: prev.listinoId }),
+    ssg.prefetchQuery('pers.list', { listino: prev.listinoId })
+  ])
+
+  return {
+    props: {
+      id,
+      idListino: prev.listinoId,
+      trpcState: ssg.dehydrate(),
+    }
+  }
+}
+
+export default function Index(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>,
+) {
   // handle query
   const router = useRouter()
-  const idPreventivo = parseId(router.query["id"])
+  const idPreventivo = props.id as number
+  const idListino = props.idListino as number
 
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
-  const [listinoId, setListinoId] = useState(INVALID_ID)
 
   const context = trpc.useContext()
   const preventivoRowCallback = {
@@ -35,10 +70,9 @@ export default function Index() {
       preventivoQuery.refetch()
       preventivoRowQuery.refetch()
     },
-    enabled: idPreventivo != INVALID_ID,
   }
-  const prodottiQuery = trpc.useQuery(['prodotto.list', { listino: listinoId }])
-  const persQuery = trpc.useQuery(['pers.list', { listino: listinoId }])
+  const prodottiQuery = trpc.useQuery(['prodotto.list', { listino: idListino }])
+  const persQuery = trpc.useQuery(['pers.list', { listino: idListino }])
   const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }])
   const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId: idPreventivo }])
   const preventivoRowInsert = trpc.useMutation('preventivo.row.insert', preventivoRowCallback)
@@ -50,16 +84,6 @@ export default function Index() {
       router.push('/preventivo/list')
     }
   })
-
-  useEffect(() => {
-    if (!preventivoQuery.isSuccess) return
-    if (!preventivoQuery.data) router.push('/preventivo/list')
-    else {
-      setListinoId(preventivoQuery.data.listinoId)
-      prodottiQuery.refetch()
-      persQuery.refetch()
-    }
-  }, [preventivoQuery.status])
 
   const locked = useMemo(() => preventivoQuery.data?.locked ?? true, [preventivoQuery.data])
 

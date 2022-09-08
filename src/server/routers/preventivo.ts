@@ -63,7 +63,7 @@ export const prevRouter = createProtectedRouter()
     resolve: async ({ input }) => {
       return await prisma.preventivo.findFirst({
         where: { id: input.id },
-        select: { ...prevSelect, rows: true }
+        select: prevSelect,
       })
     }
   })
