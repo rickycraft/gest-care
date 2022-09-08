@@ -27,6 +27,7 @@ export const rowRouter = createProtectedRouter()
     resolve: async ({ input }) => {
       const rows = await prisma.preventivoRow.findMany({
         where: { preventivo: { id: input.prevId } },
+        orderBy: { id: 'asc' },
       })
       return rows.map(row => ({
         id: row.id,
