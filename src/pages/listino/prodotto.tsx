@@ -2,8 +2,8 @@ import InsertRow from 'components/listino/InsertRow'
 import ModalListino from 'components/listino/ModalListino'
 import TableRow from 'components/listino/TableRow'
 import ErrorMessage from 'components/utils/ErrorMessage'
-import { useState } from 'react'
-import { Form, Spinner } from 'react-bootstrap'
+import { useMemo, useState } from 'react'
+import { Form } from 'react-bootstrap'
 import Table from 'react-bootstrap/Table'
 import { INVALID_ID } from 'utils/constants'
 import { trpc } from 'utils/trpc'
@@ -11,40 +11,40 @@ import { trpc } from 'utils/trpc'
 export default function Prodotto() {
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
-  const [listino, setListino] = useState(INVALID_ID)
+  const [listinoId, setListinoId] = useState(INVALID_ID)
 
   // trpc
   const trpcCallback = {
     onSuccess() { prodQuery.refetch() },
     onError() { setErrorMsg('Errore nella modifica del prodotto') }
   }
-  const prodQuery = trpc.useQuery(['prodotto.list', { listino }])
+  const prodQuery = trpc.useQuery(['prodotto.list', { listino: listinoId }])
   const listinoQuery = trpc.useQuery(['listino.list'])
   const prodottoInsert = trpc.useMutation('prodotto.insert', trpcCallback)
   const prodottoUpdate = trpc.useMutation('prodotto.update', trpcCallback)
   const prodottoDelete = trpc.useMutation('prodotto.delete', trpcCallback)
 
-  if (!prodQuery.isSuccess || !listinoQuery.isSuccess) return <Spinner animation="border" variant="primary" />
+  const listino = useMemo(() => listinoQuery.data?.find(el => el.id == listinoId), [listinoQuery.data, listinoId])
 
   return (
     <div className="container">
       {/* form dropdown per selezionare il listino */}
       <div className='d-flex mb-2'>
         <Form.Group className='me-2'>
-          <Form.Select value={listino} onChange={(event) => { setListino(Number(event.currentTarget.value)) }}>
+          <Form.Select value={listinoId} onChange={(event) => { setListinoId(Number(event.currentTarget.value)) }}>
             <option value={INVALID_ID}>Seleziona un listino</option>
-            {listinoQuery.data.map(element => (
+            {listinoQuery.data?.map(element => (
               <option key={element.id} value={element.id}>
                 {element.nome}
               </option>
             ))}
           </Form.Select>
         </Form.Group>
-        <ModalListino listinoId={listino} />
+        <ModalListino listino={listino} />
       </div>
 
       {/*Tabella che mostra i prodotti del listino selezionato*/}
-      <Table bordered hover hidden={listino == INVALID_ID} responsive className='bg-white'>
+      <Table bordered hover hidden={listinoId == INVALID_ID} responsive className='bg-white'>
         <thead>
           <tr>
             <th>Nome prodotto</th>
@@ -53,7 +53,7 @@ export default function Prodotto() {
           </tr>
         </thead>
         <tbody>
-          {prodQuery.data.map(prod => (
+          {prodQuery.data?.map(prod => (
             <TableRow
               key={prod.id}
               rowId={prod.id}
@@ -64,7 +64,7 @@ export default function Prodotto() {
             />
           ))}
           {/* riga per inserire un nuovo prodotto */}
-          <InsertRow listino={listino} addRow={prodottoInsert.mutate} />
+          <InsertRow listino={listinoId} addRow={prodottoInsert.mutate} />
         </tbody>
       </Table>
       <ErrorMessage message={errorMsg} />
