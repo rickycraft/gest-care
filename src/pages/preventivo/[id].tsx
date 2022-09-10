@@ -78,6 +78,7 @@ export default function Index(
   const preventivoDuplicate = trpc.useMutation('preventivo.duplicate', {
     onSuccess(data) {
       context.prefetchQuery(['preventivo.byId', { id: data.id }])
+      context.invalidateQueries(['preventivo.list'])
       router.push(`/preventivo/${data.id}`)
     }
   })
