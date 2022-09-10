@@ -25,8 +25,7 @@ export default function Pers() {
   const persDelete = trpc.useMutation('pers.delete', trpcCallback)
 
   const listino = useMemo(() => listinoQuery.data?.find(el => el.id == listinoId), [listinoQuery.data, listinoId])
-
-  // if (!listinoQuery.isSuccess) return <Spinner animation="border" variant="primary" />
+  const updateIdListino = (id: number) => setListinoId(id)
 
   return (
     <div className="container">
@@ -41,7 +40,7 @@ export default function Pers() {
             ))}
           </Form.Select>
         </Form.Group>
-        <ModalListino listino={listino} />
+        <ModalListino listino={listino} updateIdListino={updateIdListino} />
       </div>
       {/*Tabella che mostra i persotti del listino selezionato*/}
       <Table bordered hover hidden={listinoId == INVALID_ID} responsive className='bg-white'>

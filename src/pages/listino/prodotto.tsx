@@ -25,6 +25,7 @@ export default function Prodotto() {
   const prodottoDelete = trpc.useMutation('prodotto.delete', trpcCallback)
 
   const listino = useMemo(() => listinoQuery.data?.find(el => el.id == listinoId), [listinoQuery.data, listinoId])
+  const updateIdListino = (id: number) => setListinoId(id)
 
   return (
     <div className="container">
@@ -40,7 +41,7 @@ export default function Prodotto() {
             ))}
           </Form.Select>
         </Form.Group>
-        <ModalListino listino={listino} />
+        <ModalListino listino={listino} updateIdListino={updateIdListino} />
       </div>
 
       {/*Tabella che mostra i prodotti del listino selezionato*/}

@@ -46,7 +46,7 @@ export const listinoRouter = createProtectedRouter()
     }),
     async resolve({ input }) {
       try {
-        await prisma.listino.create({
+        return await prisma.listino.create({
           data: {
             nome: input.nome.trim(),
             fornitore: {
@@ -54,7 +54,8 @@ export const listinoRouter = createProtectedRouter()
                 id: input.fornitore,
               }
             }
-          }
+          },
+          select: { id: true }
         })
       } catch {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })

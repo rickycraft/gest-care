@@ -9,14 +9,21 @@ import { inferQueryOutput, trpc } from 'utils/trpc'
 
 export default function ModalListino({
     listino,
+    updateIdListino,
 }: {
     listino?: inferQueryOutput<'listino.list'>[0],
+    updateIdListino: (id: number) => void
 }) {
     const context = trpc.useContext()
     const trpcCallback = {
         onSuccess() { context.invalidateQueries(['listino.list']) }
     }
-    const listinoInsert = trpc.useMutation('listino.insert', trpcCallback)
+    const listinoInsert = trpc.useMutation('listino.insert', {
+        onSuccess(data) {
+            context.invalidateQueries(['listino.list'])
+            handleClose(data.id)
+        }
+    })
     const listinoUpdate = trpc.useMutation('listino.update', trpcCallback)
     const listinoDelete = trpc.useMutation('listino.delete', trpcCallback)
     const fornitoriQuery = trpc.useQuery(['fornitore.list'])
@@ -36,7 +43,10 @@ export default function ModalListino({
         }
     }, [listino])
 
-    const handleClose = () => setShow(false)
+    const handleClose = (id?: number) => {
+        if (id) updateIdListino(id)
+        setShow(false)
+    }
     const handleShow = () => setShow(true)
 
     return (
@@ -85,7 +95,7 @@ export default function ModalListino({
                     <Button variant='danger' hidden={isNew} onClick={() => {
                         if (listino == null) return
                         listinoDelete.mutate({ id: listino.id })
-                        handleClose()
+                        handleClose(INVALID_ID)
                     }}>
                         Elimina
                     </Button>
@@ -93,8 +103,10 @@ export default function ModalListino({
                         disabled={!isValid}
                         onClick={() => {
                             if (listino == null) listinoInsert.mutate({ nome: nomeListino, fornitore: fornitoreId })
-                            else listinoUpdate.mutate({ id: listino.id, nome: nomeListino })
-                            handleClose()
+                            else {
+                                listinoUpdate.mutate({ id: listino.id, nome: nomeListino })
+                                handleClose(listino.id)
+                            }
                         }}
                     >
                         {isNew ? 'Aggiungi' : 'Salva Modifiche'}
