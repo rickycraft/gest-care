@@ -1,11 +1,11 @@
+import { useAtom } from 'jotai'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { NavDropdown } from 'react-bootstrap'
 import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import { userAtom } from 'utils/atom'
-import { useAtom } from 'jotai'
-import { NavDropdown } from 'react-bootstrap'
-import { useRouter } from 'next/router'
 import { canEditUser } from 'utils/role'
 import Refresh from './utils/Refresh'
 
@@ -35,7 +35,7 @@ export default function Header() {
   if (emptyPages.includes(router.pathname)) return null
 
   return (
-    <Navbar bg="dark" variant="dark" expand="lg">
+    <Navbar bg="dark" variant="dark" expand="md">
       <Container fluid>
         <Navbar.Brand>Gest-Care</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
