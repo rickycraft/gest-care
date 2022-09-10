@@ -1,18 +1,20 @@
 import { useAtom } from 'jotai'
-import { userAtom } from 'utils/atom'
-import { useState } from 'react'
-import InputGroup from 'react-bootstrap/InputGroup'
-import Card from 'react-bootstrap/Card'
-import Button from 'react-bootstrap/Button'
-import Form from 'react-bootstrap/Form'
-import { FaUserCircle, FaKey } from "react-icons/fa"
 import dynamic from 'next/dynamic'
+import { useState } from 'react'
+import { Spinner } from 'react-bootstrap'
+import Button from 'react-bootstrap/Button'
+import Card from 'react-bootstrap/Card'
+import Form from 'react-bootstrap/Form'
+import InputGroup from 'react-bootstrap/InputGroup'
+import { FaKey, FaUserCircle } from "react-icons/fa"
+import { userAtom } from 'utils/atom'
 
 const ErrorMessage = dynamic(() => import('components/utils/ErrorMessage'), { ssr: false })
 
 export default function Login() {
   const [errorMsg, setErrorMsg] = useState('')
   const [, setUserAtom] = useAtom(userAtom)
+  const [isLoading, setLoading] = useState(false)
 
   const submit = (username: string, password: string) => {
     fetch('/api/auth/login', {
@@ -24,11 +26,13 @@ export default function Login() {
         setUserAtom(result)
         window.location.href = window.location.origin + '/preventivo/list'
       }).catch(() => setErrorMsg('Username o Passoword errati'))
+      .finally(() => setLoading(false))
   }
 
   return (
     <div className='d-flex justify-content-center' style={{ height: "70vh" }}>
       <Form onSubmit={(e) => {
+        setLoading(true)
         e.preventDefault()
         const elements = (e.target as HTMLFormElement).elements
         const username = elements.namedItem('username') as HTMLInputElement
@@ -56,7 +60,9 @@ export default function Login() {
               </Form.Control.Feedback>
             </InputGroup >
           </Form.Group>
-          <Button variant="primary" type="submit">Accedi</Button>
+          <Button variant="primary" type="submit" disabled={isLoading}>
+            {isLoading ? <Spinner animation='border' /> : 'Accedi'}
+          </Button>
           <ErrorMessage message={errorMsg} />
         </Card>
       </Form>
