@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
-import { Button, ButtonGroup, Form, Spinner } from 'react-bootstrap'
+import { Button, Form } from 'react-bootstrap'
 import { inferMutationInput, inferQueryOutput } from 'utils/trpc'
-import { MdCancel, MdSave, MdDelete, MdOutlineClear, MdOutlineCheck } from 'react-icons/md'
+import { MdCancel, MdOutlineUndo, MdSave, MdDelete, MdOutlineCheck } from 'react-icons/md'
 import { INVALID_ID } from 'utils/constants'
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 export default function TableRowPrev({
     row,
@@ -90,43 +91,51 @@ export default function TableRowPrev({
             {/*Gruppo di bottoni "edit" e "delete" per ogni riga prodotto
                 edit: modifica il prodotto della riga  (TODO)
                 delete: elimina il prodotto della riga*/}
-            <td>
+            <td hidden={locked}>
                 {isEditable ? (
-                    <ButtonGroup hidden={isNew || locked}>
-                        <Button name='EditButton' variant="outline-success" disabled={!isValid}
-                            onClick={() => {
-                                onClickEdit({ ...newRow, id: row.id })
-                                setIsEditable(false)
-                            }}>
-                            <MdOutlineCheck />
-                        </Button>
-                        <Button name='UndoButton' variant="outline-secondary"
-                            onClick={() => {
-                                resetRow()
-                                setIsEditable(false)
-                            }}><MdOutlineClear />
-                        </Button>
-                    </ButtonGroup>
+                    <div className='d-flex flex-nowrap'>
+                        <ButtonTooltip tooltip="salva modifiche">
+                            <Button name='EditButton' variant="outline-success  me-1 me-lg-2" disabled={!isValid} hidden={isNew}
+                                onClick={() => {
+                                    onClickEdit({ ...newRow, id: row.id })
+                                    setIsEditable(false)
+                                }}>
+                                <MdOutlineCheck />
+                            </Button>
+                        </ButtonTooltip>
+                        <ButtonTooltip tooltip="annulla modifiche">
+                            <Button name='UndoButton' variant="outline-secondary" hidden={isNew}
+                                onClick={() => { resetRow(); setIsEditable(false) }}>
+                                <MdOutlineUndo />
+                            </Button>
+                        </ButtonTooltip>
+                    </div>
                 ) : (
                     <div className="d-inline-block">
-                        <Button name="DeleteButton" variant="outline-danger" hidden={isNew || locked}
-                            onClick={() => onClickDelete(row.id)}> <MdDelete />
-                        </Button>
+                        <ButtonTooltip tooltip="rimuovi prodotto">
+                            <Button name="DeleteButton" variant="outline-danger" hidden={isNew} onClick={() => onClickDelete(row.id)}>
+                                <MdDelete />
+                            </Button>
+                        </ButtonTooltip>
                     </div>
                 )}
-                <ButtonGroup hidden={!isNew || locked}>
-                    <Button name="InsertButton" variant="outline-success" disabled={!isValid}
-                        onClick={() => {
-                            onClickInsert(newRow)
-                            resetRow()
-                        }}>
-                        SALVA<MdSave className='ms-1' />
-                    </Button>
-                    <Button name='UndoButton' variant="outline-secondary" onClick={() => resetRow()}>
-                        UNDO<MdCancel className='ms-1' />
-                    </Button>
-                </ButtonGroup>
+                <div className='d-flex flex-nowrap'>
+                    <ButtonTooltip tooltip="salva">
+                        <Button name="InsertButton" variant="outline-success  me-1 me-lg-2"
+                            disabled={!isValid} hidden={!isNew}
+                            onClick={() => { onClickInsert(newRow); resetRow() }}>
+                            <MdSave />
+                        </Button>
+                    </ButtonTooltip>
+                    <ButtonTooltip tooltip="pulisci">
+                        <Button name='UndoButton' variant="outline-secondary"
+                            hidden={!isNew}
+                            onClick={() => resetRow()}>
+                            <MdCancel />
+                        </Button>
+                    </ButtonTooltip>
+                </div>
             </td>
-        </tr >
+        </tr>
     )
 }

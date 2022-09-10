@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react'
-import { Button, ButtonGroup, Form } from 'react-bootstrap'
-import { MdCancel, MdSave } from 'react-icons/md'
+import { Button, Form } from 'react-bootstrap'
+import { MdCancel, MdOutlineUndo, MdSave } from 'react-icons/md'
 import { trpc } from 'utils/trpc'
+
+import ButtonTooltip from 'components/utils/ButtonTooltip'
+
 
 export default function TotReale(
   {
@@ -54,21 +57,25 @@ export default function TotReale(
         </td>
         <td>{tot.toFixed(2)}</td>
         <td>
-          <ButtonGroup>
-            <Button variant="outline-success" disabled={!isEdited}
-              onClick={() => ordineEdit.mutate({ ordineId, totSC: newSc, totComm: newComm, totRappre: newRappre })}
-            >SALVA<MdSave className='ms-1' /></Button>
-            <Button variant="outline-secondary" disabled={!isEdited}
-              onClick={() => {
+          <span className='d-flex flex-nowrap'>
+            <ButtonTooltip tooltip="salva">
+              <Button variant="outline-success  me-1 me-lg-2" hidden={!isEdited} onClick={() =>
+                ordineEdit.mutate({ ordineId, totSC: newSc, totComm: newComm, totRappre: newRappre })} >
+                <MdSave />
+              </Button>
+            </ButtonTooltip>
+            <ButtonTooltip tooltip="annulla">
+              <Button variant="outline-secondary" hidden={!isEdited} onClick={() => {
                 setSc(sc)
                 setComm(comm)
                 setRappre(rappre)
-              }}
-            >UNDO<MdCancel className='ms-1' /></Button>
-          </ButtonGroup>
+              }}>
+                <MdOutlineUndo />
+              </Button>
+            </ButtonTooltip>
+          </span>
         </td>
       </tr>
     </>
-
   )
 }

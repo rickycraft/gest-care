@@ -1,7 +1,7 @@
 // trpc
-import { withTRPC } from '@trpc/next'
+import { httpLink } from '@trpc/client/links/httpLink'
 import { loggerLink } from '@trpc/client/links/loggerLink'
-import { httpBatchLink } from '@trpc/client/links/httpBatchLink'
+import { withTRPC } from '@trpc/next'
 import superjson from 'superjson'
 // bootstrap
 import 'bootstrap/dist/css/bootstrap.css'
@@ -9,19 +9,14 @@ import SSRProvider from 'react-bootstrap/SSRProvider'
 // google analytics
 import { GoogleAnalytics } from 'nextjs-google-analytics'
 // next
-import type { AppProps } from 'next/app'
-import { AppRouter } from 'server/routers/_app'
-import Head from 'next/head'
-import { useEffect } from 'react'
 import Layout from 'components/Layout'
+import type { AppProps } from 'next/app'
+import Head from 'next/head'
+import { AppRouter } from 'server/routers/_app'
 
 // dynamic(() => require('bootstrap/dist/js/bootstrap'), { ssr: false })
 
 function MyApp({ Component, pageProps }: AppProps) {
-
-  useEffect(() => {
-    import('../components/utils/Highlight').then(h => h.setup())
-  }, [])
 
   return (
     <>
@@ -57,9 +52,8 @@ export default withTRPC<AppRouter>({
         loggerLink({
           enabled: (opts) => process.env.NODE_ENV === 'development'
         }),
-        httpBatchLink({
+        httpLink({
           url: '/api/trpc',
-          maxBatchSize: 10,
         }),
       ],
       transformer: superjson,

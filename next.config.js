@@ -13,6 +13,16 @@ module.exports = {
         destination: '/preventivo/list',
         permanent: false,
       },
+      {
+        source: '/ordine',
+        destination: '/ordine/list',
+        permanent: false,
+      },
+      {
+        source: '/',
+        destination: '/preventivo/list',
+        permanent: false,
+      },
     ]
   },
 }

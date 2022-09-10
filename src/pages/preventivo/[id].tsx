@@ -1,60 +1,85 @@
-import { trpc } from 'utils/trpc'
-import Table from 'react-bootstrap/Table'
-import { useEffect, useMemo, useState } from 'react'
-import { Button, Card, Spinner } from 'react-bootstrap'
-import { useRouter } from 'next/router'
-import ErrorMessage from 'components/utils/ErrorMessage'
 import ModalOptions from 'components/preventivo/ModalOptionsPreventivo'
-import { MdContentCopy, MdDownload, MdGridOn } from 'react-icons/md'
 import TableRowPrev from 'components/preventivo/TableRowPrev'
+import ButtonTooltip from 'components/utils/ButtonTooltip'
+import ErrorMessage from 'components/utils/ErrorMessage'
+import { useRouter } from 'next/router'
+import { useMemo, useState } from 'react'
+import { Button, Card, Spinner } from 'react-bootstrap'
+import Table from 'react-bootstrap/Table'
+import { MdContentCopy, MdDownload, MdGridOn } from 'react-icons/md'
 import { INVALID_ID } from 'utils/constants'
+import { trpc } from 'utils/trpc'
+
+// server side
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import { createSSG } from 'server/context'
 
 const parseId = (id: any) => {
-  if (id == undefined || Array.isArray(id)) return null
+  if (id == undefined || Array.isArray(id)) return INVALID_ID
   const numId = Number(id)
-  if (isNaN(numId)) return null
-  return numId
+  return (isNaN(numId)) ? null : numId
 }
 
-export default function Index() {
+const redirect = {
+  redirect: {
+    destination: '/preventivo/list', permanent: false,
+  }
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const id = parseId(context.query.id)
+  if (id == null) return redirect
+
+  const ssg = await createSSG(context.req.cookies)
+  const prev = await ssg.fetchQuery('preventivo.byId', { id })
+  if (prev == null) return redirect
+
+  await Promise.allSettled([
+    ssg.prefetchQuery('prodotto.list', { listino: prev.listinoId }),
+    ssg.prefetchQuery('pers.list', { listino: prev.listinoId })
+  ])
+
+  return {
+    props: {
+      id,
+      idListino: prev.listinoId,
+      trpcState: ssg.dehydrate(),
+    }
+  }
+}
+
+export default function Index(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>,
+) {
   // handle query
   const router = useRouter()
-  const idPreventivo = useMemo(() => parseId(router.query.id) ?? INVALID_ID, [router.query])
+  const idPreventivo = props.id as number
+  const idListino = props.idListino as number
+
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
-  const [listinoId, setListinoId] = useState(INVALID_ID)
 
   const context = trpc.useContext()
   const preventivoRowCallback = {
     onError() {
-      setErrorMsg('Errore riga preventivo')
+      setErrorMsg('Errore modifica prodotto')
     },
     onSuccess() {
-      preventivoQuery.refetch()
       preventivoRowQuery.refetch()
     },
-    enabled: idPreventivo != INVALID_ID,
   }
-  const prodottiQuery = trpc.useQuery(['prodotto.list', { listino: listinoId }], { enabled: listinoId != INVALID_ID })
-  const persQuery = trpc.useQuery(['pers.list', { listino: listinoId }], { enabled: listinoId != INVALID_ID })
-  const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }], {
-    onSettled(data, error) {
-      if (error || !data) router.push('/preventivo/list')
-      else {
-        setListinoId(data.listinoId)
-        prodottiQuery.refetch()
-        persQuery.refetch()
-      }
-    },
-  })
+  const prodottiQuery = trpc.useQuery(['prodotto.list', { listino: idListino }])
+  const persQuery = trpc.useQuery(['pers.list', { listino: idListino }])
+  const preventivoQuery = trpc.useQuery(['preventivo.byId', { id: idPreventivo }])
   const preventivoRowQuery = trpc.useQuery(['preventivo.row.list', { prevId: idPreventivo }])
   const preventivoRowInsert = trpc.useMutation('preventivo.row.insert', preventivoRowCallback)
   const preventivoRowUpdate = trpc.useMutation('preventivo.row.update', preventivoRowCallback)
   const preventivoRowDelete = trpc.useMutation('preventivo.row.delete', preventivoRowCallback)
   const preventivoDuplicate = trpc.useMutation('preventivo.duplicate', {
-    onSuccess() {
+    onSuccess(data) {
+      context.prefetchQuery(['preventivo.byId', { id: data.id }])
       context.invalidateQueries(['preventivo.list'])
-      router.push('/preventivo/list')
+      router.push(`/preventivo/${data.id}`)
     }
   })
 
@@ -64,32 +89,45 @@ export default function Index() {
     return <Spinner animation="border" />
   }
 
+  if (prodottiQuery.data.length == 0 || persQuery.data.length == 0) {
+    return <Spinner animation="border" />
+  }
+
   return (
     <Card body>
       <div className='d-flex align-items-center justify-content-between'>
         <h1>{preventivoQuery.data?.nome.toUpperCase()}</h1>
-        <span className='d-flex'>
-          <Button variant='success' className='me-2 p-2 p-lg-3 rounded-circle'
-            onClick={
-              () => router.push({
-                pathname: '/preventivo/excel',
-                query: { id: preventivoQuery.data?.id },
-              })}
-          ><MdGridOn /></Button>
-          <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
-            onClick={
-              () => router.push({
-                pathname: '/preventivo/pdf',
-                query: { id: preventivoQuery.data?.id },
-              })}
-          ><MdDownload /></Button>
-          <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
-            onClick={() => {
-              if (preventivoQuery.data == null) return
-              preventivoDuplicate.mutate({ id: preventivoQuery.data.id })
-            }}
-          ><MdContentCopy /></Button>
-        </span>
+        <div className='d-flex'>
+          <ButtonTooltip tooltip="exporta in excel">
+            <Button variant='success' className='me-2 p-2 p-lg-3 rounded-circle'
+              onClick={
+                () => router.push({
+                  pathname: '/preventivo/excel',
+                  query: { id: preventivoQuery.data?.id },
+                })}
+            ><MdGridOn />
+            </Button>
+          </ButtonTooltip>
+          <ButtonTooltip tooltip="esporta in pdf">
+            <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
+              onClick={
+                () => router.push({
+                  pathname: '/preventivo/pdf',
+                  query: { id: preventivoQuery.data?.id },
+                })}
+            ><MdDownload />
+            </Button>
+          </ButtonTooltip>
+          <ButtonTooltip tooltip="duplica">
+            <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
+              onClick={() => {
+                if (preventivoQuery.data == null) return
+                preventivoDuplicate.mutate({ id: preventivoQuery.data.id })
+              }}
+            ><MdContentCopy />
+            </Button>
+          </ButtonTooltip>
+        </div>
       </div>
       <p>ultima modifica alle {preventivoQuery.data?.editedAt.toLocaleString()}</p>
       {/*Tabella che mostra i prodotti del preventivo selezionato*/}

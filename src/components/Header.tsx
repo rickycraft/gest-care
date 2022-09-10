@@ -1,12 +1,11 @@
+import { useAtom } from 'jotai'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { NavDropdown } from 'react-bootstrap'
 import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
-import { useEffect, useMemo, useState } from 'react'
 import { userAtom } from 'utils/atom'
-import { useAtom } from 'jotai'
-import { NavDropdown } from 'react-bootstrap'
-import { useRouter } from 'next/router'
 import { canEditUser } from 'utils/role'
 import Refresh from './utils/Refresh'
 
@@ -23,7 +22,7 @@ const basicMenuLinks = [
   { title: 'Prodotti', path: '/listino/prodotto', hidden: true },
   { title: 'Perso', path: '/listino/personalizzazione', hidden: true },
   { title: 'Preventivi', path: '/preventivo/list', hidden: false },
-  { title: 'Ordini', path: '/ordine/list', hidden: false },
+  { title: 'Buste', path: '/ordine/list', hidden: false },
 ]
 
 const emptyPages = ["/auth/login", "/auth/logout", "/preventivo/pdf"]
@@ -36,7 +35,7 @@ export default function Header() {
   if (emptyPages.includes(router.pathname)) return null
 
   return (
-    <Navbar bg="dark" variant="dark" expand="lg">
+    <Navbar bg="dark" variant="dark" expand="md">
       <Container fluid>
         <Navbar.Brand>Gest-Care</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />

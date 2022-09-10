@@ -1,7 +1,7 @@
-import { createProtectedRouter } from "server/createRouter"
-import { z } from 'zod'
-import { prisma } from 'server/prisma'
 import { TRPCError } from "@trpc/server"
+import { createProtectedRouter } from "server/createRouter"
+import { prisma } from 'server/prisma'
+import { z } from 'zod'
 
 export const ordineById = async (id: number) => {
   const ordine = await prisma.ordine.findFirst({
@@ -12,7 +12,7 @@ export const ordineById = async (id: number) => {
       totRappre: true,
       totComm: true,
       preventivo: {
-        select: { nome: true }
+        select: { id: true, nome: true }
       },
       OrdineRow: {
         select: {
@@ -91,12 +91,15 @@ export const ordineRouter = createProtectedRouter()
       if (!ordine) throw new TRPCError({ code: "BAD_REQUEST" })
       return {
         ...ordine,
+        totSC: ordine.totSC.toNumber(),
+        totRappre: ordine.totRappre.toNumber(),
+        totComm: ordine.totComm.toNumber(),
         OrdineRow: ordine.OrdineRow.map(row => ({
           ...row,
           costo: row.costo.toNumber(),
           sc: row.sc.toNumber(),
           comm: row.comm.toNumber(),
-          rappre: row.comm.toNumber(),
+          rappre: row.rappre.toNumber(),
         })),
       }
     }
@@ -112,12 +115,10 @@ export const ordineRouter = createProtectedRouter()
   .query("list", {
     input: z.any(),
     async resolve() {
-      return await prisma.ordine.findMany({
+      const ordineList = await prisma.ordine.findMany({
         select: {
           id: true,
           totSC: true,
-          totRappre: true,
-          totComm: true,
           preventivo: {
             select: { id: true, nome: true }
           }
@@ -127,6 +128,10 @@ export const ordineRouter = createProtectedRouter()
           id: "desc"
         }
       })
+      return ordineList.map(o => ({
+        ...o,
+        sc: o.totSC.toNumber(),
+      }))
     }
   })
   .mutation("create", {

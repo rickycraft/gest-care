@@ -1,13 +1,13 @@
-import { createProtectedRouter } from "server/createRouter"
-import { z } from 'zod'
-import { prisma } from 'server/prisma'
 import { TRPCError } from "@trpc/server"
+import { createProtectedRouter } from "server/createRouter"
+import { prisma } from 'server/prisma'
+import { z } from 'zod'
 
 export const listinoRouter = createProtectedRouter()
   .query("list", {
     input: z.any(),
     async resolve() {
-      const listni = await prisma.listino.findMany({
+      const listini = await prisma.listino.findMany({
         where: {},
         select: {
           id: true,
@@ -16,12 +16,11 @@ export const listinoRouter = createProtectedRouter()
           fornitore: true,
         },
         orderBy: {
-          nome: "asc",
+          id: "desc",
         },
         take: 5,
       })
-      if (!listni) throw new TRPCError({ code: "NOT_FOUND" })
-      return listni
+      return listini
     }
   })
   .query("byId", {
@@ -47,7 +46,7 @@ export const listinoRouter = createProtectedRouter()
     }),
     async resolve({ input }) {
       try {
-        await prisma.listino.create({
+        return await prisma.listino.create({
           data: {
             nome: input.nome.trim(),
             fornitore: {
@@ -55,7 +54,8 @@ export const listinoRouter = createProtectedRouter()
                 id: input.fornitore,
               }
             }
-          }
+          },
+          select: { id: true }
         })
       } catch {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" })

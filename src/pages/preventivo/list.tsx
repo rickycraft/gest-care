@@ -1,67 +1,87 @@
-import { trpc } from 'utils/trpc'
-import React, { useState } from 'react'
-import { Button, Card, Spinner } from 'react-bootstrap'
-import ModalEdit from 'components/preventivo/ModalEditPreventivo'
-import { useRouter } from 'next/router'
 import ModalDelete from 'components/preventivo/ModalDeletePreventivo'
-import { MdCreate, MdDeleteOutline, MdDownload, MdLock, MdLockOpen } from 'react-icons/md'
+import ModalEdit from 'components/preventivo/ModalEditPreventivo'
 import ModalLock from 'components/preventivo/ModalLockPreventivo'
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 import { useAtom } from 'jotai'
+import { useRouter } from 'next/router'
+import { useMemo, useState } from 'react'
+import { Button, Card, Spinner } from 'react-bootstrap'
+import { MdCreate, MdDelete, MdLock, MdLockOpen } from 'react-icons/md'
 import { userAtom } from 'utils/atom'
+import { INVALID_ID } from 'utils/constants'
 import { canUnlockPreventivo } from 'utils/role'
-
-const invalidId = -1
+import { trpc } from 'utils/trpc'
 
 export default function List() {
   const router = useRouter()
   const [user,] = useAtom(userAtom)
   const preventiviQuery = trpc.useQuery(['preventivo.list'])
 
-  const [prevId, setPrevId] = useState(invalidId)
-  const [isPrevLock, setIsPrevLock] = useState(false)
-  const [showEdit, setShowEdit] = useState(false)
-  const [showDelete, setShowDelete] = useState(false)
-  const [showLock, setShowLock] = useState(false)
+  const [prevId, setPrevId] = useState(INVALID_ID)
+  const [showEdit, setShowEdit] = useState(0)
+  const [showDelete, setShowDelete] = useState(0)
+  const [showLock, setShowLock] = useState(0)
 
-  const openEdit = () => setShowEdit(!showEdit)
-  const openDelete = () => setShowDelete(!showDelete)
-  const openLock = () => setShowLock(!showLock)
-  const openModal = (id: number, locked: boolean, openFn: () => void) => {
+  const preventivo = useMemo(() => preventiviQuery.data?.find(el => el.id == prevId), [prevId])
+
+  const openEdit = (id: number) => {
     setPrevId(id)
-    setIsPrevLock(locked)
-    openFn()
+    setShowEdit(showEdit + 1)
+  }
+  const openDelete = (id: number) => {
+    setPrevId(id)
+    setShowDelete(showDelete + 1)
+  }
+  const openLock = (id: number) => {
+    setPrevId(id)
+    setShowLock(showLock + 1)
   }
 
-  if (!preventiviQuery.isSuccess) return <Spinner animation="border" />
+  const [isLoading, setLoading] = useState(false)
 
   return (
     <>
       <div className='mb-3'>
-        {preventiviQuery.data.map((prev) => (
+        {preventiviQuery.data?.map((prev) => (
           <Card key={prev.id} className='my-3'>
             <Card.Body>
-              <Card.Title onClick={() => router.push(`/preventivo/${prev.id}`)}>{prev.nome}</Card.Title>
-              <Card.Text className='mb-0 d-flex justify-content-between flex-wrap'>
+              <Card.Title onClick={() => {
+                setTimeout(() => setLoading(true), 250)
+                router.push(`/preventivo/${prev.id}`)
+              }}>
+                {isLoading ? <Spinner animation="border" /> : prev.nome}
+              </Card.Title>
+              <div className='mb-0 d-flex justify-content-between flex-wrap'>
                 <span className='d-flex flex-nowrap'>{prev.scuola} - {prev.listino.nome}</span>
                 <span className='d-flex flex-nowrap'>
                   {prev.locked && canUnlockPreventivo(user.role) && (
-                    <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}><MdLockOpen /></Button>
+                    <ButtonTooltip tooltip="sblocca">
+                      <Button variant='outline-secondary' className='me-2' onClick={() => openLock(prev.id)}>
+                        <MdLockOpen />
+                      </Button>
+                    </ButtonTooltip>
                   )}
                   {prev.locked ? (null) : (
                     <>
-                      <Button variant='secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}>
-                        <MdLock />
-                      </Button>
-                      <Button variant='info' className='me-2' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
-                        <MdCreate />
-                      </Button>
-                      <Button variant='danger' onClick={() => openModal(prev.id, prev.locked, openDelete)}>
-                        <MdDeleteOutline />
-                      </Button>
+                      <ButtonTooltip tooltip="blocca">
+                        <Button variant='outline-secondary' className='me-2' onClick={() => openLock(prev.id)}>
+                          <MdLock />
+                        </Button>
+                      </ButtonTooltip>
+                      <ButtonTooltip tooltip="modifica">
+                        <Button variant='outline-info' className='me-2' onClick={() => openEdit(prev.id)}>
+                          <MdCreate />
+                        </Button>
+                      </ButtonTooltip>
+                      <ButtonTooltip tooltip="elimina">
+                        <Button variant='outline-danger' onClick={() => openDelete(prev.id)}>
+                          <MdDelete />
+                        </Button>
+                      </ButtonTooltip>
                     </>
                   )}
                 </span>
-              </Card.Text>
+              </div>
             </Card.Body>
             <Card.Footer>
               <>modificato l&apos;ultima volta da: {prev.lastEditedBy.username}, alle {prev.editedAt.toLocaleString()}</>
@@ -70,9 +90,16 @@ export default function List() {
         ))
         }
       </div>
-      <ModalEdit preventivoId={prevId} showModal={showEdit} />
-      <ModalDelete preventivoId={prevId} showModal={showDelete} />
-      <ModalLock preventivoId={prevId} showModal={showLock} isLock={isPrevLock} />
+      <div className='d-flex justify-content-end'>
+        <ButtonTooltip tooltip="aggiungi preventivo">
+          <Button variant="primary" size='lg' className="rounded-circle" onClick={() => openEdit(0)}>+</Button>
+        </ButtonTooltip>
+      </div>
+      {prevId != INVALID_ID && (<>
+        <ModalEdit preventivo={preventivo} showModal={showEdit} />
+        <ModalDelete preventivo={preventivo} showModal={showDelete} />
+        <ModalLock preventivo={preventivo} showModal={showLock} />
+      </>)}
     </>
   )
 }

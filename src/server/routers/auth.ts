@@ -9,6 +9,7 @@ import bcrypt from 'bcrypt'
 const defaultUserSelect = Prisma.validator<Prisma.UserSelect>()({
   id: true,
   username: true,
+  role: true,
 })
 
 export const authRouter = createProtectedRouter()
@@ -49,29 +50,3 @@ export const authRouter = createProtectedRouter()
       }
     }
   })
-
-  // })
-
-/*
-  const _user = await prisma.user.findFirst({ where: { username: cred.data.username } })
-// hash password
-try {
-  const hash = await bcrypt.hash(cred.data.password, 10)
-  const data = {
-    username: cred.data.username,
-    password: hash,
-    role: cred.data.role,
-  }
-  var user: User
-  if (_user === null) {
-    user = await prisma.user.create({ data })
-  } else {
-    user = await prisma.user.update({
-      where: { id: _user.id },
-      data,
-    })
-  }
-  res.status(200).end()
-} catch {
-  res.status(500).end()
-}*/
