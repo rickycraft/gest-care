@@ -40,7 +40,6 @@ export default function ModalEdit({
             setNomePreventivo('')
             setScuola('')
         }
-        setShow(true)
     }, [preventivo])
     useEffect(() => setShow(true), [showModal])
 

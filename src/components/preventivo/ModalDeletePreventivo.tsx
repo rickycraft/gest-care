@@ -1,32 +1,27 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
-import { trpc } from 'utils/trpc'
-
-const invalidId = -1
+import { inferQueryOutput, trpc } from 'utils/trpc'
 
 export default function ModalDelete({
-  preventivoId = invalidId,
+  preventivo,
   showModal,
 }: {
-  preventivoId?: number,
-  showModal: boolean
+  preventivo?: inferQueryOutput<'preventivo.list'>[0],
+  showModal: boolean,
 }) {
   const [show, setShow] = useState(false)
 
   const context = trpc.useContext()
   const preventivoDelete = trpc.useMutation('preventivo.delete', {
     onSuccess() {
-      context.invalidateQueries(['preventivo.byId', { id: preventivoId }])
       context.invalidateQueries(['preventivo.list'])
       setShow(false)
     }
   })
 
-  useEffect(() => {
-    if (preventivoId === invalidId) return
-    setShow(true)
-  }, [showModal])
+  useEffect(() => setShow(true), [showModal])
+  if (!preventivo) return null
 
   return (
     <>
@@ -36,9 +31,7 @@ export default function ModalDelete({
         </Modal.Body>
         <Modal.Footer>
           <Button variant='danger'
-            onClick={() => {
-              preventivoDelete.mutate({ id: preventivoId })
-            }}
+            onClick={() => preventivoDelete.mutate({ id: preventivo.id })}
           >
             Conferma
           </Button>

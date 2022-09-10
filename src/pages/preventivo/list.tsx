@@ -21,7 +21,6 @@ export default function List() {
   const preventiviQuery = trpc.useQuery(['preventivo.list'])
 
   const [prevId, setPrevId] = useState(invalidId)
-  const [isPrevLock, setIsPrevLock] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [showLock, setShowLock] = useState(false)
@@ -32,12 +31,13 @@ export default function List() {
     setPrevId(id)
     setShowEdit(!showEdit)
   }
-  const openDelete = () => setShowDelete(!showDelete)
-  const openLock = () => setShowLock(!showLock)
-  const openModal = (id: number, openFn: () => void, locked: boolean = false) => {
+  const openDelete = (id: number) => {
     setPrevId(id)
-    setIsPrevLock(locked)
-    openFn()
+    setShowDelete(!showDelete)
+  }
+  const openLock = (id: number) => {
+    setPrevId(id)
+    setShowLock(!showLock)
   }
 
   const [isLoading, setLoading] = useState(false)
@@ -61,8 +61,8 @@ export default function List() {
                 <span className='d-flex flex-nowrap'>{prev.scuola} - {prev.listino.nome}</span>
                 <span className='d-flex flex-nowrap'>
                   {prev.locked && canUnlockPreventivo(user.role) && (
-                    <ButtonTooltip tooltip="Sblocca">
-                      <Button variant='outline-secondary' className='me-2' onClick={() => openModal(prev.id, openLock, prev.locked)}>
+                    <ButtonTooltip tooltip="sblocca">
+                      <Button variant='outline-secondary' className='me-2' onClick={() => openLock(prev.id)}>
                         <MdLockOpen />
                       </Button>
                     </ButtonTooltip>
@@ -70,7 +70,7 @@ export default function List() {
                   {prev.locked ? (null) : (
                     <>
                       <ButtonTooltip tooltip="blocca">
-                        <Button variant='outline-secondary' className='me-2' onClick={() => openModal(prev.id, openLock)}>
+                        <Button variant='outline-secondary' className='me-2' onClick={() => openLock(prev.id)}>
                           <MdLock />
                         </Button>
                       </ButtonTooltip>
@@ -80,7 +80,7 @@ export default function List() {
                         </Button>
                       </ButtonTooltip>
                       <ButtonTooltip tooltip="elimina">
-                        <Button variant='outline-danger' onClick={() => openModal(prev.id, openDelete)}>
+                        <Button variant='outline-danger' onClick={() => openDelete(prev.id)}>
                           <MdDelete />
                         </Button>
                       </ButtonTooltip>
@@ -101,9 +101,11 @@ export default function List() {
           <Button variant="primary" size='lg' className="rounded-circle" onClick={() => openEdit(0)}>+</Button>
         </ButtonTooltip>
       </div>
-      {prevId != INVALID_ID && <ModalEdit preventivo={preventivo} showModal={showEdit} />}
-      <ModalDelete preventivoId={prevId} showModal={showDelete} />
-      <ModalLock preventivoId={prevId} showModal={showLock} isLock={isPrevLock} />
+      {prevId != INVALID_ID && (<>
+        <ModalEdit preventivo={preventivo} showModal={showEdit} />
+        <ModalDelete preventivo={preventivo} showModal={showDelete} />
+        <ModalLock preventivo={preventivo} showModal={showLock} />
+      </>)}
     </>
   )
 }
