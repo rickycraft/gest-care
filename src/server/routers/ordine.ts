@@ -1,7 +1,7 @@
-import { createProtectedRouter } from "server/createRouter"
-import { z } from 'zod'
-import { prisma } from 'server/prisma'
 import { TRPCError } from "@trpc/server"
+import { createProtectedRouter } from "server/createRouter"
+import { prisma } from 'server/prisma'
+import { z } from 'zod'
 
 export const ordineById = async (id: number) => {
   const ordine = await prisma.ordine.findFirst({
@@ -12,7 +12,7 @@ export const ordineById = async (id: number) => {
       totRappre: true,
       totComm: true,
       preventivo: {
-        select: { nome: true }
+        select: { id: true, nome: true }
       },
       OrdineRow: {
         select: {

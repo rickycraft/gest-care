@@ -47,9 +47,7 @@ export default function Index(
   const router = useRouter()
   const idOrdine = props.idOrdine as number
 
-  const ordineQuery = trpc.useQuery(['ordine.byId', { id: idOrdine }], {
-    enabled: idOrdine !== invalidId,
-  })
+  const ordineQuery = trpc.useQuery(['ordine.byId', { id: idOrdine }])
   const totalsQuery = trpc.useQuery(['ordine.totals', { id: idOrdine }])
   const ordineEdit = trpc.useMutation(['ordine.editRow'], {
     onSuccess: () => {
@@ -58,11 +56,7 @@ export default function Index(
     },
   })
 
-  const editRow = (id: number, quantity: number) => {
-    ordineEdit.mutate({ rowId: id, quantity })
-  }
-
-  if (!ordineQuery.isSuccess || !totalsQuery.isSuccess) return <Spinner animation="border" />
+  if (!ordineQuery.isSuccess) return <Spinner animation="border" />
 
   return (
     <Card body>
@@ -81,58 +75,50 @@ export default function Index(
           </ButtonTooltip>
           <ButtonTooltip tooltip="apri preventivo">
             <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
-              onClick={
-                () => router.push({
-                  pathname: `/preventivo/${ordineQuery.data.id}`,
-                })}
+              onClick={() => router.push(`/preventivo/${ordineQuery.data.preventivo.id}`)}
             ><MdReplyAll style={{ transform: "scaleX(-1)" }} />
             </Button>
           </ButtonTooltip>
         </span>
       </div>
-      <style type="text/css">
-        {`
-            .table:not(thead){
-              display: block;
-              max-height: 60vh;
-              overflow-y: auto;
-            }
-            .table thead tr{
-              position: sticky;
-              top: 0;
-              background-color: white;
-              border: solid; border-width: 1px 1px;
-              border-color: #dee2e6;
-             }
-             .table thead tr th{
-              border: solid; border-width: 0 1px;
-              border-color: #dee2e6;
-             }
-            tfoot {
-              background-color: white;
-              position: sticky;
-              bottom: 0;
-            }
+      <style type="text/css">{`
+        .table:not(thead){
+          display: block;
+          max-height: 60vh;
+          overflow-y: auto;
+        }
+        .table thead tr{
+          position: sticky;
+          top: 0;
+          background-color: white;
+          border: solid; border-width: 1px 1px;
+          border-color: #dee2e6;
           }
-          ` }
-      </style>
+          .table thead tr th{
+          border: solid; border-width: 0 1px;
+          border-color: #dee2e6;
+          }
+        tfoot {
+          background-color: white;
+          position: sticky;
+          bottom: 0;
+        }
+        .t-number {
+          width: 8%;
+          min-width: 5em;
+        }
+        .t-string {
+          min-width: 8em;
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        `}</style>
       <Table bordered responsive className='w-100'>
-        <style type="text/css"> {`
-          .t-number {
-            width: 8%;
-            min-width: 5em;
-          }
-          .t-string {
-            min-width: 8em;
-          }
-          .btn {
-              display: flex;
-              align-items: center;
-              flex-wrap: nowrap;
-              margin-left: auto;
-              margin-right: auto;
-          }
-        `} </style>
         <thead>
           <tr>
             <th className='t-string'>Prodotto</th>
@@ -155,11 +141,11 @@ export default function Index(
               sc={row.sc}
               comm={row.comm}
               rappre={row.rappre}
-              onChange={editRow}
+              onChange={ordineEdit.mutate}
             />
           ))}
         </tbody>
-        <tfoot>
+        {totalsQuery.isSuccess && <tfoot>
           <tr>
             <td>Tot Calcolato</td>
             <td>{totalsQuery.data.qt}</td>
@@ -180,7 +166,7 @@ export default function Index(
             comm={Number(ordineQuery.data.totComm)}
             rappre={Number(ordineQuery.data.totRappre)}
           />
-        </tfoot>
+        </tfoot>}
       </Table>
     </Card>
   )

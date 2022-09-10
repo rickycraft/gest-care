@@ -1,7 +1,8 @@
 import ButtonTooltip from 'components/utils/ButtonTooltip'
 import { useEffect, useMemo, useState } from 'react'
 import { Button, Form } from 'react-bootstrap'
-import { MdOutlineUndo, MdOutlineCheck } from 'react-icons/md'
+import { MdOutlineCheck, MdOutlineUndo } from 'react-icons/md'
+import { inferMutationInput } from 'utils/trpc'
 
 export default function TableRow({
   id, prod, _quantity, costo, sc, comm, rappre, onChange,
@@ -13,7 +14,7 @@ export default function TableRow({
   sc: number,
   comm: number,
   rappre: number,
-  onChange: (id: number, quantity: number) => void,
+  onChange: (row: inferMutationInput<'ordine.editRow'>) => void,
 }) {
   const [quantity, setQuantity] = useState(_quantity)
   useEffect(() => {
@@ -45,7 +46,7 @@ export default function TableRow({
       <td>
         <span className='d-flex flex-nowrap'>
           <ButtonTooltip tooltip="salva modifiche">
-            <Button variant="outline-success me-1 me-lg-2" hidden={!isEdited} onClick={() => onChange(id, quantity)}>  <MdOutlineCheck /></Button>
+            <Button variant="outline-success me-1 me-lg-2" hidden={!isEdited} onClick={() => onChange({ rowId: id, quantity })}>  <MdOutlineCheck /></Button>
           </ButtonTooltip>
           <ButtonTooltip tooltip="annulla modifiche">
             <Button variant="outline-secondary" hidden={!isEdited} onClick={() => setQuantity(_quantity)}><MdOutlineUndo /></Button>

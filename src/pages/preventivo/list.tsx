@@ -1,26 +1,23 @@
 import ModalDelete from 'components/preventivo/ModalDeletePreventivo'
 import ModalEdit from 'components/preventivo/ModalEditPreventivo'
 import ModalLock from 'components/preventivo/ModalLockPreventivo'
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 import { useAtom } from 'jotai'
 import { useRouter } from 'next/router'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Button, Card, Spinner } from 'react-bootstrap'
 import { MdCreate, MdDelete, MdLock, MdLockOpen } from 'react-icons/md'
 import { userAtom } from 'utils/atom'
+import { INVALID_ID } from 'utils/constants'
 import { canUnlockPreventivo } from 'utils/role'
 import { trpc } from 'utils/trpc'
-
-import ButtonTooltip from 'components/utils/ButtonTooltip'
-import { INVALID_ID } from 'utils/constants'
-
-const invalidId = -1
 
 export default function List() {
   const router = useRouter()
   const [user,] = useAtom(userAtom)
   const preventiviQuery = trpc.useQuery(['preventivo.list'])
 
-  const [prevId, setPrevId] = useState(invalidId)
+  const [prevId, setPrevId] = useState(INVALID_ID)
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [showLock, setShowLock] = useState(false)
@@ -41,20 +38,17 @@ export default function List() {
   }
 
   const [isLoading, setLoading] = useState(false)
-  useEffect(() => {
-    router.events.on('routeChangeStart', () => setLoading(true))
-    router.events.on('routeChangeComplete', () => setLoading(false))
-  }, [])
-
-  if (!preventiviQuery.isSuccess) return <Spinner animation="border" />
 
   return (
     <>
       <div className='mb-3'>
-        {preventiviQuery.data.map((prev) => (
+        {preventiviQuery.data?.map((prev) => (
           <Card key={prev.id} className='my-3'>
             <Card.Body>
-              <Card.Title onClick={() => router.push(`/preventivo/${prev.id}`)}>
+              <Card.Title onClick={() => {
+                setTimeout(() => setLoading(true), 250)
+                router.push(`/preventivo/${prev.id}`)
+              }}>
                 {isLoading ? <Spinner animation="border" /> : prev.nome}
               </Card.Title>
               <div className='mb-0 d-flex justify-content-between flex-wrap'>
