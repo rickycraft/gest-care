@@ -10,7 +10,7 @@ export default function ModalEdit({
     showModal,
 }: {
     preventivo?: inferQueryOutput<'preventivo.list'>[0],
-    showModal: boolean,
+    showModal: number,
 }) {
     const [show, setShow] = useState(false)
 
@@ -41,7 +41,7 @@ export default function ModalEdit({
             setScuola('')
         }
     }, [preventivo])
-    useEffect(() => setShow(true), [showModal])
+    useEffect(() => { if (showModal > 0) setShow(true) }, [showModal])
 
     const isValid = useMemo(() => (scuola !== '' && listinoId !== INVALID_ID && nomePreventivo.length > 4), [scuola, listinoId, nomePreventivo])
 

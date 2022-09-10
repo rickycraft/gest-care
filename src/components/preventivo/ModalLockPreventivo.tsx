@@ -8,7 +8,7 @@ export default function ModalLock({
   showModal,
 }: {
   preventivo?: inferQueryOutput<'preventivo.list'>[0],
-  showModal: boolean,
+  showModal: number,
 }) {
   const [show, setShow] = useState(false)
 
@@ -22,7 +22,7 @@ export default function ModalLock({
   const preventivoLock = trpc.useMutation('preventivo.lock', trpcCallback)
   const preventivoUnlock = trpc.useMutation('preventivo.unlock', trpcCallback)
 
-  useEffect(() => setShow(true), [showModal])
+  useEffect(() => { if (showModal > 0) setShow(true) }, [showModal])
   if (!preventivo) return null
 
   return (

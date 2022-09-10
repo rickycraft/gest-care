@@ -18,23 +18,23 @@ export default function List() {
   const preventiviQuery = trpc.useQuery(['preventivo.list'])
 
   const [prevId, setPrevId] = useState(INVALID_ID)
-  const [showEdit, setShowEdit] = useState(false)
-  const [showDelete, setShowDelete] = useState(false)
-  const [showLock, setShowLock] = useState(false)
+  const [showEdit, setShowEdit] = useState(0)
+  const [showDelete, setShowDelete] = useState(0)
+  const [showLock, setShowLock] = useState(0)
 
   const preventivo = useMemo(() => preventiviQuery.data?.find(el => el.id == prevId), [prevId])
 
   const openEdit = (id: number) => {
     setPrevId(id)
-    setShowEdit(!showEdit)
+    setShowEdit(showEdit + 1)
   }
   const openDelete = (id: number) => {
     setPrevId(id)
-    setShowDelete(!showDelete)
+    setShowDelete(showDelete + 1)
   }
   const openLock = (id: number) => {
     setPrevId(id)
-    setShowLock(!showLock)
+    setShowLock(showLock + 1)
   }
 
   const [isLoading, setLoading] = useState(false)

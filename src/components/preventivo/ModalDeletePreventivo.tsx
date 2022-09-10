@@ -8,7 +8,7 @@ export default function ModalDelete({
   showModal,
 }: {
   preventivo?: inferQueryOutput<'preventivo.list'>[0],
-  showModal: boolean,
+  showModal: number,
 }) {
   const [show, setShow] = useState(false)
 
@@ -20,7 +20,7 @@ export default function ModalDelete({
     }
   })
 
-  useEffect(() => setShow(true), [showModal])
+  useEffect(() => { if (showModal > 0) setShow(true) }, [showModal])
   if (!preventivo) return null
 
   return (

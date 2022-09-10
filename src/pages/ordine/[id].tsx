@@ -9,7 +9,6 @@ import { trpc } from 'utils/trpc'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { createSSG } from 'server/context'
 
-const invalidId = -1
 const parseId = (id: any) => {
   if (id == undefined || Array.isArray(id)) return null
   const numId = Number(id)

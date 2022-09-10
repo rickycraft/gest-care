@@ -35,7 +35,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (prev == null) return redirect
 
   await Promise.allSettled([
-    ssg.prefetchQuery('preventivo.row.list', { prevId: prev.id }),
     ssg.prefetchQuery('prodotto.list', { listino: prev.listinoId }),
     ssg.prefetchQuery('pers.list', { listino: prev.listinoId })
   ])
