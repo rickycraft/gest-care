@@ -1,11 +1,11 @@
-import { createProtectedRouter } from "server/createRouter"
-import { z } from 'zod'
-import { prisma } from 'server/prisma'
-import { TRPCError } from "@trpc/server"
 import { Prisma } from "@prisma/client"
-import { rowRouter } from './preventivo_row'
-import { optsRouter } from './preventivo_opts'
+import { TRPCError } from "@trpc/server"
+import { createProtectedRouter } from "server/createRouter"
+import { prisma } from 'server/prisma'
 import { canUnlockPreventivo } from 'utils/role'
+import { z } from 'zod'
+import { optsRouter } from './preventivo_opts'
+import { rowRouter } from './preventivo_row'
 
 const prevSelect = {
   id: true,
@@ -77,6 +77,7 @@ export const prevRouter = createProtectedRouter()
           scuola: true,
           listino: {
             select: {
+              id: true,
               nome: true,
             },
           },

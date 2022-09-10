@@ -3,7 +3,7 @@ import ModalEdit from 'components/preventivo/ModalEditPreventivo'
 import ModalLock from 'components/preventivo/ModalLockPreventivo'
 import { useAtom } from 'jotai'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button, Card, Spinner } from 'react-bootstrap'
 import { MdCreate, MdDelete, MdLock, MdLockOpen } from 'react-icons/md'
 import { userAtom } from 'utils/atom'
@@ -11,6 +11,7 @@ import { canUnlockPreventivo } from 'utils/role'
 import { trpc } from 'utils/trpc'
 
 import ButtonTooltip from 'components/utils/ButtonTooltip'
+import { INVALID_ID } from 'utils/constants'
 
 const invalidId = -1
 
@@ -25,10 +26,15 @@ export default function List() {
   const [showDelete, setShowDelete] = useState(false)
   const [showLock, setShowLock] = useState(false)
 
-  const openEdit = () => setShowEdit(!showEdit)
+  const preventivo = useMemo(() => preventiviQuery.data?.find(el => el.id == prevId), [prevId])
+
+  const openEdit = (id: number) => {
+    setPrevId(id)
+    setShowEdit(!showEdit)
+  }
   const openDelete = () => setShowDelete(!showDelete)
   const openLock = () => setShowLock(!showLock)
-  const openModal = (id: number, locked: boolean, openFn: () => void) => {
+  const openModal = (id: number, openFn: () => void, locked: boolean = false) => {
     setPrevId(id)
     setIsPrevLock(locked)
     openFn()
@@ -56,25 +62,25 @@ export default function List() {
                 <span className='d-flex flex-nowrap'>
                   {prev.locked && canUnlockPreventivo(user.role) && (
                     <ButtonTooltip tooltip="Sblocca">
-                      <Button variant='outline-secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}>
+                      <Button variant='outline-secondary' className='me-2' onClick={() => openModal(prev.id, openLock, prev.locked)}>
                         <MdLockOpen />
                       </Button>
                     </ButtonTooltip>
                   )}
                   {prev.locked ? (null) : (
                     <>
-                      <ButtonTooltip tooltip="Blocca">
-                        <Button variant='outline-secondary' className='me-2' onClick={() => openModal(prev.id, prev.locked, openLock)}>
+                      <ButtonTooltip tooltip="blocca">
+                        <Button variant='outline-secondary' className='me-2' onClick={() => openModal(prev.id, openLock)}>
                           <MdLock />
                         </Button>
                       </ButtonTooltip>
-                      <ButtonTooltip tooltip="Modifica">
-                        <Button variant='outline-info' className='me-2' onClick={() => openModal(prev.id, prev.locked, openEdit)}>
+                      <ButtonTooltip tooltip="modifica">
+                        <Button variant='outline-info' className='me-2' onClick={() => openEdit(prev.id)}>
                           <MdCreate />
                         </Button>
                       </ButtonTooltip>
-                      <ButtonTooltip tooltip="Elimina">
-                        <Button variant='outline-danger' onClick={() => openModal(prev.id, prev.locked, openDelete)}>
+                      <ButtonTooltip tooltip="elimina">
+                        <Button variant='outline-danger' onClick={() => openModal(prev.id, openDelete)}>
                           <MdDelete />
                         </Button>
                       </ButtonTooltip>
@@ -90,7 +96,12 @@ export default function List() {
         ))
         }
       </div>
-      <ModalEdit preventivoId={prevId} showModal={showEdit} />
+      <div className='d-flex justify-content-end'>
+        <ButtonTooltip tooltip="aggiungi preventivo">
+          <Button variant="primary" size='lg' className="rounded-circle" onClick={() => openEdit(0)}>+</Button>
+        </ButtonTooltip>
+      </div>
+      {prevId != INVALID_ID && <ModalEdit preventivo={preventivo} showModal={showEdit} />}
       <ModalDelete preventivoId={prevId} showModal={showDelete} />
       <ModalLock preventivoId={prevId} showModal={showLock} isLock={isPrevLock} />
     </>
