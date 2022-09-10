@@ -1,14 +1,14 @@
-import { trpc } from 'utils/trpc'
-import Table from 'react-bootstrap/Table'
+import ModalOptions from 'components/preventivo/ModalOptionsPreventivo'
+import TableRowPrev from 'components/preventivo/TableRowPrev'
+import ButtonTooltip from 'components/utils/ButtonTooltip'
+import ErrorMessage from 'components/utils/ErrorMessage'
+import { useRouter } from 'next/router'
 import { useMemo, useState } from 'react'
 import { Button, Card, Spinner } from 'react-bootstrap'
-import { useRouter } from 'next/router'
-import ErrorMessage from 'components/utils/ErrorMessage'
-import ModalOptions from 'components/preventivo/ModalOptionsPreventivo'
+import Table from 'react-bootstrap/Table'
 import { MdContentCopy, MdDownload, MdGridOn } from 'react-icons/md'
-import TableRowPrev from 'components/preventivo/TableRowPrev'
 import { INVALID_ID } from 'utils/constants'
-import ButtonTooltip from 'components/utils/ButtonTooltip'
+import { trpc } from 'utils/trpc'
 
 // server side
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
@@ -63,10 +63,9 @@ export default function Index(
   const context = trpc.useContext()
   const preventivoRowCallback = {
     onError() {
-      setErrorMsg('Errore riga preventivo')
+      setErrorMsg('Errore modifica prodotto')
     },
     onSuccess() {
-      preventivoQuery.refetch()
       preventivoRowQuery.refetch()
     },
   }
@@ -78,9 +77,9 @@ export default function Index(
   const preventivoRowUpdate = trpc.useMutation('preventivo.row.update', preventivoRowCallback)
   const preventivoRowDelete = trpc.useMutation('preventivo.row.delete', preventivoRowCallback)
   const preventivoDuplicate = trpc.useMutation('preventivo.duplicate', {
-    onSuccess() {
-      context.invalidateQueries(['preventivo.list'])
-      router.push('/preventivo/list')
+    onSuccess(data) {
+      context.prefetchQuery(['preventivo.byId', { id: data.id }])
+      router.push(`/preventivo/${data.id}`)
     }
   })
 
