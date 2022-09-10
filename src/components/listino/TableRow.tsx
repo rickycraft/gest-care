@@ -1,8 +1,8 @@
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 import { useMemo, useState } from 'react'
 import { Button } from 'react-bootstrap'
 import Form from 'react-bootstrap/Form'
 import { MdDelete, MdOutlineCheck, MdOutlineUndo } from 'react-icons/md'
-import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 export default function TableRow({
     rowId,
@@ -14,15 +14,15 @@ export default function TableRow({
     rowId: number,
     rowName: string,
     rowPrice: number,
-    onClickEdit: (row_id: number, row_prezzo: number) => void,
-    onClickDelete: (row_id: number) => void,
+    onClickEdit: (row: { id: number, prezzo: number }) => void,
+    onClickDelete: (row: { id: number }) => void,
 }) {
     const [isEditable, setIsEditable] = useState(false)
     const [newPrice, setNewPrice] = useState(rowPrice)
     const isEdited = useMemo(() => rowPrice !== newPrice, [rowPrice, newPrice])
 
-    const editRow = (id: number, price: number) => {
-        onClickEdit(id, price)
+    const editRow = (id: number, prezzo: number) => {
+        onClickEdit({ id, prezzo })
         setIsEditable(false)
     }
 
@@ -67,7 +67,7 @@ export default function TableRow({
                 ) : (
                     <ButtonTooltip tooltip="Elimina">
                         <Button hidden={isEditable} name="DeleteButton" variant="outline-danger"
-                            onClick={() => onClickDelete(rowId)} >
+                            onClick={() => onClickDelete({ id: rowId })} >
                             <MdDelete />
                         </Button>
                     </ButtonTooltip>

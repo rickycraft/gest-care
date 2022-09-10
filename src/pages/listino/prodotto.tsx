@@ -24,18 +24,6 @@ export default function Prodotto() {
   const prodottoUpdate = trpc.useMutation('prodotto.update', trpcCallback)
   const prodottoDelete = trpc.useMutation('prodotto.delete', trpcCallback)
 
-  const updateProdotto = (idProdotto: number, prezzo: number) => {
-    if (prodottoUpdate.isLoading) return
-    prodottoUpdate.mutate({
-      id: idProdotto,
-      prezzo: prezzo,
-    })
-  }
-  const deleteProdotto = (idProdotto: number) => {
-    if (prodottoDelete.isLoading) return
-    prodottoDelete.mutate({ id: idProdotto })
-  }
-
   if (!prodQuery.isSuccess || !listinoQuery.isSuccess) return <Spinner animation="border" variant="primary" />
 
   return (
@@ -56,7 +44,7 @@ export default function Prodotto() {
       </div>
 
       {/*Tabella che mostra i prodotti del listino selezionato*/}
-      <Table bordered hover hidden={listino == -1} responsive className='bg-white'>
+      <Table bordered hover hidden={listino == INVALID_ID} responsive className='bg-white'>
         <thead>
           <tr>
             <th>Nome prodotto</th>
@@ -71,8 +59,8 @@ export default function Prodotto() {
               rowId={prod.id}
               rowName={prod.nome}
               rowPrice={prod.prezzo}
-              onClickDelete={deleteProdotto}
-              onClickEdit={updateProdotto}
+              onClickDelete={prodottoDelete.mutate}
+              onClickEdit={prodottoUpdate.mutate}
             />
           ))}
           {/* riga per inserire un nuovo prodotto */}

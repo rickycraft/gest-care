@@ -24,18 +24,6 @@ export default function Pers() {
   const persUpdate = trpc.useMutation('pers.update', trpcCallback)
   const persDelete = trpc.useMutation('pers.delete', trpcCallback)
 
-  const updatePers = (idPers: number, prezzo: number) => {
-    if (persUpdate.isLoading) return
-    persUpdate.mutate({
-      id: idPers,
-      prezzo: prezzo,
-    })
-  }
-  const deletePers = (idPers: number) => {
-    if (persDelete.isLoading) return
-    persDelete.mutate({ id: idPers })
-  }
-
   if (!persQuery.isSuccess || !listinoQuery.isSuccess) return <Spinner animation="border" variant="primary" />
 
   return (
@@ -69,8 +57,8 @@ export default function Pers() {
               rowId={pers.id}
               rowName={pers.nome}
               rowPrice={pers.prezzo}
-              onClickDelete={deletePers}
-              onClickEdit={updatePers}
+              onClickDelete={persDelete.mutate}
+              onClickEdit={persUpdate.mutate}
             />
           ))}
           {/* riga per inserire un nuovo Pers */}
