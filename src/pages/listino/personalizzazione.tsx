@@ -1,34 +1,28 @@
-import { trpc } from 'utils/trpc'
-import Table from 'react-bootstrap/Table'
+import InsertRow from 'components/listino/InsertRow'
+import ModalListino from 'components/listino/ModalListino'
+import TableRow from 'components/listino/TableRow'
+import ErrorMessage from 'components/utils/ErrorMessage'
 import { useState } from 'react'
 import { Form, Spinner } from 'react-bootstrap'
-import TableRow from 'components/listino/TableRow'
-import ModalListino from 'components/listino/ModalListino'
-import PersSubmitRow from 'components/listino/PersSubmitRow'
-import ErrorMessage from 'components/utils/ErrorMessage'
-
-const invalidListino = -1
+import Table from 'react-bootstrap/Table'
+import { INVALID_ID } from 'utils/constants'
+import { trpc } from 'utils/trpc'
 
 export default function Pers() {
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
-  const [listino, setListino] = useState(-1)
+  const [listino, setListino] = useState(INVALID_ID)
 
   // trpc
+  const trpcCallback = {
+    onSuccess() { persQuery.refetch() },
+    onError() { setErrorMsg('Errore nella modifica della personalizzazione') }
+  }
   const listinoQuery = trpc.useQuery(['listino.list'])
   const persQuery = trpc.useQuery(['pers.list', { listino }])
-  const persInsert = trpc.useMutation('pers.insert', {
-    onSuccess() { persQuery.refetch() },
-    onError() { setErrorMsg('Errore nell inserire la personalizzazione selezionato') }
-  })
-  const persUpdate = trpc.useMutation('pers.update', {
-    onSuccess() { persQuery.refetch() },
-    onError() { setErrorMsg('Errore nel aggiornare una personalizzazione') }
-  })
-  const persDelete = trpc.useMutation('pers.delete', {
-    onSuccess() { persQuery.refetch() },
-    onError() { setErrorMsg('Errore nell eliminare la personalizzazione selezionata') }
-  })
+  const persInsert = trpc.useMutation('pers.insert', trpcCallback)
+  const persUpdate = trpc.useMutation('pers.update', trpcCallback)
+  const persDelete = trpc.useMutation('pers.delete', trpcCallback)
 
   const updatePers = (idPers: number, prezzo: number) => {
     if (persUpdate.isLoading) return
@@ -49,7 +43,7 @@ export default function Pers() {
       <div className='d-flex mb-2'>
         <Form.Group className='me-2'>
           <Form.Select value={listino} onChange={(event) => { setListino(Number(event.currentTarget.value)) }}>
-            <option value={invalidListino}>Seleziona un listino</option>
+            <option value={INVALID_ID}>Seleziona un listino</option>
             {listinoQuery.data.map(element => (
               <option key={element.id} value={element.id}>
                 {element.nome}
@@ -60,7 +54,7 @@ export default function Pers() {
         <ModalListino listinoId={listino} />
       </div>
       {/*Tabella che mostra i persotti del listino selezionato*/}
-      <Table bordered hover hidden={listino == -1} responsive className='bg-white'>
+      <Table bordered hover hidden={listino == INVALID_ID} responsive className='bg-white'>
         <thead>
           <tr>
             <th>Nome Personalizzazione</th>
@@ -80,7 +74,7 @@ export default function Pers() {
             />
           ))}
           {/* riga per inserire un nuovo Pers */}
-          <PersSubmitRow listino={listino} insertPers={persInsert.mutate} />
+          <InsertRow listino={listino} addRow={persInsert.mutate} />
         </tbody>
       </Table>
       <ErrorMessage message={errorMsg} />

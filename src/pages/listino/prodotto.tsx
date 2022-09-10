@@ -1,34 +1,28 @@
-import { trpc } from 'utils/trpc'
-import Table from 'react-bootstrap/Table'
+import InsertRow from 'components/listino/InsertRow'
+import ModalListino from 'components/listino/ModalListino'
+import TableRow from 'components/listino/TableRow'
+import ErrorMessage from 'components/utils/ErrorMessage'
 import { useState } from 'react'
 import { Form, Spinner } from 'react-bootstrap'
-import TableRow from 'components/listino/TableRow'
-import ModalListino from 'components/listino/ModalListino'
-import ProdSubmitRow from 'components/listino/ProdSubmitRow'
-import ErrorMessage from 'components/utils/ErrorMessage'
-
-const invalidListino = -1
+import Table from 'react-bootstrap/Table'
+import { INVALID_ID } from 'utils/constants'
+import { trpc } from 'utils/trpc'
 
 export default function Prodotto() {
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
-  const [listino, setListino] = useState(invalidListino)
+  const [listino, setListino] = useState(INVALID_ID)
 
   // trpc
+  const trpcCallback = {
+    onSuccess() { prodQuery.refetch() },
+    onError() { setErrorMsg('Errore nella modifica del prodotto') }
+  }
   const prodQuery = trpc.useQuery(['prodotto.list', { listino }])
   const listinoQuery = trpc.useQuery(['listino.list'])
-  const prodottoInsert = trpc.useMutation('prodotto.insert', {
-    onSuccess() { prodQuery.refetch() },
-    onError() { setErrorMsg('Errore nell inserire il prodotto selezionato') }
-  })
-  const prodottoUpdate = trpc.useMutation('prodotto.update', {
-    onSuccess() { prodQuery.refetch() },
-    onError() { setErrorMsg('Errore nel aggiornare un prodotto') }
-  })
-  const prodottoDelete = trpc.useMutation('prodotto.delete', {
-    onSuccess() { prodQuery.refetch() },
-    onError() { setErrorMsg('Errore nell eliminare il prodotto selezionato') }
-  })
+  const prodottoInsert = trpc.useMutation('prodotto.insert', trpcCallback)
+  const prodottoUpdate = trpc.useMutation('prodotto.update', trpcCallback)
+  const prodottoDelete = trpc.useMutation('prodotto.delete', trpcCallback)
 
   const updateProdotto = (idProdotto: number, prezzo: number) => {
     if (prodottoUpdate.isLoading) return
@@ -50,7 +44,7 @@ export default function Prodotto() {
       <div className='d-flex mb-2'>
         <Form.Group className='me-2'>
           <Form.Select value={listino} onChange={(event) => { setListino(Number(event.currentTarget.value)) }}>
-            <option value={invalidListino}>Seleziona un listino</option>
+            <option value={INVALID_ID}>Seleziona un listino</option>
             {listinoQuery.data.map(element => (
               <option key={element.id} value={element.id}>
                 {element.nome}
@@ -82,7 +76,7 @@ export default function Prodotto() {
             />
           ))}
           {/* riga per inserire un nuovo prodotto */}
-          <ProdSubmitRow listino={listino} insertProdotto={prodottoInsert.mutate} />
+          <InsertRow listino={listino} addRow={prodottoInsert.mutate} />
         </tbody>
       </Table>
       <ErrorMessage message={errorMsg} />
