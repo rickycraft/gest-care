@@ -1,8 +1,8 @@
-import { useState } from 'react'
-import { Alert, Button, Form, Modal, Spinner } from 'react-bootstrap'
-import { trpc } from 'utils/trpc'
-import { MdReceipt } from 'react-icons/md'
 import ButtonTooltip from 'components/utils/ButtonTooltip'
+import { useState } from 'react'
+import { Alert, Button, Form, Modal } from 'react-bootstrap'
+import { MdReceipt } from 'react-icons/md'
+import { trpc } from 'utils/trpc'
 
 
 export default function ModalOptions({
@@ -13,7 +13,9 @@ export default function ModalOptions({
   const [show, setShow] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
 
-  const optionQuery = trpc.useQuery(['preventivo.opts.list', { prevId }])
+  const optionQuery = trpc.useQuery(['preventivo.opts.list', { prevId }], {
+    keepPreviousData: true,
+  })
   const optionEdit = trpc.useMutation('preventivo.opts.edit', {
     onSuccess() {
       optionQuery.refetch()
@@ -21,9 +23,6 @@ export default function ModalOptions({
       setTimeout(() => setShowSuccess(false), 2000)
     }
   })
-
-  if (!optionQuery.isSuccess) return <Spinner animation="border" />
-  if (optionQuery.data === null) return <Spinner animation="border" />
 
   return (
     <>
@@ -41,7 +40,7 @@ export default function ModalOptions({
           <Modal.Title>Modifica le opzioni</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {optionQuery.data.map((opt) => (
+          {optionQuery.data?.map((opt) => (
             <Form.Check key={opt.id}>
               <Form.Check.Input type="checkbox" defaultChecked={opt.selected} disabled={optionEdit.isLoading || optionQuery.isLoading}
                 onChange={(e) => optionEdit.mutate({
