@@ -4,7 +4,7 @@ import ButtonTooltip from 'components/utils/ButtonTooltip'
 import ErrorMessage from 'components/utils/ErrorMessage'
 import { useRouter } from 'next/router'
 import { useMemo, useState } from 'react'
-import { Button, Card, Spinner } from 'react-bootstrap'
+import { Button, Card } from 'react-bootstrap'
 import Table from 'react-bootstrap/Table'
 import { MdContentCopy, MdDownload, MdGridOn } from 'react-icons/md'
 import { INVALID_ID } from 'utils/constants'
@@ -33,11 +33,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const ssg = await createSSG(context.req.cookies)
   const prev = await ssg.fetchQuery('preventivo.byId', { id })
   if (prev == null) return redirect
-
-  await Promise.allSettled([
-    ssg.prefetchQuery('prodotto.list', { listino: prev.listinoId }),
-    ssg.prefetchQuery('pers.list', { listino: prev.listinoId })
-  ])
 
   return {
     props: {
@@ -84,14 +79,6 @@ export default function Index(
   })
 
   const locked = useMemo(() => preventivoQuery.data?.locked ?? true, [preventivoQuery.data])
-
-  if (!preventivoRowQuery.isSuccess || !preventivoQuery.isSuccess || !prodottiQuery.isSuccess || !persQuery.isSuccess) {
-    return <Spinner animation="border" />
-  }
-
-  if (prodottiQuery.data.length == 0 || persQuery.data.length == 0) {
-    return <Spinner animation="border" />
-  }
 
   return (
     <Card body>
@@ -189,13 +176,13 @@ export default function Index(
           </tr>
         </thead>
         <tbody>
-          {preventivoRowQuery.data.map((prevRow) => (
+          {preventivoRowQuery.data?.map((prevRow) => (
             <TableRowPrev
               locked={locked}
               key={prevRow.id}
               row={prevRow}
-              prodList={prodottiQuery.data}
-              persList={persQuery.data}
+              prodList={prodottiQuery.data ?? []}
+              persList={persQuery.data ?? []}
               onClickInsert={() => { }}
               onClickDelete={(row_id) => preventivoRowDelete.mutate({ id: row_id })}
               onClickEdit={(row) => preventivoRowUpdate.mutate(row)} />
@@ -213,8 +200,8 @@ export default function Index(
               provRappre: 0,
               provSc: 0,
             }}
-            prodList={prodottiQuery.data}
-            persList={persQuery.data}
+            prodList={prodottiQuery.data ?? []}
+            persList={persQuery.data ?? []}
             onClickInsert={(new_row) => preventivoRowInsert.mutate(new_row)}
             onClickDelete={() => { }}
             onClickEdit={() => { }} />}
