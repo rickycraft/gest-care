@@ -5,20 +5,23 @@ import Modal from 'react-bootstrap/Modal'
 import { INVALID_ID } from 'utils/constants'
 import { inferQueryOutput, trpc } from 'utils/trpc'
 
+const CLEAR_ON_CLOSE = true
+
 export default function ModalEdit({
     preventivo,
-    showModal,
+    show,
+    onHide,
 }: {
     preventivo?: inferQueryOutput<'preventivo.list'>[0],
-    showModal: number,
+    show: boolean,
+    onHide: () => void,
 }) {
-    const [show, setShow] = useState(false)
 
     const context = trpc.useContext()
     const trpcCallback = {
         onSuccess() {
+            onHide()
             context.invalidateQueries(['preventivo.list'])
-            setShow(false)
         }
     }
     const preventivoInsert = trpc.useMutation('preventivo.insert', trpcCallback)
@@ -29,8 +32,9 @@ export default function ModalEdit({
     const [nomePreventivo, setNomePreventivo] = useState('')
     const [scuola, setScuola] = useState('')
     const isEditing = useMemo(() => preventivo !== undefined, [preventivo])
+    const isInvalid = useMemo(() => nomePreventivo.length < 5 || scuola.length < 5 || listinoId === INVALID_ID, [nomePreventivo, scuola, listinoId])
 
-    useEffect(() => {
+    const setState = () => {
         if (preventivo) {
             setListinoId(preventivo.listino.id)
             setNomePreventivo(preventivo.nome)
@@ -40,13 +44,17 @@ export default function ModalEdit({
             setNomePreventivo('')
             setScuola('')
         }
-    }, [preventivo])
-    useEffect(() => { if (showModal > 0) setShow(true) }, [showModal])
-
-    const isValid = useMemo(() => (scuola !== '' && listinoId !== INVALID_ID && nomePreventivo.length > 4), [scuola, listinoId, nomePreventivo])
+    }
+    useEffect(() => {
+        if (!CLEAR_ON_CLOSE) return
+        // Reset form when hiding, add delay so it doesn't reset while closing
+        if (!show) setTimeout(setState, 500)
+    }, [show])
+    // Update form when preventivo changes
+    useEffect(setState, [preventivo])
 
     return (
-        <Modal show={show} onHide={() => setShow(false)} keyboard={false}>
+        <Modal show={show} onHide={() => onHide()} keyboard={false}>
             <Modal.Header closeButton>
                 <Modal.Title>{isEditing ? "Modifica" : "Aggiungi"} preventivo</Modal.Title>
             </Modal.Header>
@@ -62,7 +70,7 @@ export default function ModalEdit({
                             autoFocus
                             onChange={(event) => setNomePreventivo(event.currentTarget.value)}
                         />
-                        <Form.Control.Feedback type="invalid">Il nome deve essere di almeno 5 caratteri</Form.Control.Feedback>
+                        <Form.Control.Feedback type="invalid">Il nome del preventivo è troppo corto</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="InputSelectScuola">
                         <Form.Label>Scuola</Form.Label>
@@ -72,7 +80,7 @@ export default function ModalEdit({
                             placeholder="Nome scuola"
                             onChange={(event) => setScuola(event.currentTarget.value)}
                         />
-                        <Form.Control.Feedback type="invalid">Scegli una scuola</Form.Control.Feedback>
+                        <Form.Control.Feedback type="invalid">Il nome della scuola è troppo corto</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="InputSelectListino">
                         <Form.Label>Scegli il Listino</Form.Label>
@@ -93,7 +101,7 @@ export default function ModalEdit({
             </Modal.Body>
             <Modal.Footer>
                 <Button variant={isEditing ? 'success' : 'primary'}
-                    disabled={!isValid}
+                    disabled={isInvalid}
                     onClick={() => {
                         if (preventivo) {
                             preventivoUpdate.mutate({ id: preventivo.id, nome: nomePreventivo, scuola })

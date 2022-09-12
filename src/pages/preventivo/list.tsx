@@ -18,23 +18,23 @@ export default function List() {
   const preventiviQuery = trpc.useQuery(['preventivo.list'])
 
   const [prevId, setPrevId] = useState(INVALID_ID)
-  const [showEdit, setShowEdit] = useState(0)
-  const [showDelete, setShowDelete] = useState(0)
-  const [showLock, setShowLock] = useState(0)
+  const [showEdit, setShowEdit] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
+  const [showLock, setShowLock] = useState(false)
 
   const preventivo = useMemo(() => preventiviQuery.data?.find(el => el.id == prevId), [prevId])
 
   const openEdit = (id: number) => {
     setPrevId(id)
-    setShowEdit(showEdit + 1)
+    setShowEdit(true)
   }
   const openDelete = (id: number) => {
     setPrevId(id)
-    setShowDelete(showDelete + 1)
+    setShowDelete(true)
   }
   const openLock = (id: number) => {
     setPrevId(id)
-    setShowLock(showLock + 1)
+    setShowLock(true)
   }
 
   const [isLoading, setLoading] = useState(false)
@@ -95,11 +95,9 @@ export default function List() {
           <Button variant="primary" size='lg' className="rounded-circle" onClick={() => openEdit(0)}>+</Button>
         </ButtonTooltip>
       </div>
-      {prevId != INVALID_ID && (<>
-        <ModalEdit preventivo={preventivo} showModal={showEdit} />
-        <ModalDelete preventivo={preventivo} showModal={showDelete} />
-        <ModalLock preventivo={preventivo} showModal={showLock} />
-      </>)}
+      <ModalEdit preventivo={preventivo} show={showEdit} onHide={() => setShowEdit(false)} />
+      <ModalDelete preventivo={preventivo} show={showDelete} onHide={() => setShowDelete(false)} />
+      <ModalLock preventivo={preventivo} show={showLock} onHide={() => setShowLock(false)} />
     </>
   )
 }
