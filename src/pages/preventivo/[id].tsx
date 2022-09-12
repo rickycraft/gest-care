@@ -116,7 +116,7 @@ export default function Index(
           </ButtonTooltip>
         </div>
       </div>
-      <p>ultima modifica alle {preventivoQuery.data?.editedAt.toLocaleString()}</p>
+      <p>scuola: {preventivoQuery.data?.scuola} | ultima modifica alle {preventivoQuery.data?.editedAt.toLocaleString()}</p>
       {/*Tabella che mostra i prodotti del preventivo selezionato*/}
       <style type="text/css">
         {`
