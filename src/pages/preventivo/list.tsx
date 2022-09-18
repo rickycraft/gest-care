@@ -1,6 +1,7 @@
 import ModalDelete from 'components/preventivo/ModalDeletePreventivo'
 import ModalEdit from 'components/preventivo/ModalEditPreventivo'
 import ModalLock from 'components/preventivo/ModalLockPreventivo'
+import SearchBar from 'components/preventivo/SearchBar'
 import ButtonTooltip from 'components/utils/ButtonTooltip'
 import { useAtom } from 'jotai'
 import { useRouter } from 'next/router'
@@ -15,13 +16,17 @@ import { trpc } from 'utils/trpc'
 export default function List() {
   const router = useRouter()
   const [user,] = useAtom(userAtom)
-  const preventiviQuery = trpc.useQuery(['preventivo.list'])
+
+  const [search, setSearch] = useState('')
+  const preventiviQuery = trpc.useQuery(['preventivo.list', { search }], {
+    keepPreviousData: true,
+  })
 
   const [prevId, setPrevId] = useState(INVALID_ID)
   const [showEdit, setShowEdit] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
   const [showLock, setShowLock] = useState(false)
-
+  const [isLoading, setLoading] = useState(false)
   const preventivo = useMemo(() => preventiviQuery.data?.find(el => el.id == prevId), [prevId])
 
   const openEdit = (id: number) => {
@@ -37,11 +42,10 @@ export default function List() {
     setShowLock(true)
   }
 
-  const [isLoading, setLoading] = useState(false)
-
   return (
     <>
       <div className='mb-3'>
+        <SearchBar updateSearch={(newSearch: string) => setSearch(newSearch)} />
         {preventiviQuery.data?.map((prev) => (
           <Card key={prev.id} className='my-3'>
             <Card.Body>

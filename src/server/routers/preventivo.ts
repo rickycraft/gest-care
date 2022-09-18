@@ -50,9 +50,18 @@ export const prevRouter = createProtectedRouter()
     }
   })
   .query('list', {
-    input: z.any(),
-    resolve: async () => {
+    input: z.object({
+      search: z.string().optional(),
+    }),
+    resolve: async ({ input }) => {
+      const searchParam = input.search ?? ''
       return await prisma.preventivo.findMany({
+        where: {
+          OR: [
+            { nome: { contains: searchParam } },
+            { scuola: { contains: searchParam } },
+          ]
+        },
         select: {
           id: true,
           nome: true,
