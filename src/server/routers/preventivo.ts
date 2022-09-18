@@ -51,10 +51,10 @@ export const prevRouter = createProtectedRouter()
   })
   .query('list', {
     input: z.object({
-      search: z.string().optional(),
+      search: z.string(),
     }),
     resolve: async ({ input }) => {
-      const searchParam = (input.search?.length == 0)
+      const searchParam = (input.search.length == 0)
         ? undefined
         : [
           { nome: { search: input.search + '*' } },
