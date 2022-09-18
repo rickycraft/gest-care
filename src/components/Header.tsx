@@ -25,7 +25,7 @@ const basicMenuLinks = [
   { title: 'Buste', path: '/ordine/list', hidden: false },
 ]
 
-const emptyPages = ["/auth/login", "/auth/logout", "/preventivo/pdf"]
+const emptyPages = ["/auth/login", "/auth/logout", "/preventivo/pdf", "/404"]
 const defaultRole = 'user'
 
 export default function Header() {

@@ -4,13 +4,14 @@ import ButtonTooltip from 'components/utils/ButtonTooltip'
 import ErrorMessage from 'components/utils/ErrorMessage'
 import { useRouter } from 'next/router'
 import { useMemo, useState } from 'react'
-import { Button, Card, Spinner } from 'react-bootstrap'
+import { Button, Card } from 'react-bootstrap'
 import Table from 'react-bootstrap/Table'
 import { MdContentCopy, MdDownload, MdGridOn } from 'react-icons/md'
 import { INVALID_ID } from 'utils/constants'
 import { trpc } from 'utils/trpc'
 
 // server side
+import ModalDuplicate from 'components/preventivo/ModalDuplicate'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { createSSG } from 'server/context'
 
@@ -34,11 +35,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const prev = await ssg.fetchQuery('preventivo.byId', { id })
   if (prev == null) return redirect
 
-  await Promise.allSettled([
-    ssg.prefetchQuery('prodotto.list', { listino: prev.listinoId }),
-    ssg.prefetchQuery('pers.list', { listino: prev.listinoId })
-  ])
-
   return {
     props: {
       id,
@@ -58,8 +54,10 @@ export default function Index(
 
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
+  const [showDuplicate, setShowDuplicate] = useState(false)
+  const hideDuplicate = () => setShowDuplicate(false)
+  const openDuplicate = () => setShowDuplicate(true)
 
-  const context = trpc.useContext()
   const preventivoRowCallback = {
     onError() {
       setErrorMsg('Errore modifica prodotto')
@@ -75,23 +73,8 @@ export default function Index(
   const preventivoRowInsert = trpc.useMutation('preventivo.row.insert', preventivoRowCallback)
   const preventivoRowUpdate = trpc.useMutation('preventivo.row.update', preventivoRowCallback)
   const preventivoRowDelete = trpc.useMutation('preventivo.row.delete', preventivoRowCallback)
-  const preventivoDuplicate = trpc.useMutation('preventivo.duplicate', {
-    onSuccess(data) {
-      context.prefetchQuery(['preventivo.byId', { id: data.id }])
-      context.invalidateQueries(['preventivo.list'])
-      router.push(`/preventivo/${data.id}`)
-    }
-  })
 
   const locked = useMemo(() => preventivoQuery.data?.locked ?? true, [preventivoQuery.data])
-
-  if (!preventivoRowQuery.isSuccess || !preventivoQuery.isSuccess || !prodottiQuery.isSuccess || !persQuery.isSuccess) {
-    return <Spinner animation="border" />
-  }
-
-  if (prodottiQuery.data.length == 0 || persQuery.data.length == 0) {
-    return <Spinner animation="border" />
-  }
 
   return (
     <Card body>
@@ -120,16 +103,13 @@ export default function Index(
           </ButtonTooltip>
           <ButtonTooltip tooltip="duplica">
             <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
-              onClick={() => {
-                if (preventivoQuery.data == null) return
-                preventivoDuplicate.mutate({ id: preventivoQuery.data.id })
-              }}
+              onClick={openDuplicate}
             ><MdContentCopy />
             </Button>
           </ButtonTooltip>
         </div>
       </div>
-      <p>ultima modifica alle {preventivoQuery.data?.editedAt.toLocaleString()}</p>
+      <p>scuola: {preventivoQuery.data?.scuola} | ultima modifica alle {preventivoQuery.data?.editedAt.toLocaleString()}</p>
       {/*Tabella che mostra i prodotti del preventivo selezionato*/}
       <style type="text/css">
         {`
@@ -189,13 +169,13 @@ export default function Index(
           </tr>
         </thead>
         <tbody>
-          {preventivoRowQuery.data.map((prevRow) => (
+          {preventivoRowQuery.data?.map((prevRow) => (
             <TableRowPrev
               locked={locked}
               key={prevRow.id}
               row={prevRow}
-              prodList={prodottiQuery.data}
-              persList={persQuery.data}
+              prodList={prodottiQuery.data ?? []}
+              persList={persQuery.data ?? []}
               onClickInsert={() => { }}
               onClickDelete={(row_id) => preventivoRowDelete.mutate({ id: row_id })}
               onClickEdit={(row) => preventivoRowUpdate.mutate(row)} />
@@ -213,13 +193,19 @@ export default function Index(
               provRappre: 0,
               provSc: 0,
             }}
-            prodList={prodottiQuery.data}
-            persList={persQuery.data}
+            prodList={prodottiQuery.data ?? []}
+            persList={persQuery.data ?? []}
             onClickInsert={(new_row) => preventivoRowInsert.mutate(new_row)}
             onClickDelete={() => { }}
             onClickEdit={() => { }} />}
         </tbody>
       </Table>
+      <ModalDuplicate
+        idPreventivo={idPreventivo}
+        show={showDuplicate}
+        onHide={hideDuplicate}
+        _nomePreventivo={preventivoQuery.data?.nome}
+      />
       <ModalOptions prevId={idPreventivo} />
       {/* alert per mostrare i messaggi di errore */}
       <ErrorMessage message={errorMsg} />

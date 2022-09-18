@@ -1,31 +1,30 @@
-import { useEffect, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import { inferQueryOutput, trpc } from 'utils/trpc'
 
 export default function ModalDelete({
   preventivo,
-  showModal,
+  show,
+  onHide,
 }: {
   preventivo?: inferQueryOutput<'preventivo.list'>[0],
-  showModal: number,
+  show: boolean,
+  onHide: () => void,
 }) {
-  const [show, setShow] = useState(false)
 
   const context = trpc.useContext()
   const preventivoDelete = trpc.useMutation('preventivo.delete', {
     onSuccess() {
       context.invalidateQueries(['preventivo.list'])
-      setShow(false)
+      onHide()
     }
   })
 
-  useEffect(() => { if (showModal > 0) setShow(true) }, [showModal])
   if (!preventivo) return null
 
   return (
     <>
-      <Modal show={show} onHide={() => setShow(false)} keyboard={false}>
+      <Modal show={show} onHide={() => onHide()} keyboard={false}>
         <Modal.Body>
           <Modal.Title>Sei sicuro di voler eliminare il preventivo?</Modal.Title>
         </Modal.Body>

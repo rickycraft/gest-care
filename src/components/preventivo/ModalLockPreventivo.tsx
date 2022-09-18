@@ -1,33 +1,32 @@
-import { useEffect, useState } from 'react'
 import Button from 'react-bootstrap/Button'
 import Modal from 'react-bootstrap/Modal'
 import { inferQueryOutput, trpc } from 'utils/trpc'
 
 export default function ModalLock({
   preventivo,
-  showModal,
+  show,
+  onHide,
 }: {
   preventivo?: inferQueryOutput<'preventivo.list'>[0],
-  showModal: number,
+  show: boolean,
+  onHide: () => void,
 }) {
-  const [show, setShow] = useState(false)
 
   const context = trpc.useContext()
   const trpcCallback = {
     onSuccess() {
       context.invalidateQueries(['preventivo.list'])
-      setShow(false)
+      onHide()
     }
   }
   const preventivoLock = trpc.useMutation('preventivo.lock', trpcCallback)
   const preventivoUnlock = trpc.useMutation('preventivo.unlock', trpcCallback)
 
-  useEffect(() => { if (showModal > 0) setShow(true) }, [showModal])
   if (!preventivo) return null
 
   return (
     <>
-      <Modal show={show} onHide={() => setShow(false)} keyboard={false}>
+      <Modal show={show} onHide={() => onHide()} keyboard={false}>
         <Modal.Body>
           <Modal.Title>Sei sicuro di voler {preventivo.locked ? 'sbloccare' : 'bloccare'} il preventivo?</Modal.Title>
         </Modal.Body>
