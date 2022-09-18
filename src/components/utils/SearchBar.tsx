@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import { Form, InputGroup } from 'react-bootstrap'
 import { MdOutlineBlock, MdSearch } from 'react-icons/md'
 
+const MIN_SEARCH_LENGTH = 4
+
 export default function SearchBar(
   { updateSearch }: { updateSearch: (search: string) => void }
 ) {
@@ -11,7 +13,8 @@ export default function SearchBar(
   const debounceSearch = useDebounce(search)
 
   useEffect(() => {
-    if (debounceSearch.length < 4 && debounceSearch.length != 0) return
+    if (debounceSearch.length < MIN_SEARCH_LENGTH
+      && debounceSearch.length != 0) return
     updateSearch(debounceSearch)
   }, [debounceSearch])
 
@@ -23,6 +26,7 @@ export default function SearchBar(
       <Form.Control
         placeholder='inserisci almeno 4 caratteri'
         value={search}
+        isInvalid={search.length < MIN_SEARCH_LENGTH && search.length != 0}
         onChange={(e) => setSearch(e.target.value)}
       />
       <InputGroup.Text
