@@ -11,7 +11,7 @@ export default function SearchBar(
   const debounceSearch = useDebounce(search)
 
   useEffect(() => {
-    if (debounceSearch.length <= 4 && debounceSearch.length != 0) return
+    if (debounceSearch.length < 4 && debounceSearch.length != 0) return
     updateSearch(debounceSearch)
   }, [debounceSearch])
 

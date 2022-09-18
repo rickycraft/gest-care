@@ -51,40 +51,46 @@ export const prevRouter = createProtectedRouter()
   })
   .query('list', {
     input: z.object({
-      search: z.string().optional(),
+      search: z.string(),
     }),
     resolve: async ({ input }) => {
-      const searchParam = input.search ?? ''
-      return await prisma.preventivo.findMany({
-        where: {
-          OR: [
-            { nome: { contains: searchParam } },
-            { scuola: { contains: searchParam } },
-          ]
-        },
-        select: {
-          id: true,
-          nome: true,
-          scuola: true,
-          listino: {
-            select: {
-              id: true,
-              nome: true,
+      const searchParam = (input.search.length == 0)
+        ? undefined
+        : [
+          { nome: { search: input.search + '*' } },
+          { scuola: { search: input.search + '*' } },
+        ]
+      try {
+        return await prisma.preventivo.findMany({
+          where: {
+            OR: searchParam,
+          },
+          select: {
+            id: true,
+            nome: true,
+            scuola: true,
+            listino: {
+              select: {
+                id: true,
+                nome: true,
+              },
             },
+            lastEditedBy: {
+              select: {
+                username: true,
+              }
+            },
+            editedAt: true,
+            locked: true,
           },
-          lastEditedBy: {
-            select: {
-              username: true,
-            }
-          },
-          editedAt: true,
-          locked: true,
-        },
-        take: 10,
-        orderBy: {
-          createdAt: "desc",
-        }
-      })
+          take: 10,
+          orderBy: {
+            createdAt: "desc",
+          }
+        })
+      } catch (e: any) {
+        console.error(e)
+      }
     }
   })
   .mutation('insert', {
