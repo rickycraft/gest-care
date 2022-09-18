@@ -9,6 +9,7 @@
     "lint": "next lint",
     "docker": "sudo docker build -t gest-care:latest .",
     "deploy": "sudo bash deploy.sh",
+    "vercel-build": "prisma generate && next build",
     "prisma-generate": "npx prisma generate",
     "prisma-migrate": "npx prisma migrate dev"
   },
