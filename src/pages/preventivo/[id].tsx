@@ -11,6 +11,7 @@ import { INVALID_ID } from 'utils/constants'
 import { trpc } from 'utils/trpc'
 
 // server side
+import ModalDuplicate from 'components/preventivo/ModalDuplicate'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { createSSG } from 'server/context'
 
@@ -53,8 +54,10 @@ export default function Index(
 
   //stati vari
   const [errorMsg, setErrorMsg] = useState('')
+  const [showDuplicate, setShowDuplicate] = useState(false)
+  const hideDuplicate = () => setShowDuplicate(false)
+  const openDuplicate = () => setShowDuplicate(true)
 
-  const context = trpc.useContext()
   const preventivoRowCallback = {
     onError() {
       setErrorMsg('Errore modifica prodotto')
@@ -70,13 +73,6 @@ export default function Index(
   const preventivoRowInsert = trpc.useMutation('preventivo.row.insert', preventivoRowCallback)
   const preventivoRowUpdate = trpc.useMutation('preventivo.row.update', preventivoRowCallback)
   const preventivoRowDelete = trpc.useMutation('preventivo.row.delete', preventivoRowCallback)
-  const preventivoDuplicate = trpc.useMutation('preventivo.duplicate', {
-    onSuccess(data) {
-      context.prefetchQuery(['preventivo.byId', { id: data.id }])
-      context.invalidateQueries(['preventivo.list'])
-      router.push(`/preventivo/${data.id}`)
-    }
-  })
 
   const locked = useMemo(() => preventivoQuery.data?.locked ?? true, [preventivoQuery.data])
 
@@ -107,10 +103,7 @@ export default function Index(
           </ButtonTooltip>
           <ButtonTooltip tooltip="duplica">
             <Button variant='primary' className='me-2 p-2 p-lg-3 rounded-circle'
-              onClick={() => {
-                if (preventivoQuery.data == null) return
-                preventivoDuplicate.mutate({ id: preventivoQuery.data.id })
-              }}
+              onClick={openDuplicate}
             ><MdContentCopy />
             </Button>
           </ButtonTooltip>
@@ -207,6 +200,12 @@ export default function Index(
             onClickEdit={() => { }} />}
         </tbody>
       </Table>
+      <ModalDuplicate
+        idPreventivo={idPreventivo}
+        show={showDuplicate}
+        onHide={hideDuplicate}
+        _nomePreventivo={preventivoQuery.data?.nome}
+      />
       <ModalOptions prevId={idPreventivo} />
       {/* alert per mostrare i messaggi di errore */}
       <ErrorMessage message={errorMsg} />

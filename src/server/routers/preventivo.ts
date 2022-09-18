@@ -178,7 +178,10 @@ export const prevRouter = createProtectedRouter()
     }
   })
   .mutation('duplicate', {
-    input: z.object({ id: z.number() }),
+    input: z.object({
+      id: z.number(),
+      nome: z.string()
+    }),
     resolve: async ({ input }) => {
       try {
         const preventivo = await prisma.preventivo.findFirstOrThrow({
@@ -187,7 +190,7 @@ export const prevRouter = createProtectedRouter()
         })
         const newPreventivo = await prisma.preventivo.create({
           data: {
-            nome: preventivo.nome + ' new',
+            nome: input.nome,
             userId: preventivo.userId,
             scuola: preventivo.scuola,
             listinoId: preventivo.listinoId,
