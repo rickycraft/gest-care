@@ -1,7 +1,7 @@
+import ButtonTooltip from 'components/utils/ButtonTooltip'
 import { useState } from 'react'
 import { Button, Form, Modal, Spinner } from 'react-bootstrap'
 import { trpc } from 'utils/trpc'
-import ButtonTooltip from 'components/utils/ButtonTooltip'
 
 const invalidId = -1
 
@@ -17,7 +17,7 @@ export default function ModalCreate() {
     },
   })
   const ordineQuery = trpc.useQuery(['ordine.list'])
-  const preventivoQuery = trpc.useQuery(['preventivo.list'])
+  const preventivoQuery = trpc.useQuery(['preventivo.list', {}])
 
   if (!preventivoQuery.isSuccess || !ordineQuery.isSuccess) return <Spinner animation="border" />
 
