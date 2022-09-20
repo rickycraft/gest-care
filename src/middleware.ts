@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
 import { getIronSession } from "iron-session/edge"
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 import { ironSessionOptions } from 'utils/iron'
 
 // This function can be marked `async` if using `await` inside
@@ -17,5 +17,5 @@ export async function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ['/', '/listino/:page*', '/preventivo/:page*'],
+  matcher: ['/', '/listino/:page*', '/preventivo/:page*', '/ordine/:page*'],
 }
