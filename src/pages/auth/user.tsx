@@ -58,7 +58,7 @@ export default function User() {
         </Form.Group>
         <Form.Group>
           <Form.Label>Password</Form.Label>
-          <Form.Control type="password" placeholder="Password" name='password' />
+          <Form.Control type="text" placeholder="Password" name='password' />
         </Form.Group>
         <Form.Group>
           <Form.Label>Ruolo</Form.Label>
