@@ -34,7 +34,7 @@ export default function TableRow({
                 <Form.Control
                     id={'InputPrezzo' + rowId}
                     type="number"
-                    value={(newPrice == 0) ? '' : newPrice}
+                    value={newPrice}
                     disabled={!isEditable}
                     onInput={(event) => {
                         event.preventDefault()
