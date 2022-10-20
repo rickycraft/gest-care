@@ -32,8 +32,8 @@ export default function TableRowPrev({
     const total = useMemo(() => (
         newRow.provComm + newRow.provRappre + newRow.provSc + prodotto + pers
     ).toFixed(2), [newRow])
-    const isValid = useMemo(() => (prodotto > 0 && pers > 0
-        && newRow.provComm > 0 && newRow.provRappre > 0 && newRow.provSc > 0
+    const isValid = useMemo(() => (prodotto >= 0 && pers >= 0
+        && newRow.provComm >= 0 && newRow.provRappre >= 0 && newRow.provSc >= 0
     ), [newRow])
     const isNew = useMemo(() => row.id == INVALID_ID, [row])
 
