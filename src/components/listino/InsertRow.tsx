@@ -14,7 +14,7 @@ export default function InsertRow({
   const [nome, setNome] = useState('')
   const [prezzo, setPrezzo] = useState(0)
   const isEdited = useMemo(() => nome !== '' || prezzo !== 0, [nome, prezzo])
-  const isRowValid = useMemo(() => nome.length > 0 && prezzo > 0, [nome, prezzo])
+  const isRowValid = useMemo(() => nome.length > 0 && prezzo >= 0, [nome, prezzo])
 
   const doAddRow = () => {
     if (!isRowValid) return
@@ -34,7 +34,7 @@ export default function InsertRow({
       </td>
       <td>
         <Form.Control name='InputTextPrezzo' type='number'
-          value={(prezzo == 0) ? '' : prezzo}
+          value={prezzo}
           onChange={(event) => { event.preventDefault(); setPrezzo(Number(event.currentTarget.value)) }}
           onKeyUp={(event) => { if (event.key === 'Enter') doAddRow() }}
           placeholder="Prezzo"
