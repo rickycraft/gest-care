@@ -25,7 +25,16 @@ export default function TableRowPrev({
 
     const [isEditable, setIsEditable] = useState((row.id == INVALID_ID) ? true : false)
     const [newRow, setNewRow] = useState(row)
-    const resetRow = () => setNewRow(row)
+    const resetRow = () => {
+        setNewRow(row)
+        setProvScTxt(row.provSc.toString())
+        setProvCommTxt(row.provComm.toString())
+        setProvRappreTxt(row.provRappre.toString())
+    }
+
+    const [provScTxt, setProvScTxt] = useState(row.provSc.toString())
+    const [provCommTxt, setProvCommTxt] = useState(row.provComm.toString())
+    const [provRappreTxt, setProvRappreTxt] = useState(row.provRappre.toString())
 
     const prodotto = useMemo(() => prodList.find(p => p.id === newRow.prodId)?.prezzo ?? 0, [prodList, newRow.prodId])
     const pers = useMemo(() => persList.find(p => p.id === newRow.persId)?.prezzo ?? 0, [persList, newRow.persId])
@@ -69,28 +78,34 @@ export default function TableRowPrev({
                 </Form.Select>
             </td>
             <td>{pers}</td>
-            <td><Form.Control value={newRow.provSc} type="number" disabled={!isEditable} className="p-1"
-                onInput={(e) => setNewRow({
-                    ...newRow,
-                    provSc: Number(e.currentTarget.value)
-                })} />
+            <td><Form.Control value={provScTxt} type="number" disabled={!isEditable} className="p-1"
+                onInput={(e) => {
+                    setProvScTxt(e.currentTarget.value)
+                    setNewRow({
+                        ...newRow,
+                        provSc: Number(e.currentTarget.value)
+                    })
+                }} />
             </td>
-            <td><Form.Control value={newRow.provComm} type="number" disabled={!isEditable} className="p-1"
-                onInput={(e) => setNewRow({
-                    ...newRow,
-                    provComm: Number(e.currentTarget.value)
-                })} />
+            <td><Form.Control value={provCommTxt} type="number" disabled={!isEditable} className="p-1"
+                onInput={(e) => {
+                    setProvCommTxt(e.currentTarget.value)
+                    setNewRow({
+                        ...newRow,
+                        provComm: Number(e.currentTarget.value)
+                    })
+                }} />
             </td>
-            <td><Form.Control value={newRow.provRappre} type="number" disabled={!isEditable} className="p-1"
-                onInput={(e) => setNewRow({
-                    ...newRow,
-                    provRappre: Number(e.currentTarget.value)
-                })} />
+            <td><Form.Control value={provRappreTxt} type="number" disabled={!isEditable} className="p-1"
+                onInput={(e) => {
+                    setProvRappreTxt(e.currentTarget.value)
+                    setNewRow({
+                        ...newRow,
+                        provRappre: Number(e.currentTarget.value)
+                    })
+                }} />
             </td>
             <td>{total}</td>
-            {/*Gruppo di bottoni "edit" e "delete" per ogni riga prodotto
-                edit: modifica il prodotto della riga  (TODO)
-                delete: elimina il prodotto della riga*/}
             <td hidden={locked}>
                 {!isNew && (isEditable ? (
                     <div className='d-flex flex-nowrap'>
@@ -98,6 +113,9 @@ export default function TableRowPrev({
                             <Button name='EditButton' variant="outline-success  me-1 me-lg-2" disabled={!isValid}
                                 onClick={() => {
                                     onClickEdit({ ...newRow, id: row.id })
+                                    setProvCommTxt(newRow.provComm.toString())
+                                    setProvRappreTxt(newRow.provRappre.toString())
+                                    setProvScTxt(newRow.provSc.toString())
                                     setIsEditable(false)
                                 }}>
                                 <MdOutlineCheck />
