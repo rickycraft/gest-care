@@ -31,10 +31,10 @@ export default function TableRowPrev({
     const pers = useMemo(() => persList.find(p => p.id === newRow.persId)?.prezzo ?? 0, [persList, newRow.persId])
     const total = useMemo(() => (
         newRow.provComm + newRow.provRappre + newRow.provSc + prodotto + pers
-    ).toFixed(2), [newRow])
+    ).toFixed(2), [newRow, prodotto, pers])
     const isValid = useMemo(() => (prodotto >= 0 && pers >= 0
         && newRow.provComm >= 0 && newRow.provRappre >= 0 && newRow.provSc >= 0
-    ), [newRow])
+    ), [newRow, prodotto, pers])
     const isNew = useMemo(() => row.id == INVALID_ID, [row])
 
     return (
