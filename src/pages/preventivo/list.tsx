@@ -4,16 +4,27 @@ import ModalLock from 'components/preventivo/ModalLockPreventivo'
 import ButtonTooltip from 'components/utils/ButtonTooltip'
 import SearchBar from 'components/utils/SearchBar'
 import { useAtom } from 'jotai'
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { useRouter } from 'next/router'
 import { useMemo, useState } from 'react'
 import { Button, Card, Spinner } from 'react-bootstrap'
 import { MdCreate, MdDelete, MdLock, MdLockOpen } from 'react-icons/md'
+import { createSSG } from 'server/context'
 import { userAtom } from 'utils/atom'
 import { INVALID_ID } from 'utils/constants'
 import { canUnlockPreventivo } from 'utils/role'
 import { trpc } from 'utils/trpc'
 
-export default function List() {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const ssg = await createSSG(context.req.cookies)
+  await ssg.prefetchQuery('preventivo.list', { search: '' })
+
+  return { props: { trpcState: ssg.dehydrate() } }
+}
+
+export default function List(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>,
+) {
   const router = useRouter()
   const [user,] = useAtom(userAtom)
 
