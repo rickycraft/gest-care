@@ -62,7 +62,7 @@ export default function List(
             <Card.Body>
               <Card.Title role="button"
                 onClick={() => {
-                  setTimeout(() => setLoading(true), 250)
+                  setTimeout(() => setLoading(true), 500)
                   router.push(`/preventivo/${prev.id}`)
                 }}
               >
