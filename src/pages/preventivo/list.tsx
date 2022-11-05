@@ -49,10 +49,12 @@ export default function List() {
         {preventiviQuery.data?.map((prev) => (
           <Card key={prev.id} className='my-3'>
             <Card.Body>
-              <Card.Title onClick={() => {
-                setTimeout(() => setLoading(true), 250)
-                router.push(`/preventivo/${prev.id}`)
-              }}>
+              <Card.Title role="button"
+                onClick={() => {
+                  setTimeout(() => setLoading(true), 250)
+                  router.push(`/preventivo/${prev.id}`)
+                }}
+              >
                 {isLoading ? <Spinner animation="border" /> : prev.nome}
               </Card.Title>
               <div className='mb-0 d-flex justify-content-between flex-wrap'>
