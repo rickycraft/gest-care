@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json ./
-RUN [ -f package-lock.json ] && npm ci || (echo "Lockfile not found." && exit 1)
+RUN npm ci
 
 # Rebuild the source code only when needed
 FROM node:18-alpine AS builder
