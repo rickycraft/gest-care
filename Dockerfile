@@ -1,16 +1,10 @@
 # Install dependencies only when needed
-FROM node:18 AS deps
+FROM node:18 AS builder
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json ./
 RUN npm ci
-
-# Rebuild the source code only when needed
-FROM node:18 AS builder
-WORKDIR /app
-COPY --from=deps /app/package.json ./package.json
-COPY --from=deps /app/node_modules ./node_modules
 
 # Generate prisma
 COPY prisma/schema.prisma ./prisma/schema.prisma
