@@ -10,8 +10,8 @@
     "docker": "sudo docker build -t gest-care:latest .",
     "deploy": "sudo bash deploy.sh",
     "vercel-build": "prisma generate && next build",
-    "prisma-generate": "npx prisma generate",
-    "prisma-migrate": "npx prisma migrate dev"
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate dev"
   },
   "dependencies": {
     "@prisma/client": "^4.3.0",

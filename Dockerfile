@@ -15,7 +15,7 @@ COPY --from=deps /app/node_modules ./node_modules
 
 # Generate prisma
 COPY prisma/schema.prisma ./prisma/schema.prisma
-RUN npx prisma generate
+RUN npm run prisma:generate
 
 # Build app
 COPY . .
