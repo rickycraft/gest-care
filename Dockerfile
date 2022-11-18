@@ -14,6 +14,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 
 # Generate prisma
+COPY --from=deps /app/package.json ./package.json
 COPY prisma/schema.prisma ./prisma/schema.prisma
 RUN npm run prisma:generate
 
