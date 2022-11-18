@@ -8,15 +8,14 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
+# Generate prisma
+COPY prisma/schema.prisma ./prisma/schema.prisma
+RUN npm run prisma:generate
+
 # Rebuild the source code only when needed
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-
-# Generate prisma
-COPY --from=deps /app/package.json ./package.json
-COPY prisma/schema.prisma ./prisma/schema.prisma
-RUN npm run prisma:generate
 
 # Build app
 COPY . .
