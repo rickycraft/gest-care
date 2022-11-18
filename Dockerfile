@@ -11,6 +11,7 @@ RUN npm ci
 # Rebuild the source code only when needed
 FROM node:18-alpine AS builder
 RUN apk add --no-cache openssl
+RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 COPY --from=deps /app/package.json ./package.json
