@@ -10,7 +10,10 @@ RUN npm ci
 
 # Rebuild the source code only when needed
 FROM node:18-alpine AS builder
+RUN apk add --no-cache openssl
+
 WORKDIR /app
+COPY --from=deps /app/package.json ./package.json
 COPY --from=deps /app/node_modules ./node_modules
 
 # Generate prisma
