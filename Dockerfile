@@ -9,16 +9,12 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # Rebuild the source code only when needed
-FROM node:18-alpine AS builder
-RUN apk add --no-cache openssl
-RUN apk add --no-cache libc6-compat
-
+FROM node:18 AS builder
 WORKDIR /app
 COPY --from=deps /app/package.json ./package.json
 COPY --from=deps /app/node_modules ./node_modules
 
 # Generate prisma
-COPY --from=deps /app/package.json ./package.json
 COPY prisma/schema.prisma ./prisma/schema.prisma
 RUN npm run prisma:generate
 
